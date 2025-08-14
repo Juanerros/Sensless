@@ -6,10 +6,10 @@ let player;
 let world;
 let keys = {};
 let keysPressed = {};
-const force = 0.01;
+const force = 0.02;
 const jumpForce = 0.1;
 
-export function createPlayer(x, y, worldRef) {
+export function createPlayer(x, y, worldRef, playerSprite) {
   world = worldRef;
   player = Matter.Bodies.rectangle(x, y, 40, 60, {
     frictionAir: 0.01,
@@ -22,6 +22,7 @@ export function createPlayer(x, y, worldRef) {
   player.height = 60;
   player.isPlayer = true;
   player.label = "player";
+  // player.sprite = playerSprite;
 
   // Se guarda en el estado global
   gameState.player = player;
@@ -116,14 +117,22 @@ export function getPlayer() {
 }
 
 export function drawPlayer(p) {
-  if (!player) return;
-
   const pos = player.position;
+  const angle = player.angle;
 
   p.push();
   p.translate(pos.x, pos.y);
-  p.rectMode(p.CENTER);
-  p.fill(0, 150, 255);
-  p.rect(0, 0, player.width, player.height);
+  p.rotate(angle);
+
+  if (player.sprite && player.sprite.width > 0) {
+    p.imageMode(p.CENTER);
+    p.image(player.sprite, 0, 0, player.width, player.height);
+  } else {
+    p.fill(0, 255, 0);
+    p.rectMode(p.CENTER);
+    p.rect(0, 0, player.width, player.height);
+  }
+
+
   p.pop();
 }
