@@ -4,6 +4,8 @@ import { createPlayer, updatePlayer, handleKeyPressed, handleKeyReleased, drawPl
 import { moveCamera } from "./camera";
 import { gameState } from "./state";
 
+import { createEnemy, updateEnemies, drawEnemies } from "./enemies/wandering_sprout";
+
 // Nuestro sketch de p5.js
 const sketch = (p) => {
   // Inicializamos las cosas
@@ -11,6 +13,9 @@ const sketch = (p) => {
     p.createCanvas(1800, 810);
     setupPhysics();
     createPlayer(200, 300, getWorld(), getEngine());
+
+    //enemigo
+    createEnemy(500, 300, getWorld()); 
   };
 
   // Bucle para dibujar en pantalla cada frame
@@ -34,6 +39,10 @@ const sketch = (p) => {
     drawBodies();
 
     drawPlayer(p);
+
+    //enemigo
+    drawEnemies(p);
+
   };
 
   // Funcion para dibujar los cuerpos
