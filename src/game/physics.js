@@ -8,6 +8,9 @@ export function setupPhysics() {
   engine = Matter.Engine.create();
   world = engine.world;
 
+  //Cosa de los enemigos
+  gameState.world = world;
+
   // Crear un suelo
   const ground = Matter.Bodies.rectangle(900, 790, 1800, 80, { isStatic: true });
   Matter.World.add(world, ground);

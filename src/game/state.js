@@ -3,7 +3,9 @@ export const gameState = {
   score: 0,
   timeScale: 1,
   isPaused: false,
-  fixedCamera: -225
+  fixedCamera: -225,
+  //Cosa para los enemigos
+  world: null 
 };
 
 export function togglePauseGame() {
