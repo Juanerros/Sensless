@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { setupPhysics, updatePhysics, getBodies, getWorld, getEngine } from "./physics";
+import { setupPhysics, updatePhysics, getBodies, getWorld, loadBoxSprite } from "./physics";
 import {
   createPlayer,
   updatePlayer,
@@ -15,19 +15,13 @@ import { ChaserEnemy, updateEnemies, drawEnemies } from "./enemies/enemy";
 
 // Nuestro sketch de p5.js
 const sketch = (p) => {
-  let playerSprite;
-
   p.setup = () => {
-    
     p.createCanvas(1800, 810);
 
-    // Cargamos sprite del jugador
-    // p.loadImage("/assets/sprites/Zenith.png", (img) => {
-    //   playerSprite = img;
-    // });
-    
     setupPhysics();
-    createPlayer(200, 300, getWorld(), getEngine());
+
+    // Cargamos sprites
+    loadSprites()
 
     // enemigo 
     new ChaserEnemy(900, 700, getWorld());
@@ -45,7 +39,7 @@ const sketch = (p) => {
     p.background(200);
 
     updatePhysics();
-    updatePlayer();
+    updatePlayer(p);
     //Enemigos
     updateEnemies(); 
 
@@ -64,6 +58,21 @@ const sketch = (p) => {
     drawPlayer(p);
 
   };
+
+  function loadSprites() {
+    p.noSmooth();
+    p.pixelDensity(1);
+
+    // Player
+    p.loadImage("/assets/sprites/Zenith.png", (img) => {
+      createPlayer(200, 300, getWorld(), img);
+    });
+
+    // Cajas
+    p.loadImage("/assets/sprites/box-a.png", (img) => {
+      loadBoxSprite(img);
+    });
+  }
 
   function drawBodies() {
     const bodies = getBodies();
@@ -89,8 +98,12 @@ const sketch = (p) => {
     }
   }
 
-  p.mousePressed = () => {
+  p.mousePressed = (event) => {
+    if (event) {
+      event.preventDefault();
+    }
     handleMousePressed(p);
+    return false;
   };
 
   p.keyPressed = () => {

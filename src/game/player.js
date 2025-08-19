@@ -7,22 +7,23 @@ let world;
 let keys = {};
 let keysPressed = {};
 const force = 0.02;
-const jumpForce = 0.1;
+const jumpForce = 0.03;
+const dashForce = .5;
 
 export function createPlayer(x, y, worldRef, playerSprite) {
   world = worldRef;
-  player = Matter.Bodies.rectangle(x, y, 40, 60, {
-    frictionAir: 0.01,
+  player = Matter.Bodies.rectangle(x, y, 42, 72, {
+    frictionAir: 0.02,
     friction: 0.1,
     density: 0.001,
     restitution: 0,
     inertia: Infinity
   });
-  player.width = 40;
-  player.height = 60;
+  player.width = 42;
+  player.height = 72;
   player.isPlayer = true;
   player.label = "player";
-  // player.sprite = playerSprite;
+  player.sprite = playerSprite;
 
   // Se guarda en el estado global
   gameState.player = player;
@@ -32,8 +33,10 @@ export function createPlayer(x, y, worldRef, playerSprite) {
   return player;
 }
 
-export function updatePlayer() {
+export function updatePlayer(p) {
   if (!player) return;
+
+  drawBorderBox(p)
 
   // Funcion de pause (no funciona como es debido)
   // if(keys['p'] && !keysPressed['p']) {
@@ -48,12 +51,14 @@ export function updatePlayer() {
     keysPressed['g'] = true;
   }
 
-  if (keys['a'] || keys['ArrowLeft']) {
+  if (keys['a']) {
     Matter.Body.applyForce(player, player.position, { x: -force, y: 0 });
+    player.direction = 'left'
   }
 
-  if (keys['d'] || keys['ArrowRight']) {
+  if (keys['d']) {
     Matter.Body.applyForce(player, player.position, { x: force, y: 0 });
+    player.direction = 'right'
   }
 
   if ((keys[' ']) && isOnGround(player, getBodies())) {
@@ -74,8 +79,8 @@ export function toggleTimeScale(newTimeScale) {
 }
 
 function isOnGround(player, allBodies) {
-  const offset = 30;
-  const tolerance = 5;
+  const offset = 50;
+  const tolerance = 15;
   const px = player.position.x;
   const py = player.position.y + offset;
 
@@ -96,12 +101,44 @@ export function handleMousePressed(p) {
   // Lo que movimos la camara
   const camX = (p.width / 2 - 225) - gameState.player.position.x;
   const camY = (p.height / 2 + 70) - gameState.player.position.y;
-
   // Transformar mouseX/mouseY a coordenadas del mundo movido
   const worldX = p.mouseX - camX;
   const worldY = p.mouseY - camY;
-  createBox(worldX, worldY, 50, 50);
+
+  if (p.mouseButton.left) {
+    createBox(worldX, worldY, 50, 50);
+  }
+
+  if (p.mouseButton.right) {
+    dash(worldX, worldY);
+  }
 }
+
+function dash(worldX, worldY) {
+  const directionX = worldX - player.position.x;
+  const directionY = worldY - player.position.y;
+  
+  const magnitude = Math.sqrt(directionX * directionX + directionY * directionY);
+
+  if (magnitude === 0) {
+    return;
+  }
+
+  const normalizedX = directionX / magnitude;
+  const normalizedY = directionY / magnitude;
+
+  Matter.Body.applyForce(player, player.position, {
+    x: normalizedX * dashForce,
+    y: normalizedY * dashForce
+  });
+}
+
+function drawBorderBox(p) {
+  p.noFill();
+  p.stroke(0);
+  p.rect(p.mouseX - 25, p.mouseY - 25, 50, 50);
+}
+
 
 export function handleKeyPressed(key) {
   keys[key] = true;
@@ -117,12 +154,20 @@ export function getPlayer() {
 }
 
 export function drawPlayer(p) {
+  if (!player) return;
+
   const pos = player.position;
   const angle = player.angle;
 
   p.push();
   p.translate(pos.x, pos.y);
   p.rotate(angle);
+  if (player.direction === 'left') {
+    p.scale(-1, 1);
+  } else {
+    p.scale(1, 1);
+  }
+
 
   if (player.sprite && player.sprite.width > 0) {
     p.imageMode(p.CENTER);

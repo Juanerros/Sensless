@@ -3,6 +3,7 @@ import { gameState } from "./state";
 
 let engine, world;
 let boxes = [];
+let boxSprite;
 
 export function setupPhysics() {
   engine = Matter.Engine.create();
@@ -18,19 +19,25 @@ export function setupPhysics() {
   ground.height = 80;
   ground.label = "ground";
 
-  createBox(400, 300, 50, 50);
-
   boxes.push(ground);
+}
+
+export function loadBoxSprite(img) {
+  boxSprite = img
 }
 
 export function createBox(x, y, w, h) {
   const box = Matter.Bodies.rectangle(x, y, w, h, {
     timeScale: gameState.timeScale,
+    friction: 0.3,
+    restitution: 0.2,
+    mass: 5,
   });
   Matter.World.add(world, box);
   box.width = w;
   box.height = h;
   box.label = "box";
+  box.sprite = boxSprite;
 
   boxes.push(box);
 }
