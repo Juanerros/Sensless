@@ -9,6 +9,7 @@ let keysPressed = {};
 const force = 0.02;
 const jumpForce = 0.03;
 const dashForce = .5;
+const playerVelocity = 7;
 
 export function createPlayer(x, y, worldRef, playerSprite) {
   world = worldRef;
@@ -24,6 +25,8 @@ export function createPlayer(x, y, worldRef, playerSprite) {
   player.isPlayer = true;
   player.label = "player";
   player.sprite = playerSprite;
+  player.inventory = 0;
+  player.direction = 'right';
 
   // Se guarda en el estado global
   gameState.player = player;
@@ -36,8 +39,6 @@ export function createPlayer(x, y, worldRef, playerSprite) {
 export function updatePlayer(p) {
   if (!player) return;
 
-  drawBorderBox(p)
-
   // Funcion de pause (no funciona como es debido)
   // if(keys['p'] && !keysPressed['p']) {
   //   togglePauseGame();
@@ -45,6 +46,8 @@ export function updatePlayer(p) {
   // }
 
   if (gameState.isPaused) return;
+
+  drawBorderBox(p)
 
   if (keys['g'] && !keysPressed['g']) {
     toggleTimeScale(0.25);
@@ -65,18 +68,31 @@ export function updatePlayer(p) {
     Matter.Body.applyForce(player, player.position, { x: 0, y: -jumpForce });
   }
 
-  if (player.velocity.x > 10) {
-    Matter.Body.setVelocity(player, { x: 10, y: player.velocity.y });
+  if (keys['1']) {
+    setInventory(0);
   }
 
-  if (player.velocity.x < -10) {
-    Matter.Body.setVelocity(player, { x: -10, y: player.velocity.y });
+  if (keys['2']) {
+    setInventory(1);
+  }
+
+  if (keys['3']) {
+    setInventory(2);
+  }
+
+  if (player.velocity.x > playerVelocity) {
+    Matter.Body.setVelocity(player, { x: playerVelocity, y: player.velocity.y });
+  }
+
+  if (player.velocity.x < -playerVelocity) {
+    Matter.Body.setVelocity(player, { x: -playerVelocity, y: player.velocity.y });
   }
 }
 
-export function toggleTimeScale(newTimeScale) {
-  gameState.timeScale = gameState.timeScale === 1 ? newTimeScale : 1;
+export function setInventory(index) {
+  player.inventory = index;
 }
+
 
 function isOnGround(player, allBodies) {
   const offset = 50;
@@ -97,27 +113,10 @@ function isOnGround(player, allBodies) {
   });
 }
 
-export function handleMousePressed(p) {
-  // Lo que movimos la camara
-  const camX = (p.width / 2 - 225) - gameState.player.position.x;
-  const camY = (p.height / 2 + 70) - gameState.player.position.y;
-  // Transformar mouseX/mouseY a coordenadas del mundo movido
-  const worldX = p.mouseX - camX;
-  const worldY = p.mouseY - camY;
-
-  if (p.mouseButton.left) {
-    createBox(worldX, worldY, 50, 50);
-  }
-
-  if (p.mouseButton.right) {
-    dash(worldX, worldY);
-  }
-}
-
 function dash(worldX, worldY) {
   const directionX = worldX - player.position.x;
   const directionY = worldY - player.position.y;
-  
+
   const magnitude = Math.sqrt(directionX * directionX + directionY * directionY);
 
   if (magnitude === 0) {
@@ -139,6 +138,26 @@ function drawBorderBox(p) {
   p.rect(p.mouseX - 25, p.mouseY - 25, 50, 50);
 }
 
+export function handleMousePressed(p) {
+  // Lo que movimos la camara
+  const camX = (p.width / 2 - 225) - player.position.x;
+  const camY = (p.height / 2 + 70) - player.position.y;
+  // Transformar mouseX/mouseY a coordenadas del mundo movido
+  const worldX = p.mouseX - camX;
+  const worldY = p.mouseY - camY;
+
+  if (p.mouseButton.left) {
+    createBox(worldX, worldY, 50, 50, player.inventory);
+  }
+
+  if (p.mouseButton.right) {
+    dash(worldX, worldY);
+  }
+}
+
+export function toggleTimeScale(newTimeScale) {
+  gameState.timeScale = gameState.timeScale === 1 ? newTimeScale : 1;
+}
 
 export function handleKeyPressed(key) {
   keys[key] = true;
@@ -168,7 +187,6 @@ export function drawPlayer(p) {
     p.scale(1, 1);
   }
 
-
   if (player.sprite && player.sprite.width > 0) {
     p.imageMode(p.CENTER);
     p.image(player.sprite, 0, 0, player.width, player.height);
@@ -177,7 +195,6 @@ export function drawPlayer(p) {
     p.rectMode(p.CENTER);
     p.rect(0, 0, player.width, player.height);
   }
-
 
   p.pop();
 }
