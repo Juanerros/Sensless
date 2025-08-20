@@ -1,5 +1,5 @@
 import Matter from "matter-js";
-import { createBox, getBodies } from "./physics";
+import { createBox, createQuimic, getBodies } from "./physics";
 import { gameState, togglePauseGame } from "./state";
 
 let player;
@@ -147,7 +147,11 @@ export function handleMousePressed(p) {
   const worldY = p.mouseY - camY;
 
   if (p.mouseButton.left) {
-    createBox(worldX, worldY, 50, 50, player.inventory);
+    if (player.inventory === 0) {
+      createBox(worldX, worldY, 50, 50);
+    } else {
+      createQuimic(worldX, worldY, 33, 45, player.inventory);
+    }
   }
 
   if (p.mouseButton.right) {

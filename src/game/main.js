@@ -1,5 +1,5 @@
 import p5 from "p5";
-import { setupPhysics, updatePhysics, getBodies, getWorld, loadBoxSprite } from "./physics";
+import { setupPhysics, updatePhysics, getBodies, getWorld, loadSprite } from "./physics";
 import {
   createPlayer,
   updatePlayer,
@@ -69,20 +69,16 @@ const sketch = (p) => {
     });
 
     // Cajas
-    p.loadImage("/assets/sprites/hidrogeno.png", (img) => {
-      loadBoxSprite(img);
-    });
-
-    p.loadImage("/assets/sprites/oxigeno.png", (img) => {
-      loadBoxSprite(img);
-    });
-
-    p.loadImage("/assets/sprites/agua.png", (img) => {
-      loadBoxSprite(img);
-    });
-
     p.loadImage("/assets/sprites/box-a.png", (img) => {
-      loadBoxSprite(img);
+      loadSprite(img, 'box');
+    });
+
+    p.loadImage("/assets/sprites/hidrogeno-pixel.png", (img) => {
+      loadSprite(img, 'hidrogeno');
+    });
+
+    p.loadImage("/assets/sprites/oxigeno-pixel.png", (img) => {
+      loadSprite(img, 'oxigeno');
     });
   }
 
@@ -101,13 +97,13 @@ const sketch = (p) => {
         p.imageMode(p.CENTER);
         p.image(body.sprite, 0, 0, body.width || 50, body.height || 50);
       } else {
-        if(body.element === "agua") {
+        if (body.element === "agua") {
           p.fill(0, 100, 255);
         } else {
           p.fill(0, 0, 0);
         }
-        
-        if(body.shape === 'circle') {
+
+        if (body.shape === 'circle') {
           p.ellipse(0, 0, body.width || 5, body.height || 5);
         } else {
           p.rectMode(p.CENTER);

@@ -3,10 +3,24 @@ import { gameState } from "./state";
 
 let engine, world;
 let boxes = [];
-let boxSprite;
-
-let elementsSprite = []
-let elements = ['hidrogeno', 'oxigeno', 'agua']
+let elements = [
+  {
+    name: 'box',
+    sprite: null,
+  },
+  {
+    name: 'hidrogeno',
+    sprite: null,
+  },
+  {
+    name: 'oxigeno',
+    sprite: null,
+  },
+  {
+    name: 'agua',
+    sprite: null,
+  },
+]
 
 export function setupPhysics() {
   engine = Matter.Engine.create();
@@ -25,11 +39,15 @@ export function setupPhysics() {
   boxes.push(ground);
 }
 
-export function loadBoxSprite(img) {
-  elementsSprite.push(img);
+export function loadSprite(img, name) {
+  elements.forEach(e => { 
+    if (e.name === name) {
+      e.sprite = img;
+    }
+  })
 }
 
-export function createBox(x, y, w, h, index) {
+export function createBox(x, y, w, h) {
   const box = Matter.Bodies.rectangle(x, y, w, h, {
     timeScale: gameState.timeScale,
     friction: 0.3,
@@ -39,15 +57,26 @@ export function createBox(x, y, w, h, index) {
   Matter.World.add(world, box);
   box.width = w;
   box.height = h;
-  if (index !== undefined) {
-    box.sprite = elementsSprite[index];
-    box.label = 'elements'
-  } else {
-    box.sprite = boxSprite;
-    box.label = "box";
-  }
+  box.sprite = elements[0].sprite;
+  box.label = "box";
 
-  box.element = elements[index];
+  boxes.push(box);
+}
+
+export function createQuimic(x, y, w, h, index) {
+  const box = Matter.Bodies.rectangle(x, y, w, h, {
+    timeScale: gameState.timeScale,
+    friction: 0.5,
+    restitution: 0.01,
+    mass: 5,
+  });
+  Matter.World.add(world, box);
+
+  box.width = w;
+  box.height = h;
+  box.label = 'element'
+  box.sprite = elements[index].sprite;
+  box.element = elements[index].name;
 
   boxes.push(box);
 }
@@ -69,12 +98,12 @@ function updateTimeScale() {
 
 function checkQuimic() {
   boxes.forEach(body => {
-    if (body.label === "elements") {
+    if (body.label === "element") {
       if (body.element === "hidrogeno") {
-        body.sprite = elementsSprite[0];
+        body.sprite = elements[1].sprite;
       }
       if (body.element === "oxigeno") {
-        body.sprite = elementsSprite[1];
+        body.sprite = elements[2].sprite;
       }
     }
   })
@@ -83,7 +112,7 @@ function checkQuimic() {
 }
 
 function checkWaterFormation() {
-  const elements = boxes.filter(body => body.label === "elements");
+  const elements = boxes.filter(body => body.label === "element");
   const hydrogens = elements.filter(body => body.element === "hidrogeno");
   const oxygens = elements.filter(body => body.element === "oxigeno");
 
