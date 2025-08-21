@@ -47,6 +47,7 @@ export function loadSprite(img, name) {
   })
 }
 
+
 export function createBox(x, y, w, h) {
   const box = Matter.Bodies.rectangle(x, y, w, h, {
     timeScale: gameState.timeScale,

@@ -5,7 +5,8 @@ export const gameState = {
   isPaused: false,
   fixedCamera: -225,
   //Cosa para los enemigos
-  world: null 
+  world: null ,
+  persistentActions: []
 };
 
 export function togglePauseGame() {

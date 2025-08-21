@@ -11,7 +11,7 @@ import {
 import { moveCamera } from "./camera";
 import { gameState } from "./state";
 
-import { ChaserEnemy, updateEnemies, drawEnemies } from "./enemies/enemy";
+import { ChaserEnemy, updateEnemies, drawEnemies, loadSpriteEnemies } from "./enemies/enemy";
 import { WanderingBud } from "./enemies/wanderingBud";
 
  
@@ -59,8 +59,41 @@ const sketch = (p) => {
     //enemigo
     drawEnemies(p);
     drawPlayer(p);
+    drawPersistentActions(p);
 
   };
+
+  //Enemigos
+  function drawPersistentActions(p) {
+    // Actualizar y dibujar círculos persistentes
+    for (let i = gameState.persistentActions.length - 1; i >= 0; i--) {
+      const circle = gameState.persistentActions[i];
+      
+      p.push();
+      // Crear un gradiente radial
+      for (let j = circle.radius * 2; j > 0; j -= 5) {
+        let alpha = p.map(j, 0, circle.radius * 2, 0, 50);
+        p.fill(255, 0, 0, alpha);
+        p.noStroke();
+        p.circle(circle.x, circle.y, j);
+      }
+      
+      p.noFill();
+      p.stroke(255, 0, 0);
+      p.strokeWeight(2);
+      p.circle(circle.x, circle.y, circle.radius * 2);
+      p.pop();
+      
+     
+      circle.lifeTime--;
+      
+      // Eliminar círculos que han expirado
+      if (circle.lifeTime <= 0) {
+        gameState.persistentActions.splice(i, 1);
+      }
+    }
+  }
+
 
   function loadSprites() {
     p.noSmooth();
@@ -83,6 +116,12 @@ const sketch = (p) => {
     p.loadImage("/assets/sprites/oxigeno-pixel.png", (img) => {
       loadSprite(img, 'oxigeno');
     });
+
+    //Enemigos
+    p.loadImage("/assets/sprites/enemies/olvido.png", (img) => {
+      loadSpriteEnemies(img, 'olvido');
+    });
+
   }
 
   function drawBodies() {

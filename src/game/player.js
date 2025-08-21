@@ -21,7 +21,7 @@ export function createPlayer(x, y, worldRef, playerSprite) {
     inertia: Infinity
   });
   player.width = 42;
-  player.height = 72;
+  player.height = 80;
   player.isPlayer = true;
   player.label = "player";
   player.sprite = playerSprite;

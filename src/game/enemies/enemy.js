@@ -13,6 +13,8 @@ export class Enemy {
     this.height = h;
     this.health = 100;
     this.damage = 10;
+    this.sprite = null;
+    this.name = null;
 
     this.body = Matter.Bodies.rectangle(x, y, w, h, {
       frictionAir: 0.05,
@@ -33,15 +35,7 @@ export class Enemy {
 
   // Dibuja al enemigo(de momento un rectangulo)
   draw(p) {
-    const pos = this.body.position;
-    const angle = this.body.angle;
-    p.push();
-    p.translate(pos.x, pos.y);
-    p.rotate(angle);
-    p.rectMode(p.CENTER);
-    p.fill(255, 0, 0);
-    p.rect(0, 0, this.width, this.height);
-    p.pop();
+    //tamaño del sprite, de como se dibuja el sprite y el colider, modificar el tamaño de lo que se dibuja, actualizando el tamaño del colider tambien
   }
 
   //Esto es para el futuro cuando los enemigos reciban daño y fallezcan, dolorosamente
@@ -64,6 +58,7 @@ export class ChaserEnemy extends Enemy {
     super(x, y, 40, 60, world);
     this.detectionRadius = 300;
     this.speed = 0.005;
+    this.name = 'olvido'
   }
 
   update() {
@@ -86,6 +81,15 @@ export class ChaserEnemy extends Enemy {
       Matter.Body.applyForce(this.body, this.body.position, { x: forceX, y: forceY });
     }
   }
+}
+
+export function loadSpriteEnemies(img, name) {
+  enemies.forEach(e => { 
+    if (e.name === name) {
+      e.sprite = img;
+      e.body.sprite = img;
+    }
+  })
 }
 
 // Métodos globales para actualizar/dibujar a todos los enemigos

@@ -9,6 +9,8 @@ export class WanderingBud extends Enemy {
     this.circleRadius = 150;    // Radio para dibujar el círculo
     this.speed = 0.005;
     this.health = 50;
+    this.name = 'olvido';
+    
   }
 
   draw(p) {
@@ -26,13 +28,29 @@ export class WanderingBud extends Enemy {
 
     // Si el jugador está dentro del radio del círculo, dibuja un círculo rojo
     if (dist < this.circleRadius) {
-      p.push();
-      p.noFill();
-      p.stroke(255, 0, 0);
-      p.strokeWeight(2);
-      p.circle(this.body.position.x, this.body.position.y, this.circleRadius * 2);
-      p.pop();
+
+      this.drawCircle(p);
+
     }
+  }
+
+  drawCircle(p){
+
+     p.push();
+    // Crear un gradiente radial
+    for (let i = this.circleRadius * 2; i > 0; i -= 5) {
+      let alpha = p.map(i, 0, this.circleRadius * 2, 0, 50);
+      p.fill(255, 0, 0, alpha);
+      p.noStroke();
+      p.circle(this.body.position.x, this.body.position.y, i);
+    }
+    // Dibujar el borde
+    p.noFill();
+    p.stroke(255, 0, 0);
+    p.strokeWeight(2);
+    p.circle(this.body.position.x, this.body.position.y, this.circleRadius * 2);
+    p.pop();
+
   }
 
   update() {
@@ -69,6 +87,17 @@ export class WanderingBud extends Enemy {
       if(!this.playerInCircle){
 
         this.playerInCircle = true;
+
+        //generar el ciculo cuando muere
+        gameState.persistentActions.push({
+
+          x: this.body.position.x,
+          y: this.body.position.y,
+          radius: this.circleRadius,
+          lifeTime: 300
+
+        })
+
         //Aplicar daño
         this.takeDamage(this.health);
 
