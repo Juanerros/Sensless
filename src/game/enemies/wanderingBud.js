@@ -8,6 +8,7 @@ export class WanderingBud extends Enemy {
     this.detectionRadius = 300; // Radio de detección para perseguir
     this.circleRadius = 150;    // Radio para dibujar el círculo
     this.speed = 0.005;
+    this.health = 50;
   }
 
   draw(p) {
@@ -51,6 +52,27 @@ export class WanderingBud extends Enemy {
       const forceY = Math.sin(angle) * this.speed;
 
       Matter.Body.applyForce(this.body, this.body.position, { x: forceX, y: forceY });
+    }
+    
+    // Si el jugador está dentro del círculo, aplicar una fuerza de repulsión
+    if (dist < this.circleRadius) {
+      // Calcular el ángulo desde el jugador hacia el enemigo (dirección opuesta)
+      const angle = Math.atan2(dy, dx);
+      // Crear una fuerza para empujar al jugador hacia afuera
+      const repulsionForce = 0.7; 
+      const forceX = Math.cos(angle) * repulsionForce;
+      const forceY = Math.sin(angle) * repulsionForce;
+      
+      // Aplicar la fuerza al jugador para alejarlo
+      Matter.Body.applyForce(player, player.position, { x: forceX, y: forceY });
+
+      if(!this.playerInCircle){
+
+        this.playerInCircle = true;
+        //Aplicar daño
+        this.takeDamage(this.health);
+
+      }
     }
   }
 }
