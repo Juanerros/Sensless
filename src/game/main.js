@@ -12,7 +12,9 @@ import { moveCamera } from "./camera";
 import { gameState } from "./state";
 
 import { ChaserEnemy, updateEnemies, drawEnemies } from "./enemies/enemy";
+import { WanderingBud } from "./enemies/wanderingBud";
 
+ 
 // Nuestro sketch de p5.js
 const sketch = (p) => {
   p.setup = () => {
@@ -25,6 +27,7 @@ const sketch = (p) => {
 
     // enemigo 
     new ChaserEnemy(900, 700, getWorld());
+    new WanderingBud(700, 700, getWorld());
   };
 
   p.draw = () => {
