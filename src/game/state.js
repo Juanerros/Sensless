@@ -3,7 +3,8 @@ export const gameState = {
   score: 0,
   timeScale: 1,
   isPaused: false,
-  fixedCamera: -225,
+  cameraX: -225,
+  cameraY: 70,
   //Cosa para los enemigos
   world: null ,
   persistentActions: []

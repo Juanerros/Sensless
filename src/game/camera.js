@@ -5,7 +5,19 @@ export function moveCamera(p) {
     const player = getPlayer();
     if (!player) return;
 
-    const heightCamera = 70
+    const viewportCenterX = window.innerWidth / 2;
+    const viewportCenterY = window.innerHeight / 2;
 
-    p.translate((p.width / 2 + gameState.fixedCamera) - player.position.x, p.height / 2 - player.position.y + heightCamera);
+
+    // Dios es el unico que sabe de donde salen estos numeros
+
+    // para cuando el ancho es de 800px
+    gameState.cameraX = -500;
+    // para cuando el alto es de 1000px
+    gameState.cameraX = -400;
+    gameState.cameraY = -90
+
+
+
+    p.translate(viewportCenterX - player.position.x, viewportCenterY - player.position.y);
 }
