@@ -5,40 +5,65 @@ import { loadEnemySprites } from './enemies/enemySprites.js';
 import { createPlayer, updatePlayer, drawPlayer } from './player.js';
 import { handleKeyPressed, handleKeyReleased, handleMousePressed } from './controls.js';
 import { moveCamera } from './camera.js';
-import { updateEnemies, drawEnemies } from './enemies/enemy.js';
-import { loadEnemySprites } from './enemies/enemySprites.js';
+import { updateEnemies, drawEnemies, ChaserEnemy, getEnemies } from './enemies/enemy.js';
 import { WanderingBud } from './enemies/wanderingBud.js';
-import { ChaserEnemy } from './enemies/enemy.js';
 import { drawPersistentActions } from './enemies/persintentActions.js';
 
 let player;
- 
+let enemiesCreated = false;
+let basicSpritesLoaded = false;
+let enemySpritesLoaded = false;
+
 const sketch = (p) => {
   p.setup = () => {
     p.createCanvas(1800, 900);
     setupPhysics();
-    
     p.noSmooth();
 
-    loadSpritesAsync(p, () => {
-
-      console.log('Todos los sprites cargados');
-      // Cargar sprites de enemigos después de los sprites básicos
-      loadEnemySprites(p, () => {
-
-        console.log('Sprites de enemigos cargados');
-
-      });
-    });
-    
-    // En la función p.setup, después de crear el jugador:
-    new ChaserEnemy(900, 700, getWorld());
-    new WanderingBud(700, 700, getWorld());
-    
+    // Crear jugador PRIMERO
     player = createPlayer(400, 300, getWorld());
+    console.log('Jugador creado:', player);
+
+    // Cargar sprites básicos
+    loadSpritesAsync(p, () => {
+      console.log('Sprites básicos cargados');
+      basicSpritesLoaded = true;
+      checkAllSpritesLoaded();
+    });
+
+    // Cargar sprites de enemigos
+    loadEnemySprites(p, () => {
+      console.log('Sprites de enemigos cargados');
+      enemySpritesLoaded = true;
+      checkAllSpritesLoaded();
+    });
   };
 
+  // Función para verificar si todos los sprites están cargados
+  function checkAllSpritesLoaded() {
+    if (basicSpritesLoaded && enemySpritesLoaded && !enemiesCreated) {
+      console.log('Todos los sprites cargados, creando enemigos...');
+      const chaser = new ChaserEnemy(900, 700, getWorld());
+      const wanderer = new WanderingBud(700, 700, getWorld());
+      enemiesCreated = true;
+      console.log('Enemigos creados:', getEnemies().length);
+    }
+  }
+
   p.draw = () => {
+    
+    // Mostrar progreso de carga
+    if (!basicSpritesLoaded || !enemySpritesLoaded) {
+      p.background(100, 100, 100);
+      p.fill(255);
+      p.textAlign(p.CENTER, p.CENTER);
+      let loadingText = 'Cargando';
+      if (basicSpritesLoaded) loadingText += ' - Sprites básicos ✓';
+      if (enemySpritesLoaded) loadingText += ' - Sprites enemigos ✓';
+      p.text(loadingText, p.width/2, p.height/2);
+      return;
+    }
+
     p.background(135, 206, 235);
     
     updatePhysics();
@@ -79,7 +104,8 @@ function drawBodies(p) {
   const bodies = getBodies();
 
   bodies.forEach(body => {
-    if (body.isPlayer) return;
+    // Saltar jugadores Y enemigos (se dibujan por separado)
+    if (body.isPlayer || body.isEnemy) return;
     
     const pos = body.position;
     const angle = body.angle;

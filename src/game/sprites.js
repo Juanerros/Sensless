@@ -59,6 +59,12 @@ export function loadSpritesAsync(p, onComplete) {
     loadSprite(img, 'oxigeno');
     checkComplete();
   });
+
+   p.loadImage('/assets/sprites/box.png', (img) => {
+    loadSprite(img, 'water');
+    checkComplete();
+  });
+
 }
 
 export function getElements() {
