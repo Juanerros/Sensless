@@ -28,12 +28,16 @@ export function addToWorld(body) {
   boxes.push(body);
 }
 
+export function removeFromWorld(body) {
+  Matter.World.remove(world, body);
+  boxes = boxes.filter(b => b !== body);
+}
+
 export function updatePhysics() {
-  checkQuimic(world, boxes);
+  checkQuimic(boxes);
 
   updateTimeScale();
   Matter.Engine.update(engine);
-  gameState.bodies = boxes; 
 }
 
 export function createBox(x, y, w, h) {

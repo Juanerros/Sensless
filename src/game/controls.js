@@ -3,6 +3,8 @@ import { Vector2 } from '../utils/Vector2.js';
 import { createBox } from './physics.js';
 import { createQuimic } from './quimic.js';
 import { gameState } from './state.js';
+import { screenToWorldCoordinates } from './camera.js';
+import { selectInventorySlot, useSelectedItem } from './inventory.js';
 
 let keys = {};
 let keysPressed = {};
@@ -42,16 +44,11 @@ export function updateControls(player, getBodies) {
     Matter.Body.applyForce(player, player.position, { x: 0, y: -jumpForce });
   }
 
-  if (keys['1']) {
-    setInventory(player, 0);
-  }
-
-  if (keys['2']) {
-    setInventory(player, 1);
-  }
-
-  if (keys['3']) {
-    setInventory(player, 2);
+  for (let i = 1; i <= 9; i++) {
+    if (keys[i.toString()] && !keysPressed[i.toString()]) {
+      selectInventorySlot(i - 1);
+      keysPressed[i.toString()] = true;
+    }
   }
 
   if (player.velocity.x > playerVelocity) {
@@ -64,17 +61,12 @@ export function updateControls(player, getBodies) {
 }
 
 export function handleMousePressed(p, player) {
-  const camX = (p.width / 2 + gameState.cameraX) - player.position.x;
-  const camY = (p.height / 2 + gameState.cameraY) - player.position.y;
-  const worldX = p.mouseX - camX;
-  const worldY = p.mouseY - camY;
+  const worldCoords = screenToWorldCoordinates(p.mouseX, p.mouseY);
+  const worldX = worldCoords.x;
+  const worldY = worldCoords.y;
 
   if (p.mouseButton.left) {
-    if (player.inventory === 0) {
-      createBox(worldX, worldY, 50, 50);
-    } else {
-      createQuimic(worldX, worldY, 33, 45, player.inventory);
-    }
+    useSelectedItem(worldX, worldY);
   }
 
   if (p.mouseButton.right) {
@@ -112,9 +104,7 @@ function isOnGround(player, allBodies) {
   });
 }
 
-function setInventory(player, index) {
-  player.inventory = index;
-}
+
 
 function toggleTimeScale(newTimeScale) {
   gameState.timeScale = gameState.timeScale === 1 ? newTimeScale : 1;

@@ -19,7 +19,7 @@ export class Enemy {
    * @param {Matter.World} world - Mundo de Matter.js
    */
   constructor(x, y, w, h, world) {
-    // Propiedades básicas
+    // Propiedades básicas  
     this.width = w;
     this.height = h;
     this.health = 100;
@@ -90,8 +90,23 @@ export class Enemy {
    * Método para destruir el enemigo
    */
   destroy() {
-    enemies = enemies.filter(e => e !== this);
-    Matter.World.remove(gameState.world, this.body);
+    // Remover del array de enemigos
+    const index = enemies.indexOf(this);
+    if (index > -1) {
+      enemies.splice(index, 1);
+    }
+    
+    // Remover del mundo físico
+    if (gameState.world && this.body) {
+      Matter.World.remove(gameState.world, this.body);
+    }
+    
+    // Remover del array de cuerpos físicos
+    const bodies = getBodies();
+    const bodyIndex = bodies.indexOf(this.body);
+    if (bodyIndex > -1) {
+      bodies.splice(bodyIndex, 1);
+    }
   }
 
   /**

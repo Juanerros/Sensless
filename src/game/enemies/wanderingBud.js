@@ -21,6 +21,7 @@ export class WanderingBud extends Enemy {
     this.name = 'olvido';
     this.type = "wanderer";
     this.playerInCircle = false;
+    this.hasExploded = false; // Nueva bandera para evitar múltiples explosiones
   }
 
   /**
@@ -78,7 +79,7 @@ export class WanderingBud extends Enemy {
     }
     
     // Si el jugador está dentro del círculo, aplicar efectos
-    if (dist < this.circleRadius) {
+    if (dist < this.circleRadius && !this.hasExploded) {
       // Calcular el ángulo desde el jugador hacia el enemigo (dirección opuesta)
       const angle = Math.atan2(dy, dx);
       // Crear una fuerza para empujar al jugador hacia afuera
@@ -92,8 +93,9 @@ export class WanderingBud extends Enemy {
       // Si es la primera vez que el jugador entra al círculo
       if (!this.playerInCircle) {
         this.playerInCircle = true;
+        this.hasExploded = true; // Marcar como explotado
 
-        // Generar el círculo persistente cuando muere
+        // Generar el círculo persistente cuando explota
         gameState.persistentActions.push({
           x: this.body.position.x,
           y: this.body.position.y,
@@ -101,8 +103,8 @@ export class WanderingBud extends Enemy {
           lifeTime: 300
         });
 
-        // Aplicar daño al enemigo
-        this.takeDamage(this.health);
+        // Destruir el enemigo después de explotar
+        this.destroy();
       }
     }
   }

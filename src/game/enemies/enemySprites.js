@@ -20,18 +20,40 @@ export function loadEnemySprites(p, onComplete) {
   
   const checkComplete = () => {
     loadedCount++;
+    console.log(`Sprites cargados: ${loadedCount}/${enemySprites.length}`);
     if (loadedCount === enemySprites.length && onComplete) {
+      console.log('Todos los sprites de enemigos cargados exitosamente');
       onComplete();
     }
   };
 
+  // Si no hay sprites que cargar, completar inmediatamente
+  if (enemySprites.length === 0) {
+    if (onComplete) onComplete();
+    return;
+  }
+
   // Cargar cada sprite de enemigo
-  enemySprites.forEach(enemyType => {
-    p.loadImage(enemyType.path, (img) => {
-      enemyType.sprite = img;
-      loadSpriteEnemies(img, enemyType.name);
-      checkComplete();
-    });
+  enemySprites.forEach((enemyType, index) => {
+    console.log(`Cargando sprite: ${enemyType.path}`);
+    
+    p.loadImage(
+      enemyType.path,
+      // Callback de éxito
+      (img) => {
+        console.log(`Sprite cargado exitosamente: ${enemyType.name}`);
+        enemyType.sprite = img;
+        loadSpriteEnemies(img, enemyType.name);
+        checkComplete();
+      },
+      // Callback de error
+      (error) => {
+        console.error(`Error cargando sprite ${enemyType.name}:`, error);
+        console.error(`Ruta: ${enemyType.path}`);
+        // Aún así contar como "cargado" para no bloquear el juego
+        checkComplete();
+      }
+    );
   });
 }
 
