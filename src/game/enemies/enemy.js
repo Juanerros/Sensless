@@ -2,20 +2,33 @@ import Matter from "matter-js";
 import { getBodies } from "../physics";
 import { gameState } from "../state";
 
-// Array para guardar a los enemigos y despues dibujarlos mas facil en el draw
+// Array para guardar a los enemigos
 export let enemies = [];
 
-// Clase base de enemigo
+/**
+ * Clase base para todos los enemigos del juego
+ * Proporciona funcionalidad común como salud, daño y métodos básicos
+ */
 export class Enemy {
-  // Se definen atributos basicos generales, con esto cualquier enemigo tiene o basico
+  /**
+   * Constructor de la clase Enemy
+   * @param {number} x - Posición X inicial
+   * @param {number} y - Posición Y inicial
+   * @param {number} w - Ancho del enemigo
+   * @param {number} h - Alto del enemigo
+   * @param {Matter.World} world - Mundo de Matter.js
+   */
   constructor(x, y, w, h, world) {
+    // Propiedades básicas
     this.width = w;
     this.height = h;
     this.health = 100;
     this.damage = 10;
     this.sprite = null;
     this.name = null;
+    this.type = "enemy"; // Tipo de enemigo para identificación
 
+    // Crear cuerpo físico
     this.body = Matter.Bodies.rectangle(x, y, w, h, {
       frictionAir: 0.05,
       friction: 0.1,
@@ -23,22 +36,49 @@ export class Enemy {
       restitution: 0,
       inertia: Infinity
     });
-    //Una etiqueta para que se identifique que es un enemigo. Label
+    
+    // Etiquetas para identificación
     this.body.label = "enemy";
     this.body.isEnemy = true;
-    //Y luego lo mets al mundo 
+    
+    // Añadir al mundo físico
     Matter.World.add(world, this.body);
     getBodies().push(this.body);
 
+    // Registrar en la lista de enemigos
     enemies.push(this);
   }
 
-  // Dibuja al enemigo(de momento un rectangulo)
+  /**
+   * Método para dibujar el enemigo
+   * @param {p5} p - Instancia de p5.js
+   */
   draw(p) {
-    //tamaño del sprite, de como se dibuja el sprite y el colider, modificar el tamaño de lo que se dibuja, actualizando el tamaño del colider tambien
+    const pos = this.body.position;
+    const angle = this.body.angle;
+    
+    p.push();
+    p.translate(pos.x, pos.y);
+    p.rotate(angle);
+    
+    // Si tiene sprite, dibujarlo
+    if (this.sprite && this.sprite.width > 0) {
+      p.imageMode(p.CENTER);
+      p.image(this.sprite, 0, 0, this.width, this.height);
+    } else {
+      // Si no tiene sprite, dibujar un rectángulo rojo
+      p.rectMode(p.CENTER);
+      p.fill(255, 0, 0);
+      p.rect(0, 0, this.width, this.height);
+    }
+    
+    p.pop();
   }
 
-  //Esto es para el futuro cuando los enemigos reciban daño y fallezcan, dolorosamente
+  /**
+   * Método para recibir daño
+   * @param {number} amount - Cantidad de daño a recibir
+   */
   takeDamage(amount) {
     this.health -= amount;
     if (this.health <= 0) {
@@ -46,33 +86,62 @@ export class Enemy {
     }
   }
 
+  /**
+   * Método para destruir el enemigo
+   */
   destroy() {
     enemies = enemies.filter(e => e !== this);
     Matter.World.remove(gameState.world, this.body);
   }
+
+  /**
+   * Método de actualización base (a implementar por subclases)
+   */
+  update() {
+    // Método base a ser sobrescrito por las subclases
+  }
+
+  /**
+   * Calcula la distancia al jugador
+   * @returns {Object} Objeto con distancia y componentes dx, dy
+   */
+  getDistanceToPlayer() {
+    const player = gameState.player;
+    if (!player) return { dist: Infinity, dx: 0, dy: 0 };
+    
+    const dx = player.position.x - this.body.position.x;
+    const dy = player.position.y - this.body.position.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    
+    return { dist, dx, dy };
+  }
 }
 
-// Eredamos atributos de enemy y le agregamos la velocidad y el rango de deteccion para la mecanica de persecucion
+/**
+ * Clase para enemigos que persiguen al jugador
+ */
 export class ChaserEnemy extends Enemy {
+  /**
+   * Constructor de ChaserEnemy
+   * @param {number} x - Posición X inicial
+   * @param {number} y - Posición Y inicial
+   * @param {Matter.World} world - Mundo de Matter.js
+   */
   constructor(x, y, world) {
     super(x, y, 40, 60, world);
     this.detectionRadius = 300;
     this.speed = 0.005;
-    this.name = 'olvido'
+    this.name = 'olvido';
+    this.type = "chaser";
   }
 
+  /**
+   * Actualización específica para enemigos perseguidores
+   */
   update() {
-    // Método base, puede ser sobrescrito por los hijos
-    // Agarra al jugador
-    const player = gameState.player;
-    if (!player) return;
-
-    // Calcula distancia
-    const dx = player.position.x - this.body.position.x;
-    const dy = player.position.y - this.body.position.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
-    // Si el jugador entra dentro del rango de detección, se genera una fuerza hacia el jugador 
+    const { dist, dx, dy } = this.getDistanceToPlayer();
+    
+    // Si el jugador está dentro del radio de detección, perseguirlo
     if (dist < this.detectionRadius) {
       const angle = Math.atan2(dy, dx);
       const forceX = Math.cos(angle) * this.speed;
@@ -83,28 +152,43 @@ export class ChaserEnemy extends Enemy {
   }
 }
 
+/**
+ * Asigna sprites a los enemigos según su nombre
+ * @param {p5.Image} img - Imagen a asignar como sprite
+ * @param {string} name - Nombre del tipo de enemigo
+ */
 export function loadSpriteEnemies(img, name) {
   enemies.forEach(e => { 
     if (e.name === name) {
       e.sprite = img;
-      e.body.sprite = img;
+      e.body.sprite = img; // Asignar también al cuerpo físico
     }
-  })
+  });
 }
 
-// Métodos globales para actualizar/dibujar a todos los enemigos
+/**
+ * Actualiza todos los enemigos
+ */
 export function updateEnemies() {
   for (let e of enemies) {
     e.update();
   }
 }
 
+/**
+ * Dibuja todos los enemigos
+ * @param {p5} p - Instancia de p5.js
+ */
 export function drawEnemies(p) {
   for (let e of enemies) {
     e.draw(p);
   }
 }
 
+/**
+ * Devuelve el array de enemigos
+ * @returns {Array} Array de enemigos
+ */
 export function getEnemies() {
   return enemies;
 }

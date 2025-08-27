@@ -4,6 +4,11 @@ import { loadSpritesAsync } from './sprites.js';
 import { createPlayer, updatePlayer, drawPlayer } from './player.js';
 import { handleKeyPressed, handleKeyReleased, handleMousePressed } from './controls.js';
 import { moveCamera } from './camera.js';
+import { updateEnemies, drawEnemies } from './enemies/enemy.js';
+import { loadEnemySprites } from './enemies/enemySprites.js';
+import { WanderingBud } from './enemies/wanderingBud.js';
+import { ChaserEnemy } from './enemies/enemy.js';
+import { drawPersistentActions } from './enemies/persintentActions.js';
 
 let player;
  
@@ -13,9 +18,21 @@ const sketch = (p) => {
     setupPhysics();
     
     p.noSmooth();
+
     loadSpritesAsync(p, () => {
+
       console.log('Todos los sprites cargados');
+      // Cargar sprites de enemigos después de los sprites básicos
+      loadEnemySprites(p, () => {
+
+        console.log('Sprites de enemigos cargados');
+
+      });
     });
+    
+    // En la función p.setup, después de crear el jugador:
+    new ChaserEnemy(900, 700, getWorld());
+    new WanderingBud(700, 700, getWorld());
     
     player = createPlayer(400, 300, getWorld());
   };
@@ -32,6 +49,10 @@ const sketch = (p) => {
     drawBodies(p);
     drawPlayer(p);
     
+    updateEnemies();
+    drawEnemies(p);
+    drawPersistentActions(p);
+
     p.pop();
   };
 

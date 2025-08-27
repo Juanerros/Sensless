@@ -2,7 +2,16 @@ import Matter from "matter-js";
 import { Enemy } from "./enemy";
 import { gameState } from "../state";
 
+/**
+ * Clase para enemigos que vagan y crean círculos de daño
+ */
 export class WanderingBud extends Enemy {
+  /**
+   * Constructor de WanderingBud
+   * @param {number} x - Posición X inicial
+   * @param {number} y - Posición Y inicial
+   * @param {Matter.World} world - Mundo de Matter.js
+   */
   constructor(x, y, world) {
     super(x, y, 40, 60, world);
     this.detectionRadius = 300; // Radio de detección para perseguir
@@ -10,33 +19,33 @@ export class WanderingBud extends Enemy {
     this.speed = 0.005;
     this.health = 50;
     this.name = 'olvido';
-    
+    this.type = "wanderer";
+    this.playerInCircle = false;
   }
 
+  /**
+   * Dibuja el enemigo y su círculo si el jugador está cerca
+   * @param {p5} p - Instancia de p5.js
+   */
   draw(p) {
     // Dibuja el enemigo base
     super.draw(p);
 
-    // Obtiene el jugador
-    const player = gameState.player;
-    if (!player) return;
-
     // Calcula la distancia al jugador
-    const dx = player.position.x - this.body.position.x;
-    const dy = player.position.y - this.body.position.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
+    const { dist } = this.getDistanceToPlayer();
 
-    // Si el jugador está dentro del radio del círculo, dibuja un círculo rojo
+    // Si el jugador está dentro del radio del círculo, dibuja el círculo
     if (dist < this.circleRadius) {
-
       this.drawCircle(p);
-
     }
   }
 
-  drawCircle(p){
-
-     p.push();
+  /**
+   * Dibuja el círculo de efecto con gradiente
+   * @param {p5} p - Instancia de p5.js
+   */
+  drawCircle(p) {
+    p.push();
     // Crear un gradiente radial
     for (let i = this.circleRadius * 2; i > 0; i -= 5) {
       let alpha = p.map(i, 0, this.circleRadius * 2, 0, 50);
@@ -50,20 +59,16 @@ export class WanderingBud extends Enemy {
     p.strokeWeight(2);
     p.circle(this.body.position.x, this.body.position.y, this.circleRadius * 2);
     p.pop();
-
   }
 
   update() {
-    // Método base, puede ser sobrescrito por los hijos
     const player = gameState.player;
     if (!player) return;
 
-    // Calcula distancia
-    const dx = player.position.x - this.body.position.x;
-    const dy = player.position.y - this.body.position.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
+    // Obtiene la distancia al jugador
+    const { dist, dx, dy } = this.getDistanceToPlayer();
 
-    // Si el jugador entra dentro del rango de detección, se genera una fuerza hacia el jugador 
+    // Si el jugador entra dentro del rango de detección, perseguirlo
     if (dist < this.detectionRadius) {
       const angle = Math.atan2(dy, dx);
       const forceX = Math.cos(angle) * this.speed;
@@ -72,7 +77,7 @@ export class WanderingBud extends Enemy {
       Matter.Body.applyForce(this.body, this.body.position, { x: forceX, y: forceY });
     }
     
-    // Si el jugador está dentro del círculo, aplicar una fuerza de repulsión
+    // Si el jugador está dentro del círculo, aplicar efectos
     if (dist < this.circleRadius) {
       // Calcular el ángulo desde el jugador hacia el enemigo (dirección opuesta)
       const angle = Math.atan2(dy, dx);
@@ -84,23 +89,20 @@ export class WanderingBud extends Enemy {
       // Aplicar la fuerza al jugador para alejarlo
       Matter.Body.applyForce(player, player.position, { x: forceX, y: forceY });
 
-      if(!this.playerInCircle){
-
+      // Si es la primera vez que el jugador entra al círculo
+      if (!this.playerInCircle) {
         this.playerInCircle = true;
 
-        //generar el ciculo cuando muere
+        // Generar el círculo persistente cuando muere
         gameState.persistentActions.push({
-
           x: this.body.position.x,
           y: this.body.position.y,
           radius: this.circleRadius,
           lifeTime: 300
+        });
 
-        })
-
-        //Aplicar daño
+        // Aplicar daño al enemigo
         this.takeDamage(this.health);
-
       }
     }
   }
