@@ -8,16 +8,18 @@ export function moveCamera(p) {
     const viewportCenterX = window.innerWidth / 2;
     const viewportCenterY = window.innerHeight / 2;
 
-
-    // Dios es el unico que sabe de donde salen estos numeros
-
-    // para cuando el ancho es de 800px
-    gameState.cameraX = -500;
-    // para cuando el alto es de 1000px
-    gameState.cameraX = -400;
-    gameState.cameraY = -90
-
-
-
     p.translate(viewportCenterX - player.position.x, viewportCenterY - player.position.y);
+}
+
+export function screenToWorldCoordinates(screenX, screenY) {
+    const player = getPlayer();
+    if (!player) return { x: screenX, y: screenY };
+
+    const viewportCenterX = window.innerWidth / 2;
+    const viewportCenterY = window.innerHeight / 2;
+    
+    return {
+        x: screenX + player.position.x - viewportCenterX,
+        y: screenY + player.position.y - viewportCenterY
+    };
 }

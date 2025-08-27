@@ -12,7 +12,7 @@ let elements = [
     sprite: null,
   },
   {
-    name: 'agua',
+    name: 'water',
     sprite: null,
   },
   {

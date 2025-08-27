@@ -6,32 +6,34 @@ import { handleKeyPressed, handleKeyReleased, handleMousePressed } from './contr
 import { moveCamera } from './camera.js';
 
 let player;
- 
+
 const sketch = (p) => {
   p.setup = () => {
     p.createCanvas(1800, 900);
     setupPhysics();
-    
+
+    p.textFont('Arial');
+
     p.noSmooth();
     loadSpritesAsync(p, () => {
       console.log('Todos los sprites cargados');
     });
-    
+
     player = createPlayer(400, 300, getWorld());
   };
 
   p.draw = () => {
-    p.background(135, 206, 235);
-    
+    p.background(100, 100, 100);
+
     updatePhysics();
     updatePlayer(p);
-    
+
     p.push();
     moveCamera(p);
-    
+
     drawBodies(p);
     drawPlayer(p);
-    
+
     p.pop();
   };
 
@@ -50,39 +52,32 @@ const sketch = (p) => {
 
 function drawBodies(p) {
   const bodies = getBodies();
-  
+
   bodies.forEach(body => {
     if (body.isPlayer) return;
-    
+
     const pos = body.position;
     const angle = body.angle;
-    
+
     p.push();
     p.translate(pos.x, pos.y);
     p.rotate(angle);
-    
+
     if (body.sprite && body.sprite.width > 0) {
       p.imageMode(p.CENTER);
-      if (body.shape === 'circle') {
-        p.image(body.sprite, 0, 0, body.width, body.height);
-      } else {
-        p.image(body.sprite, 0, 0, body.width, body.height);
-      }
+      p.image(body.sprite, 0, 0, body.width, body.height);
     } else {
       if (body.label === 'ground') {
         p.fill(139, 69, 19);
-      } else if (body.label === 'water') {
-        p.fill(0, 100, 255);
-        p.ellipse(0, 0, body.width, body.height);
-        p.pop();
-        return;
+        p.stroke(0);
+        p.strokeWeight(2);
       } else {
         p.fill(100);
       }
       p.rectMode(p.CENTER);
       p.rect(0, 0, body.width, body.height);
     }
-    
+
     p.pop();
   });
 }

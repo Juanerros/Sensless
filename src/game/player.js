@@ -1,8 +1,10 @@
 import Matter from "matter-js";
-import { getBodies } from "./physics.js";
+import { getBodies, removeFromWorld } from "./physics.js";
 import { gameState } from "./state.js";
 import { updateControls } from "./controls.js";
 import { getSpriteByName } from "./sprites.js";
+import { initializeInventory, drawInventoryUI, addItemToInventory } from "./inventory.js";
+import { Vector2 } from "../utils/Vector2.js";
 
 let player;
 let world;
@@ -24,8 +26,9 @@ export function createPlayer(x, y, worldRef) {
   player.isPlayer = true;
   player.label = "player";
   player.sprite = getSpriteByName('player');
-  player.inventory = 0;
   player.direction = 'right';
+
+  initializeInventory();
 
   // Se guarda en el estado global
   gameState.player = player;
@@ -40,6 +43,20 @@ export function updatePlayer(p) {
 
   drawBorderBox(p);
   updateControls(player, getBodies);
+  drawInventoryUI(p);
+  grabObject();
+}
+
+function grabObject() {
+  const bodies = getBodies();
+
+  const spells = bodies.filter(body => body.label === 'spell')
+  for (const spell of spells) {
+    const distance = Vector2.distance(player.position, spell.position);
+    if (distance < 50 && addItemToInventory({ type: 'spell', name: spell.name })) {
+      removeFromWorld(spell);
+    }
+  }
 }
 
 function drawBorderBox(p) {

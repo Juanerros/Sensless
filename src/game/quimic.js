@@ -2,25 +2,13 @@ import Matter from "matter-js";
 import { Vector2 } from "../utils/Vector2";
 import { getElements, getSpriteByName } from "./sprites";
 import { gameState } from "./state";
-import { addToWorld } from "./physics";
+import { addToWorld, removeFromWorld } from "./physics";
+import { createSpell } from "./magic";
 
-const world = null;
-const boxes = [];
+let boxes = [];
 
-export function checkQuimic(world, boxes) {
-    world = world;
-    boxes = boxes;
-
-    boxes.forEach(body => {
-        if (body.label === "element") {
-            if (body.element === "hidrogeno") {
-                body.sprite = getSpriteByName('hidrogeno');
-            }
-            if (body.element === "oxigeno") {
-                body.sprite = getSpriteByName('oxigeno');
-            }
-        }
-    })
+export function checkQuimic(boxs) {
+    boxes = boxs;
 
     checkWaterFormation();
 }
@@ -54,8 +42,6 @@ function checkWaterFormation() {
             for (let hydrogen of hydrogens) {
                 const distance = Vector2.distance(oxygen.position, hydrogen.position);
 
-                console.log('Distancia: ', distance);
-
                 if (distance < 100) {
                     nearbyHydrogens.push(hydrogen);
                 }
@@ -73,31 +59,13 @@ function createWater(oxygen, hydrogens) {
     const centerX = (oxygen.position.x + hydrogens[0].position.x + hydrogens[1].position.x) / 3;
     const centerY = (oxygen.position.y + hydrogens[0].position.y + hydrogens[1].position.y) / 3;
 
-    for (let i = 0; i < 20; i++) {
-        const water = Matter.Bodies.circle(centerX, centerY, 5, {
-            timeScale: gameState.timeScale,
-            friction: 0.01,
-            restitution: 0.2,
-            mass: .5,
-        });
+    createSpell(centerX, centerY, 30, 40, 'water');
 
-        water.width = 10;
-        water.height = 10;
-        water.label = "water";
-        water.element = "agua";
-        water.shape = 'circle'
-
-        addToWorld(water);
-    }
     removeElements([oxygen, ...hydrogens]);
 }
 
 function removeElements(elementsToRemove) {
     elementsToRemove.forEach(element => {
-        Matter.World.remove(world, element);
-        const index = boxes.indexOf(element);
-        if (index > -1) {
-            boxes.splice(index, 1);
-        }
+        removeFromWorld(element);
     });
 }
