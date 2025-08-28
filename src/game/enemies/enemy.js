@@ -109,9 +109,9 @@ export class Enemy {
     }
   }
 
-  /**
-   * Método de actualización base (a implementar por subclases)
-   */
+
+  // * Método de actualización base (a implementar por subclases)
+  
   update() {
     // Método base a ser sobrescrito por las subclases
   }

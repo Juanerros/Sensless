@@ -9,6 +9,7 @@ import { updateEnemies, drawEnemies, ChaserEnemy, getEnemies } from './enemies/e
 import { WanderingBud } from './enemies/wanderingBud.js';
 import { drawPersistentActions } from './enemies/persintentActions.js';
 import { updateWorldGeneration } from './worldGeneration.js';
+import { Bandit, updateBullets, drawBullets } from './enemies/bandit.js';
 
 let player;
 let enemiesCreated = false;
@@ -37,10 +38,12 @@ const sketch = (p) => {
   };
 
   // Función para verificar si todos los sprites están cargados
+  // En checkAllSpritesLoaded(), agregar:
   function checkAllSpritesLoaded() {
     if (basicSpritesLoaded && enemySpritesLoaded && !enemiesCreated) {
       const chaser = new ChaserEnemy(900, 700, getWorld());
       const wanderer = new WanderingBud(700, 700, getWorld());
+      const bandit = new Bandit(1200, 600, getWorld()); // Nuevo bandit
       
       // Asignar sprites después de crear los enemigos
       const olvidoSprite = getEnemySpriteByName('olvido');
@@ -86,7 +89,10 @@ const sketch = (p) => {
     drawPlayer(p);
     
     updateEnemies();
+    updateBullets(); // Actualizar balas
+    
     drawEnemies(p);
+    drawBullets(p); // Dibujar balas
     drawPersistentActions(p);
 
     p.pop();
