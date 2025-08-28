@@ -7,8 +7,8 @@ import { getBodies, getWorld } from "../physics";
 // Clase para proyectiles del bandit
 class Bullet {
   constructor(x, y, targetX, targetY, world, shooter = null) {
-    this.width = 8;
-    this.height = 8;
+    this.width = 56;
+    this.height = 56;
     this.damage = 20;
     this.speed = 0.3;
     this.lifeTime = 360;
@@ -123,7 +123,7 @@ export let bullets = [];
 //Clase para el enemigo Bandit que dispara proyectiles
 export class Bandit extends Enemy {
   constructor(x, y, world) {
-    super(x, y, 40, 60, world);
+    super(x, y, 70, 70, world);
     this.detectionRadius = 400;
     this.shootingRange = 300;
     this.speed = 0.003;

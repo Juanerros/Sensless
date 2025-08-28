@@ -13,7 +13,7 @@ export class WanderingBud extends Enemy {
    * @param {Matter.World} world - Mundo de Matter.js
    */
   constructor(x, y, world) {
-    super(x, y, 40, 60, world);
+    super(x, y, 70, 80, world);
     this.detectionRadius = 300; // Radio de detección para perseguir
     this.circleRadius = 150;    // Radio para dibujar el círculo
     this.speed = 0.005;
