@@ -65,7 +65,7 @@ export function useSelectedItem(worldX, worldY) {
       createQuimic(worldX, worldY, selectedItem.name);
       break;
     case 'spell':
-      createSpell(worldX, worldY, 30, 40, selectedItem.element);
+      createSpell(worldX, worldY, selectedItem.element);
       break;
   }
 }
