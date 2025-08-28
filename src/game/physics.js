@@ -1,7 +1,8 @@
 import Matter from "matter-js";
 import { gameState } from "./state";
-import { getElements, getSpriteByName } from './sprites.js';
+import { getSpriteByName } from './sprites.js';
 import { checkQuimic } from "./quimic.js";
+import { initializeWorldGeneration } from './worldGeneration.js';
 
 let engine, world;
 let boxes = [];
@@ -10,17 +11,10 @@ export function setupPhysics() {
   engine = Matter.Engine.create();
   world = engine.world;
 
-  //Cosa de los enemigos
   gameState.world = world;
 
-  // Crear un suelo
-  const ground = Matter.Bodies.rectangle(900, 790, 1800, 80, { isStatic: true });
-  Matter.World.add(world, ground);
-  ground.width = 1800;
-  ground.height = 80;
-  ground.label = "ground";
-
-  boxes.push(ground);
+  // Inicializar sistema de generación procedural
+  initializeWorldGeneration();
 }
 
 export function addToWorld(body) {
@@ -40,16 +34,16 @@ export function updatePhysics() {
   Matter.Engine.update(engine);
 }
 
-export function createBox(x, y, w, h) {
-  const box = Matter.Bodies.rectangle(x, y, w, h, {
+export function createBox(x, y) {
+  const box = Matter.Bodies.rectangle(x, y, 50, 50, {
     timeScale: gameState.timeScale,
     friction: 0.3,
     restitution: 0.2,
     mass: 5,
   });
   Matter.World.add(world, box);
-  box.width = w;
-  box.height = h;
+  box.width = 50;
+  box.height = 50;
   box.sprite = getSpriteByName('box');
   box.label = "box";
 
@@ -74,4 +68,76 @@ export function getWorld() {
 
 export function getEngine() {
   return engine;
+}
+
+
+// Pool de objetos reutilizables
+class ObjectPool {
+  constructor() {
+    this.terrainPool = [];
+    this.elementPool = [];
+  }
+
+  getTerrainBody(x, y, width, height, options = {}) {
+    let body = this.terrainPool.pop();
+    
+    if (!body) {
+      body = Matter.Bodies.rectangle(x, y, width, height, {
+        isStatic: true,
+        friction: 0.8,
+        restitution: 0.1,
+        ...options
+      });
+    } else {
+      // Reutilizar cuerpo existente
+      Matter.Body.setPosition(body, { x, y });
+      Matter.Body.setAngle(body, 0);
+      Object.assign(body, options);
+    }
+    
+    body.width = width;
+    body.height = height;
+    return body;
+  }
+
+  getElementBody(x, y, width, height, options = {}) {
+    let body = this.elementPool.pop();
+    
+    if (!body) {
+      body = Matter.Bodies.rectangle(x, y, width, height, {
+        friction: 0.3,
+        restitution: 0.4,
+        density: 0.001,
+        ...options
+      });
+    } else {
+      Matter.Body.setPosition(body, { x, y });
+      Matter.Body.setAngle(body, 0);
+      Matter.Body.setVelocity(body, { x: 0, y: 0 });
+      Matter.Body.setAngularVelocity(body, 0);
+      Object.assign(body, options);
+    }
+    
+    body.width = width;
+    body.height = height;
+    return body;
+  }
+
+  returnTerrainBody(body) {
+    if (this.terrainPool.length < 100) { // Limitar tamaño del pool
+      this.terrainPool.push(body);
+    }
+  }
+
+  returnElementBody(body) {
+    if (this.elementPool.length < 50) {
+      this.elementPool.push(body);
+    }
+  }
+}
+
+const objectPool = new ObjectPool();
+
+export function getObjectPool() {
+  return objectPool;
 }

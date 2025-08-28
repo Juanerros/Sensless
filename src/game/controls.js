@@ -1,7 +1,5 @@
 import Matter from 'matter-js';
 import { Vector2 } from '../utils/Vector2.js';
-import { createBox } from './physics.js';
-import { createQuimic } from './quimic.js';
 import { gameState } from './state.js';
 import { screenToWorldCoordinates } from './camera.js';
 import { selectInventorySlot, useSelectedItem } from './inventory.js';
@@ -92,19 +90,14 @@ function isOnGround(player, allBodies) {
   const py = player.position.y + offset;
 
   return allBodies.some((body) => {
-    if (body.label === "ground" || body.label === "box") {
-      const bounds = body.bounds;
-      return (
-        px > bounds.min.x &&
-        px < bounds.max.x &&
-        Math.abs(py - bounds.min.y) <= tolerance
-      );
-    }
-    return false;
+    const bounds = body.bounds;
+    return (
+      px > bounds.min.x &&
+      px < bounds.max.x &&
+      Math.abs(py - bounds.min.y) <= tolerance
+    );
   });
 }
-
-
 
 function toggleTimeScale(newTimeScale) {
   gameState.timeScale = gameState.timeScale === 1 ? newTimeScale : 1;

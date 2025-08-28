@@ -1,5 +1,4 @@
 import { getPlayer } from "./player";
-import { gameState } from "./state";
 
 export function moveCamera(p) {
     const player = getPlayer();

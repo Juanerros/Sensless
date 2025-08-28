@@ -13,8 +13,8 @@ export function checkQuimic(boxs) {
     checkWaterFormation();
 }
 
-export function createQuimic(x, y, w, h, index) {
-    const box = Matter.Bodies.rectangle(x, y, w, h, {
+export function createQuimic(x, y, element) {
+    const box = Matter.Bodies.rectangle(x, y, 33, 45, {
         timeScale: gameState.timeScale,
         friction: 0.5,
         restitution: 0.01,
@@ -23,11 +23,11 @@ export function createQuimic(x, y, w, h, index) {
 
     addToWorld(box)
 
-    box.width = w;
-    box.height = h;
+    box.width = 33;
+    box.height = 45;
     box.label = 'element'
-    box.sprite = getElements()[index].sprite;
-    box.element = getElements()[index].name;
+    box.sprite = getSpriteByName(element);
+    box.element = element;
 }
 
 function checkWaterFormation() {

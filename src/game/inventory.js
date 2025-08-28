@@ -59,10 +59,10 @@ export function useSelectedItem(worldX, worldY) {
 
   switch (selectedItem.type) {
     case 'box':
-      createBox(worldX, worldY, 50, 50);
+      createBox(worldX, worldY);
       break;
     case 'element':
-      createQuimic(worldX, worldY, 33, 45, selectedItem.index);
+      createQuimic(worldX, worldY, selectedItem.name);
       break;
     case 'spell':
       createSpell(worldX, worldY, 30, 40, selectedItem.element);

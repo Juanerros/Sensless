@@ -20,9 +20,7 @@ export function loadEnemySprites(p, onComplete) {
   
   const checkComplete = () => {
     loadedCount++;
-    console.log(`Sprites cargados: ${loadedCount}/${enemySprites.length}`);
     if (loadedCount === enemySprites.length && onComplete) {
-      console.log('Todos los sprites de enemigos cargados exitosamente');
       onComplete();
     }
   };
@@ -35,13 +33,11 @@ export function loadEnemySprites(p, onComplete) {
 
   // Cargar cada sprite de enemigo
   enemySprites.forEach((enemyType, index) => {
-    console.log(`Cargando sprite: ${enemyType.path}`);
     
     p.loadImage(
       enemyType.path,
       // Callback de éxito
       (img) => {
-        console.log(`Sprite cargado exitosamente: ${enemyType.name}`);
         enemyType.sprite = img;
         loadSpriteEnemies(img, enemyType.name);
         checkComplete();
