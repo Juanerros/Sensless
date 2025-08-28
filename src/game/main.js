@@ -1,7 +1,7 @@
 import p5 from 'p5';
 import { setupPhysics, updatePhysics, getBodies, getWorld } from './physics.js';
 import { loadSpritesAsync } from './sprites.js';
-import { loadEnemySprites } from './enemies/enemySprites.js';
+import { loadEnemySprites, getEnemySpriteByName } from './enemies/enemySprites.js';
 import { createPlayer, updatePlayer, drawPlayer } from './player.js';
 import { handleKeyPressed, handleKeyReleased, handleMousePressed } from './controls.js';
 import { moveCamera } from './camera.js';
@@ -41,6 +41,16 @@ const sketch = (p) => {
     if (basicSpritesLoaded && enemySpritesLoaded && !enemiesCreated) {
       const chaser = new ChaserEnemy(900, 700, getWorld());
       const wanderer = new WanderingBud(700, 700, getWorld());
+      
+      // Asignar sprites después de crear los enemigos
+      const olvidoSprite = getEnemySpriteByName('olvido');
+      if (olvidoSprite) {
+        chaser.sprite = olvidoSprite;
+        chaser.body.sprite = olvidoSprite;
+        wanderer.sprite = olvidoSprite;
+        wanderer.body.sprite = olvidoSprite;
+      }
+      
       enemiesCreated = true;
     }
   }

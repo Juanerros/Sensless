@@ -1,64 +1,52 @@
-import { loadSpriteEnemies } from './enemy';
-
-// Registro de sprites de enemigos
-const enemySprites = [
+let enemyElements = [
   {
     name: 'olvido',
-    path: '/assets/sprites/enemies/olvido.png',
-    sprite: null
-  },
+    sprite: null,
+  }
   // Puedes agregar más tipos de enemigos aquí
 ];
 
-/**
- * Carga todos los sprites de enemigos
- * @param {p5} p - Instancia de p5.js
- * @param {Function} onComplete - Callback cuando se completa la carga
- */
+export function loadEnemySprite(img, name) {
+  enemyElements.forEach(e => { 
+    if (e.name === name) {
+      e.sprite = img;
+    }
+  });
+}
+
+// Función para cargar los sprites de enemigos
 export function loadEnemySprites(p, onComplete) {
   let loadedCount = 0;
   
   const checkComplete = () => {
     loadedCount++;
-    if (loadedCount === enemySprites.length && onComplete) {
+    console.log(`Sprite de enemigo cargado: ${loadedCount}/${enemyElements.length}`);
+    if (loadedCount === enemyElements.length && onComplete) {
+      console.log('Todos los sprites de enemigos cargados');
       onComplete();
     }
   };
 
   // Si no hay sprites que cargar, completar inmediatamente
-  if (enemySprites.length === 0) {
+  if (enemyElements.length === 0) {
     if (onComplete) onComplete();
     return;
   }
 
-  // Cargar cada sprite de enemigo
-  enemySprites.forEach((enemyType, index) => {
-    
-    p.loadImage(
-      enemyType.path,
-      // Callback de éxito
-      (img) => {
-        enemyType.sprite = img;
-        loadSpriteEnemies(img, enemyType.name);
-        checkComplete();
-      },
-      // Callback de error
-      (error) => {
-        console.error(`Error cargando sprite ${enemyType.name}:`, error);
-        console.error(`Ruta: ${enemyType.path}`);
-        // Aún así contar como "cargado" para no bloquear el juego
-        checkComplete();
-      }
-    );
+  p.loadImage('/assets/sprites/enemies/olvido.png', (img) => {
+    loadEnemySprite(img, 'olvido');
+    checkComplete();
+  }, (error) => {
+    console.error('Error cargando sprite olvido:', error);
+    checkComplete(); 
   });
 }
 
-/**
- * Obtiene un sprite de enemigo por nombre
- * @param {string} name - Nombre del enemigo
- * @returns {p5.Image|null} - Sprite del enemigo o null si no existe
- */
+export function getEnemyElements() {
+  return enemyElements;
+}
+
 export function getEnemySpriteByName(name) {
-  const enemyType = enemySprites.find(e => e.name === name);
-  return enemyType ? enemyType.sprite : null;
+  const element = enemyElements.find(e => e.name === name);
+  return element ? element.sprite : null;
 }
