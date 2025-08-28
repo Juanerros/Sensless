@@ -3,16 +3,17 @@ import { Enemy } from "./enemy";
 import { gameState } from "../state";
 import { getBodies, getWorld } from "../physics";
 
-/**
- * Clase para proyectiles del bandit
- */
+
+// Clase para proyectiles del bandit
 class Bullet {
-  constructor(x, y, targetX, targetY, world) {
+  constructor(x, y, targetX, targetY, world, shooter = null) {
     this.width = 8;
     this.height = 8;
     this.damage = 20;
     this.speed = 0.3;
-    this.lifeTime = 360; // 3 segundos a 60fps
+    this.lifeTime = 360;
+    this.shooter = shooter;
+    this.framesSinceCreation = 0; // Nuevo: contador de frames
     
     // Calcular dirección hacia el objetivo
     const dx = targetX - x;
@@ -21,24 +22,31 @@ class Bullet {
     this.velocityX = (dx / distance) * this.speed;
     this.velocityY = (dy / distance) * this.speed;
     
+    // Crear la bala un poco adelante del bandit para evitar colisión inmediata
+    const offsetDistance = 25; // Distancia de offset
+    const startX = x + (dx / distance) * offsetDistance;
+    const startY = y + (dy / distance) * offsetDistance;
+    
     // Crear cuerpo físico
-    this.body = Matter.Bodies.rectangle(x, y, this.width, this.height, {
+    this.body = Matter.Bodies.rectangle(startX, startY, this.width, this.height, {
       frictionAir: 0,
       friction: 0,
       density: 0.001,
       restitution: 0,
-      isSensor: true // Para que no colisione físicamente
+      isSensor: true
     });
     
     this.body.label = "bullet";
     this.body.isBullet = true;
     
-    // Añadir al mundo
     Matter.World.add(world, this.body);
     getBodies().push(this.body);
   }
   
   update() {
+    // Incrementar contador de frames
+    this.framesSinceCreation++;
+    
     // Mover el proyectil
     Matter.Body.setVelocity(this.body, {
       x: this.velocityX,
@@ -48,26 +56,45 @@ class Bullet {
     // Reducir tiempo de vida
     this.lifeTime--;
     
-    // Verificar colisión con jugador
-    if (gameState.player) {
-      const dx = this.body.position.x - gameState.player.position.x;
-      const dy = this.body.position.y - gameState.player.position.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
+    // Solo verificar colisiones después de algunos frames para evitar destrucción inmediata
+    if (this.framesSinceCreation > 5) {
+      // Obtener todos los cuerpos para verificar colisiones
+      const allBodies = getBodies();
       
-      if (distance < 20) {
-        // Aplicar daño al jugador (puedes implementar esto según tu sistema)
-        console.log("¡Jugador recibió daño de bala!");
+      // Verificar colisión con el jugador
+      if (isCollidingWithPlayer(this)) {
+        console.log("¡Bala impactó al jugador!");
         this.destroy();
-        return false; // Indica que debe ser removido
+        return false;
+      }
+      
+      // Verificar colisión con enemigos (friendly fire)
+      if (isCollidingWithEnemies(this)) {
+        console.log("¡Bala impactó a un enemigo!");
+        this.destroy();
+        return false;
+      }
+      
+      // Verificar colisión con objetos del mundo (paredes, terreno, etc.)
+      if (isCollidingWithObject(this, allBodies)) {
+        console.log("¡Bala impactó contra un objeto!");
+        this.destroy();
+        return false;
       }
     }
     
-    return this.lifeTime > 0;
+    // Si el tiempo de vida se agotó
+    if (this.lifeTime <= 0) {
+      this.destroy();
+      return false;
+    }
+    
+    return true; // La bala sigue activa
   }
   
   draw(p) {
     p.push();
-    p.fill(255, 0, 0); // Cuadrado rojo
+    p.fill(255, 0, 0); 
     p.noStroke();
     p.rectMode(p.CENTER);
     p.rect(this.body.position.x, this.body.position.y, this.width, this.height);
@@ -89,14 +116,11 @@ class Bullet {
   }
 }
 
-/**
- * Array global para manejar todas las balas
- */
+//Array global para manejar todas las balas
+
 export let bullets = [];
 
-/**
- * Clase para el enemigo Bandit que dispara proyectiles
- */
+//Clase para el enemigo Bandit que dispara proyectiles
 export class Bandit extends Enemy {
   constructor(x, y, world) {
     super(x, y, 40, 60, world);
@@ -109,21 +133,33 @@ export class Bandit extends Enemy {
     
     // Propiedades de disparo
     this.shootCooldown = 0;
-    this.shootInterval = 90; // Dispara cada 1.5 segundos (90 frames a 60fps)
+    this.shootInterval = 90;
     this.lastShotTime = 0;
+    
+    console.log("Bandit creado en posición:", x, y);
   }
   
   update() {
     const player = gameState.player;
-    if (!player) return;
+    if (!player) {
+      console.log("No hay jugador disponible");
+      return;
+    }
     
     const { dist, dx, dy } = this.getDistanceToPlayer();
     
+    // Log de depuración cada 60 frames (1 segundo aprox)
+    if (Math.floor(Math.random() * 60) === 0) {
+      console.log(`Bandit - Distancia al jugador: ${dist.toFixed(2)}, Cooldown: ${this.shootCooldown}`);
+    }
+    
     // Si el jugador está en rango de detección
     if (dist < this.detectionRadius) {
+      console.log(`Jugador detectado a distancia: ${dist.toFixed(2)}`);
       
       // Si está en rango de disparo, disparar
       if (dist < this.shootingRange && this.shootCooldown <= 0) {
+        console.log("¡Intentando disparar!");
         this.shoot(player.position.x, player.position.y);
         this.shootCooldown = this.shootInterval;
       }
@@ -135,6 +171,7 @@ export class Bandit extends Enemy {
         const forceY = -Math.sin(angle) * this.speed;
         Matter.Body.applyForce(this.body, this.body.position, { x: forceX, y: forceY });
       }
+
       // Si está muy lejos, acercarse
       else if (dist > this.shootingRange) {
         const angle = Math.atan2(dy, dx);
@@ -150,17 +187,20 @@ export class Bandit extends Enemy {
     }
   }
   
+  // Modificar el método shoot del Bandit
   shoot(targetX, targetY) {
+    console.log(`Bandit disparando hacia: ${targetX.toFixed(2)}, ${targetY.toFixed(2)}`);
     const bullet = new Bullet(
       this.body.position.x,
       this.body.position.y,
       targetX,
       targetY,
-      getWorld()
+      getWorld(),
+      this // Pasar referencia del bandit como shooter
     );
     
     bullets.push(bullet);
-    console.log("Bandit disparó!");
+    console.log("Bandit disparó! Total de balas:", bullets.length);
   }
   
   draw(p) {
@@ -180,9 +220,7 @@ export class Bandit extends Enemy {
   }
 }
 
-/**
- * Actualiza todas las balas
- */
+//Actualiza todas las balas
 export function updateBullets() {
   for (let i = bullets.length - 1; i >= 0; i--) {
     const bullet = bullets[i];
@@ -195,11 +233,80 @@ export function updateBullets() {
   }
 }
 
-/**
- * Dibuja todas las balas
- */
+//Dibuja todas las balas
 export function drawBullets(p) {
   for (let bullet of bullets) {
     bullet.draw(p);
   }
+}
+
+/**
+ * Detecta si una bala está colisionando con algún objeto
+ * Similar a isOnGround en controls.js
+ */
+// También mejorar la función de detección de colisiones para ser menos sensible
+function isCollidingWithObject(bullet, allBodies) {
+  const tolerance = 2; // Reducir tolerancia para ser menos sensible
+  const bx = bullet.body.position.x;
+  const by = bullet.body.position.y;
+  const bulletWidth = bullet.width;
+  const bulletHeight = bullet.height;
+
+  return allBodies.some((body) => {
+    // Ignorar la propia bala
+    if (body === bullet.body) return false;
+    
+    // Ignorar otros proyectiles
+    if (body.isBullet) return false;
+    
+    // Ignorar enemigos (se maneja por separado)
+    if (body.isEnemy) return false;
+    
+    // Ignorar el jugador (se maneja por separado)
+    if (body.isPlayer) return false;
+    
+    const bounds = body.bounds;
+    
+    // Verificar si la bala está dentro de los límites del objeto
+    return (
+      bx + bulletWidth/2 > bounds.min.x - tolerance &&
+      bx - bulletWidth/2 < bounds.max.x + tolerance &&
+      by + bulletHeight/2 > bounds.min.y - tolerance &&
+      by - bulletHeight/2 < bounds.max.y + tolerance
+    );
+  });
+}
+
+/**
+ * Detecta colisión específica con el jugador
+ */
+function isCollidingWithPlayer(bullet) {
+  if (!gameState.player) return false;
+  
+  const dx = bullet.body.position.x - gameState.player.position.x;
+  const dy = bullet.body.position.y - gameState.player.position.y;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+  
+  return distance < 25; 
+}
+
+// MOVER ESTA FUNCIÓN FUERA DE LA CLASE - debe ser una función global
+/**
+ * Detecta colisión con enemigos
+ */
+function isCollidingWithEnemies(bullet) {
+  const enemies = getBodies().filter(body => body.isEnemy);
+  
+  return enemies.some(enemy => {
+    // No colisionar con el enemigo que disparó la bala
+    if (bullet.shooter && enemy === bullet.shooter.body) {
+      return false;
+    }
+    
+    const dx = bullet.body.position.x - enemy.position.x;
+    const dy = bullet.body.position.y - enemy.position.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    return distance < 30; // Radio de colisión con enemigos
+  });
 }
