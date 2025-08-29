@@ -33,7 +33,7 @@ export function loadEnemySprites(p, onComplete) {
     return;
   }
 
-  p.loadImage('/assets/sprites/enemies/olvido.png', (img) => {
+  p.loadImage('/sprites/enemies/olvido.png', (img) => {
     loadEnemySprite(img, 'olvido');
     checkComplete();
   }, (error) => {

@@ -40,27 +40,27 @@ export function loadSpritesAsync(p, onComplete) {
     }
   };
 
-  p.loadImage('/assets/sprites/Zenith.png', (img) => {
+  p.loadImage('/sprites/Zenith.png', (img) => {
     loadSprite(img, 'player');
     checkComplete();
   });
   
-  p.loadImage('/assets/sprites/box-a.png', (img) => {
+  p.loadImage('/sprites/box-a.png', (img) => {
     loadSprite(img, 'box');
     checkComplete();
   });
   
-  p.loadImage('/assets/sprites/hidrogeno-pixel.png', (img) => {
+  p.loadImage('/sprites/quimic/hidrogeno-pixel.png', (img) => {
     loadSprite(img, 'hidrogeno');
     checkComplete();
   });
   
-  p.loadImage('/assets/sprites/oxigeno-pixel.png', (img) => {
+  p.loadImage('/sprites/quimic/oxigeno-pixel.png', (img) => {
     loadSprite(img, 'oxigeno');
     checkComplete();
   });
 
-   p.loadImage('/assets/sprites/box.png', (img) => {
+   p.loadImage('/sprites/spells/chispa-agua.png', (img) => {
     loadSprite(img, 'water');
     checkComplete();
   });
