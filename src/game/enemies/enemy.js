@@ -69,7 +69,17 @@ export class Enemy {
       // Si no tiene sprite, dibujar un rectángulo rojo
       p.rectMode(p.CENTER);
       p.fill(255, 0, 0);
-      p.rect(0, 0, this.width, this.height);
+      // Validar dimensiones antes de dibujar
+      if (this.width !== undefined && this.height !== undefined && 
+          this.width > 0 && this.height > 0) {
+        p.rect(0, 0, this.width, this.height);
+      } else {
+        console.log("Enemigo con dimensiones inválidas:", {
+          width: this.width,
+          height: this.height,
+          constructor: this.constructor.name
+        });
+      }
     }
     
     p.pop();

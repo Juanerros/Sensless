@@ -8,6 +8,8 @@ import { Vector2 } from "../utils/Vector2.js";
 
 let player;
 let world;
+let playerHealth = 100;
+let maxHealth = 100;
 
 export function createPlayer(x, y, worldRef) {
   const playerWidth = 42;
@@ -27,6 +29,9 @@ export function createPlayer(x, y, worldRef) {
   player.label = "player";
   player.sprite = getSpriteByName('player');
   player.direction = 'right';
+  player.health = playerHealth;
+  player.maxHealth = maxHealth;
+  player.isAlive = true;
 
   initializeInventory();
 
@@ -36,6 +41,50 @@ export function createPlayer(x, y, worldRef) {
   getBodies().push(player);
   Matter.World.add(world, player);
   return player;
+}
+
+//Funciones para manejar la vida:
+//Funciones 
+export function takeDamage(damage){
+
+  if(!player || !player.isAlive) return false;
+  //Esto resta la vida del jugador con el daño que recibe, y el Math.max Evita que el numero se vaya a negativo
+  playerHealth = Math.max(0, playerHealth - damage);
+  player.health = playerHealth;
+  console.log(playerHealth);
+
+  if(playerHealth <= 0){
+
+    player.isALive = false;
+    console.log("Jugador ripeo");
+
+  }
+
+  return playerHealth > 0;
+
+}
+
+//Funcion para el sistema de curacion
+export function heal(amount){
+
+  if(!player) return;
+  //Esto suma la vida del jugador con la curacion y evita que se exeda de su vida maxima
+  playerHealth = Math.min(maxHealth, playerHealth + amount);
+  player.health = playerHealth;
+
+};
+
+//Funcion para devolver el estado de vida del jugador 
+export function getPlayerHealth(){
+
+  return {
+    
+    current: playerHealth, 
+    max: maxHealth,
+    isAlive: player?.isAlive || false
+
+  };
+
 }
 
 export function updatePlayer(p) {
@@ -88,7 +137,16 @@ export function drawPlayer(p) {
   } else {
     p.fill(0, 0, 0);
     p.rectMode(p.CENTER);
-    p.rect(0, 0, player.width, player.height);
+    // Validar dimensiones antes de dibujar
+    if (player.width !== undefined && player.height !== undefined && 
+        player.width > 0 && player.height > 0) {
+      p.rect(0, 0, player.width, player.height);
+    } else {
+      console.log("Jugador con dimensiones inválidas:", {
+        width: player.width,
+        height: player.height
+      });
+    }
   }
 
   p.pop();

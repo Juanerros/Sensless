@@ -129,7 +129,7 @@ function drawBodies(p) {
   const bottomBound = cameraY + screenHeight / 2 + margin;
 
   bodies.forEach(body => {
-    if (body.isPlayer || body.isEnemy) return;
+    if (body.isPlayer || body.isEnemy || body.label === 'bullet') return;
     
     const pos = body.position;
     
@@ -173,7 +173,17 @@ function drawBodies(p) {
         p.fill(100);
       }
       p.rectMode(p.CENTER);
-      p.rect(0, 0, body.width, body.height);
+      // Validar que width y height estén definidos antes de dibujar
+      if (body.width !== undefined && body.height !== undefined && 
+          body.width > 0 && body.height > 0) {
+        p.rect(0, 0, body.width, body.height);
+      } else {
+        console.log("Cuerpo con dimensiones inválidas:", {
+          label: body.label,
+          width: body.width,
+          height: body.height
+        });
+      }
     }
 
     p.pop();

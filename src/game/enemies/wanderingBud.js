@@ -1,7 +1,7 @@
 import Matter from "matter-js";
 import { Enemy } from "./enemy";
 import { gameState } from "../state";
-
+import { takeDamage } from "../player";
 /**
  * Clase para enemigos que vagan y crean círculos de daño
  */
@@ -63,6 +63,7 @@ export class WanderingBud extends Enemy {
   }
 
   update() {
+
     const player = gameState.player;
     if (!player) return;
 
@@ -80,6 +81,7 @@ export class WanderingBud extends Enemy {
     
     // Si el jugador está dentro del círculo, aplicar efectos
     if (dist < this.circleRadius && !this.hasExploded) {
+      takeDamage(20);
       // Calcular el ángulo desde el jugador hacia el enemigo (dirección opuesta)
       const angle = Math.atan2(dy, dx);
       // Crear una fuerza para empujar al jugador hacia afuera
