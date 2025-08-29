@@ -10,6 +10,7 @@ import { WanderingBud } from './enemies/wanderingBud.js';
 import { drawPersistentActions } from './enemies/persintentActions.js';
 import { updateWorldGeneration } from './worldGeneration.js';
 import { Bandit, updateBullets, drawBullets } from './enemies/bandit.js';
+import { gameState, restartGame } from './state.js';
 
 let player;
 let enemiesCreated = false;
@@ -72,6 +73,12 @@ const sketch = (p) => {
       return;
     }
 
+    // Verificar si el juego ha terminado
+    if (gameState.isGameOver) {
+      drawGameOverScreen(p);
+      return;
+    }
+
     p.background(135, 206, 235);
     
     updatePhysics();
@@ -107,7 +114,21 @@ const sketch = (p) => {
   };
 
   p.mousePressed = () => {
-    handleMousePressed(p, player);
+    // Si el juego ha terminado, verificar si se hizo clic en el botón de reinicio
+    if (gameState.isGameOver) {
+      const buttonX = p.width/2;
+      const buttonY = p.height/2 + 100;
+      const buttonWidth = 300;
+      const buttonHeight = 60;
+      
+      // Verificar si el clic está dentro del botón
+      if (p.mouseX >= buttonX - buttonWidth/2 && p.mouseX <= buttonX + buttonWidth/2 &&
+          p.mouseY >= buttonY - buttonHeight/2 && p.mouseY <= buttonY + buttonHeight/2) {
+        restartGame();
+      }
+    } else {
+      handleMousePressed(p, player);
+    }
   };
 };
 
@@ -188,6 +209,38 @@ function drawBodies(p) {
 
     p.pop();
   });
+}
+
+// Función para dibujar la pantalla de muerte
+function drawGameOverScreen(p) {
+  // Fondo semi-transparente
+  p.background(0, 0, 0, 150);
+  
+  // Configurar texto
+  p.fill(255, 0, 0);
+  p.textAlign(p.CENTER, p.CENTER);
+  p.textSize(64);
+  
+  // Mensaje de muerte
+  p.text("MUERTE", p.width/2, p.height/2 - 100);
+  
+  // Texto del botón
+  p.fill(255);
+  p.textSize(32);
+  p.text("Haz clic para reiniciar", p.width/2, p.height/2 + 50);
+  
+  // Dibujar botón
+  p.fill(100, 100, 100);
+  p.stroke(255);
+  p.strokeWeight(2);
+  p.rectMode(p.CENTER);
+  p.rect(p.width/2, p.height/2 + 100, 300, 60);
+  
+  // Texto del botón
+  p.fill(255);
+  p.noStroke();
+  p.textSize(24);
+  p.text("REINICIAR", p.width/2, p.height/2 + 100);
 }
 
 new p5(sketch);
