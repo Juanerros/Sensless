@@ -55,9 +55,25 @@ export function takeDamage(damage){
 
   if(playerHealth <= 0){
 
-    player.isALive = false;
+    player.isAlive = false;
     console.log("Jugador ripeo");
+    
+    // Hacer que el jugador desaparezca del mundo físico
+    if(player.body) {
 
+      Matter.World.remove(world, player.body);
+      const bodies = getBodies();
+      const index = bodies.indexOf(player);
+
+      if (index > -1) {
+
+        bodies.splice(index, 1);
+        
+      }
+    }
+    
+    // Establecer estado de muerte en el gameState
+    gameState.isGameOver = true;
   }
 
   return playerHealth > 0;
@@ -115,7 +131,7 @@ function drawBorderBox(p) {
 }
 
 export function drawPlayer(p) {
-  if (!player) return;
+  if (!player || !player.isAlive) return;
 
   const pos = player.position;
   const angle = player.angle;
