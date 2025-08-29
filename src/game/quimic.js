@@ -59,7 +59,7 @@ function createWater(oxygen, hydrogens) {
     const centerX = (oxygen.position.x + hydrogens[0].position.x + hydrogens[1].position.x) / 3;
     const centerY = (oxygen.position.y + hydrogens[0].position.y + hydrogens[1].position.y) / 3;
 
-    createSpell(centerX, centerY, 30, 40, 'water');
+    createSpell(centerX, centerY, 'water');
 
     removeElements([oxygen, ...hydrogens]);
 }
