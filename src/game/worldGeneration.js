@@ -8,8 +8,8 @@ const CHUNK_SIZE = 800; // Tamaño de cada chunk en píxeles
 const RENDER_DISTANCE = 1; // Chunks a cargar alrededor del jugador
 const TERRAIN_HEIGHT_VARIATION = 200;
 const BASE_TERRAIN_HEIGHT = 700;
-const UNDERGROUND_LAYERS = 5; // Número de capas de tierra debajo del terreno
-const LAYER_HEIGHT = 80; // Altura de cada capa subterránea
+const UNDERGROUND_LAYERS = 8; // Número de capas de tierra debajo del terreno
+const LAYER_HEIGHT = 50; // Altura de cada capa subterránea
 
 // Almacenamiento de chunks generados
 let loadedChunks = new Map();
@@ -203,7 +203,7 @@ class Chunk {
 
             // Usar object pooling
             const surfaceY = surfaceHeight + 40;
-            const surfaceSegment = pool.getTerrainBody(x, surfaceY, segmentWidth, 80, {
+            const surfaceSegment = pool.getTerrainBody(x, surfaceY, segmentWidth, 50, {
                 friction: 0.8,
                 restitution: 0.1
             });
