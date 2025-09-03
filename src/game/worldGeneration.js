@@ -4,11 +4,11 @@ import { gameState } from './state.js';
 import { createQuimic } from "./quimic.js";
 
 // Configuración del sistema de chunks
-const CHUNK_SIZE = 800; // Tamaño de cada chunk en píxeles
+const CHUNK_SIZE = 1000; // Tamaño de cada chunk en píxeles
 const RENDER_DISTANCE = 1; // Chunks a cargar alrededor del jugador
-const TERRAIN_HEIGHT_VARIATION = 200;
+const TERRAIN_HEIGHT_VARIATION = 250;
 const BASE_TERRAIN_HEIGHT = 700;
-const UNDERGROUND_LAYERS = 8; // Número de capas de tierra debajo del terreno
+const UNDERGROUND_LAYERS = 9; // Número de capas de tierra debajo del terreno
 const LAYER_HEIGHT = 50; // Altura de cada capa subterránea
 
 // Almacenamiento de chunks generados
@@ -100,7 +100,7 @@ class Chunk {
     }
 
     generateTerrain() {
-        const segments = 20; // Número de segmentos de terreno por chunk
+        const segments = 8; // Número de segmentos de terreno por chunk
         const segmentWidth = CHUNK_SIZE / segments;
 
         for (let i = 0; i < segments; i++) {
