@@ -2,7 +2,7 @@ import p5 from 'p5';
 import { setupPhysics, updatePhysics, getBodies, getWorld } from './physics.js';
 import { loadSpritesAsync } from './sprites.js';
 import { loadEnemySprites, getEnemySpriteByName } from './enemies/enemySprites.js';
-import { createPlayer, updatePlayer, drawPlayer } from './player.js';
+import { createPlayer, updatePlayer, drawPlayer, drawHealthBar } from './player.js';
 import { handleKeyPressed, handleKeyReleased, handleMousePressed } from './controls.js';
 import { moveCamera } from './camera.js';
 import { updateEnemies, drawEnemies, ChaserEnemy, getEnemies } from './enemies/enemy.js';
@@ -103,6 +103,9 @@ const sketch = (p) => {
     drawPersistentActions(p);
 
     p.pop();
+    
+    // Dibujar la barra de vida (fuera del sistema de cámara)
+    drawHealthBar(p);
   };
 
   p.keyPressed = () => {
@@ -116,8 +119,8 @@ const sketch = (p) => {
   p.mousePressed = () => {
     // Si el juego ha terminado, verificar si se hizo clic en el botón de reinicio
     if (gameState.isGameOver) {
-      const buttonX = p.width/2;
-      const buttonY = p.height/2 + 100;
+      const buttonX = window.innerWidth / 2;
+      const buttonY = window.innerHeight / 2 + 100;
       const buttonWidth = 300;
       const buttonHeight = 60;
       
@@ -211,36 +214,59 @@ function drawBodies(p) {
   });
 }
 
+// Variable para cargar el logo
+let logoImage = null;
+let logoLoaded = false;
+
 // Función para dibujar la pantalla de muerte
 function drawGameOverScreen(p) {
-  // Fondo semi-transparente
-  p.background(0, 0, 0, 150);
+  // Cargar logo si no está cargado
+  if (!logoImage && !logoLoaded) {
+    logoLoaded = true; 
+    p.loadImage('./sprites/interfas/logo.png', (img) => {
+      logoImage = img;
+      console.log('Logo cargado exitosamente');
+    }, () => {
+      console.error('Error al cargar el logo');
+      logoLoaded = false;
+    });
+  }
   
-  // Configurar texto
-  p.fill(255, 0, 0);
-  p.textAlign(p.CENTER, p.CENTER);
-  p.textSize(64);
+  // Fondo blanco
+  p.background(255);
   
-  // Mensaje de muerte
-  p.text("MUERTE", p.width/2, p.height/2 - 100);
+  // Usar dimensiones de la ventana para centrado correcto
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
   
-  // Texto del botón
-  p.fill(255);
-  p.textSize(32);
-  p.text("Haz clic para reiniciar", p.width/2, p.height/2 + 50);
+  // Dibujar logo centrado
+  if (logoImage) {
+    p.push();
+    p.imageMode(p.CENTER);
+    const logoWidth = 300;
+    // Usar dimensiones fijas si las dimensiones de la imagen no están disponibles
+    const logoHeight = logoImage.height && logoImage.width ? 
+      (logoImage.height / logoImage.width) * logoWidth : logoWidth;
+    p.image(logoImage, centerX, centerY - 80, logoWidth, logoHeight);
+    p.pop();
+  }
   
-  // Dibujar botón
+  // Dibujar botón centrado debajo del logo
+  p.push();
   p.fill(100, 100, 100);
-  p.stroke(255);
+  p.stroke(0);
   p.strokeWeight(2);
   p.rectMode(p.CENTER);
-  p.rect(p.width/2, p.height/2 + 100, 300, 60);
+  const buttonY = centerY + 100;
+  p.rect(centerX, buttonY, 300, 60);
   
   // Texto del botón
   p.fill(255);
   p.noStroke();
+  p.textAlign(p.CENTER, p.CENTER);
   p.textSize(24);
-  p.text("REINICIAR", p.width/2, p.height/2 + 100);
+  p.text("REINICIAR", centerX, buttonY);
+  p.pop();
 }
 
 new p5(sketch);

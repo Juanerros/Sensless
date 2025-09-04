@@ -16,6 +16,7 @@ export function createPlayer(x, y, worldRef) {
   const playerHeight = 80;
 
   world = worldRef;
+
   player = Matter.Bodies.rectangle(x, y, playerWidth, playerHeight, {
     frictionAir: 0.02,
     friction: 0.1,
@@ -23,6 +24,7 @@ export function createPlayer(x, y, worldRef) {
     restitution: 0,
     inertia: Infinity
   });
+
   player.width = playerWidth;
   player.height = playerHeight;
   player.isPlayer = true;
@@ -166,6 +168,43 @@ export function drawPlayer(p) {
   }
 
   p.pop();
+}
+
+// Función para dibujar la barra de vida
+export function drawHealthBar(p) {
+
+  if (!player || !player.isAlive) return;
+  
+  const barWidth = 200;
+  const barHeight = 20;
+  const barX = 20;
+  const barY = 100;
+  
+  // Calcular el porcentaje de vida
+  const healthPercentage = playerHealth / maxHealth;
+  
+  // Dibujar el fondo de la barra (rojo)
+  p.fill(255, 0, 0);
+  p.noStroke();
+  p.rectMode(p.CORNER);
+  p.rect(barX, barY, barWidth, barHeight);
+  
+  // Dibujar la barra de vida (verde)
+  p.fill(0, 255, 0);
+  p.rect(barX, barY, barWidth * healthPercentage, barHeight);
+  
+  // Dibujar el borde de la barra
+  p.stroke(255);
+  p.strokeWeight(2);
+  p.noFill();
+  p.rect(barX, barY, barWidth, barHeight);
+  
+  // Mostrar texto de vida
+  p.fill(255);
+  p.noStroke();
+  p.textAlign(p.LEFT, p.CENTER);
+  p.textSize(16);
+  p.text(`${playerHealth}/${maxHealth}`, barX + barWidth + 10, barY + barHeight/2);
 }
 
 export function getPlayer() {
