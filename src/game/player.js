@@ -55,6 +55,8 @@ export function createPlayer(x, y, worldRef, p5Instance = null) {
   player.health = playerHealth;
   player.maxHealth = maxHealth;
   player.isAlive = true;
+  
+
 
   initializeInventory();
 
@@ -88,12 +90,12 @@ export function takeDamage(damage){
         player.sprite = player.hurtSprite1;
 
         setTimeout(() => {
-
+          
           // Volver al sprite normal después del daño
           if (player.isAlive) {
 
             player.sprite = getSpriteByName('player');
-            
+
           }
 
         }, 200);
@@ -148,6 +150,16 @@ export function updatePlayer(p) {
   updateControls(player, getBodies);
   drawInventoryUI(p);
   grabObject();
+  
+  // Actualizar dirección del jugador
+  const velocity = player.velocity;
+  if (velocity.x > 0.1) {
+    player.direction = 'right';
+  } else if (velocity.x < -0.1) {
+    player.direction = 'left';
+  }
+  
+  player.lastVelocity = { x: velocity.x, y: velocity.y };
 }
 
 function grabObject() {
@@ -177,58 +189,56 @@ export function drawPlayer(p) {
   p.push();
   p.translate(pos.x, pos.y);
   p.rotate(angle);
-  if (player.direction === 'left') {
-    p.scale(-1, 1);
-  } else {
-    p.scale(1, 1);
-  }
 
   if (!player.isAlive) {
     // Usar sprite de muerte si está disponible
     if (player.deadSprite) {
       player.sprite = player.deadSprite;
-    } else {
-      return; // No dibujar si el sprite de muerte no está cargado
-    }
-
-  } else {
-    // Solo asignar sprite normal si no hay un sprite de daño activo
-    if (!player.sprite || player.sprite === getSpriteByName('player')) {
-      player.sprite = getSpriteByName('player');
-    }
-  }
-
-  if (player.sprite && player.sprite.width > 0) {
-    p.imageMode(p.CENTER);
-    
-    // Ajustar tamaño para sprite de muerte
-    if (!player.isAlive && player.deadSprite) {
-
+      
+      if (player.direction === 'left') {
+        p.scale(-1, 1);
+      } else {
+        p.scale(1, 1);
+      }
+      
+      p.imageMode(p.CENTER);
       // Calcular dimensiones proporcionales para el sprite de muerte
       const aspectRatio = player.deadSprite.height / player.deadSprite.width + 1;
       const deadWidth = player.width;
       const deadHeight = deadWidth * aspectRatio;
       p.image(player.sprite, 0, 0, deadWidth, deadHeight);
-
-    } else {
-
-      p.image(player.sprite, 0, 0, player.width, player.height);
-
     }
   } else {
-    p.fill(0, 0, 0);
-    p.rectMode(p.CENTER);
-    // Validar dimensiones antes de dibujar
-    if (player.width !== undefined && player.height !== undefined && 
-        player.width > 0 && player.height > 0) {
-      p.rect(0, 0, player.width, player.height);
-    } else {
-      console.log("Jugador con dimensiones inválidas:", {
-        width: player.width,
-        height: player.height
-      });
-    }
-  }
+    // Sistema de sprites estáticos
+      if (player.direction === 'left') {
+        p.scale(-1, 1);
+      } else {
+        p.scale(1, 1);
+      }
+      
+      // Solo asignar sprite normal si no hay un sprite de daño activo
+      if (!player.sprite || player.sprite === getSpriteByName('player')) {
+        player.sprite = getSpriteByName('player');
+      }
+      
+      if (player.sprite && player.sprite.width > 0) {
+         p.imageMode(p.CENTER);
+         p.image(player.sprite, 0, 0, player.width, player.height);
+       } else {
+          p.fill(0, 0, 0);
+          p.rectMode(p.CENTER);
+          // Validar dimensiones antes de dibujar
+          if (player.width !== undefined && player.height !== undefined && 
+              player.width > 0 && player.height > 0) {
+            p.rect(0, 0, player.width, player.height);
+          } else {
+            console.log("Jugador con dimensiones inválidas:", {
+              width: player.width,
+              height: player.height
+            });
+          }
+        }
+      }
 
   p.pop();
 }

@@ -1,4 +1,4 @@
-let elements = [
+const elements = [
   {
     name: 'box',
     sprite: null,
@@ -20,6 +20,8 @@ let elements = [
     sprite: null,
   }
 ];
+
+
 
 export function loadSprite(img, name) {
   elements.forEach(e => { 
@@ -64,6 +66,10 @@ export function loadSpritesAsync(p, onComplete) {
     loadSprite(img, 'water');
     checkComplete();
   });
+
+
+
+  
 
 }
 
