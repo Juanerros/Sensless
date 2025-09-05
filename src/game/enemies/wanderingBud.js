@@ -94,14 +94,41 @@ export class WanderingBud extends Enemy {
 
       // Si es la primera vez que el jugador entra al círculo
       if (!this.playerInCircle) {
-        this.playerInCircle = true;
-        this.hasExploded = true; // Marcar como explotado
 
-        // Generar el círculo persistente cuando explota
+        this.playerInCircle = true;
+        this.hasExploded = true; 
+
+        // Generar múltiples sprites de nubes de cloro cuando explota
+        const numSprites = Math.floor(Math.random() * 50) + 3; 
+        const sprites = [];
+        
+        for (let i = 0; i < numSprites; i++) {
+
+          // Generar posición aleatoria dentro del radio
+          const angle = Math.random() * Math.PI * 2;
+          const distance = Math.random() * (this.circleRadius * 0.6); 
+          const spriteX = this.body.position.x + Math.cos(angle) * distance;
+          const spriteY = this.body.position.y + Math.sin(angle) * distance;
+          
+          // Seleccionar sprite aleatorio (1, 2, o 3)
+          const spriteNumber = Math.floor(Math.random() * 3) + 1;
+          
+          sprites.push({
+            x: spriteX,
+            y: spriteY,
+            spriteNumber: spriteNumber,
+            rotation: Math.random() * Math.PI * 2, 
+            rotationSpeed: (Math.random() - 0.5) * 0.03, 
+            scale: 0.5 + Math.random() * 5 
+          });
+        }
+        
         gameState.persistentActions.push({
-          x: this.body.position.x,
-          y: this.body.position.y,
+          type: 'chlorineCloud',
+          centerX: this.body.position.x,
+          centerY: this.body.position.y,
           radius: this.circleRadius,
+          sprites: sprites,
           lifeTime: 300
         });
 

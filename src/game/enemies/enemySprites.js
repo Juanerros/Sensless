@@ -2,6 +2,18 @@ let enemyElements = [
   {
     name: 'olvido',
     sprite: null,
+  },
+  {
+    name: 'chlorineCloud1',
+    sprite: null,
+  },
+  {
+    name: 'chlorineCloud2',
+    sprite: null,
+  },
+  {
+    name: 'chlorineCloud3',
+    sprite: null,
   }
   // Puedes agregar más tipos de enemigos aquí
 ];
@@ -38,6 +50,31 @@ export function loadEnemySprites(p, onComplete) {
     checkComplete();
   }, (error) => {
     console.error('Error cargando sprite olvido:', error);
+    checkComplete(); 
+  });
+
+  // Cargar sprites de nubes de cloro
+  p.loadImage('/sprites/enemies/efects/nubes_de_cloro/1.png', (img) => {
+    loadEnemySprite(img, 'chlorineCloud1');
+    checkComplete();
+  }, (error) => {
+    console.error('Error cargando sprite chlorineCloud1:', error);
+    checkComplete(); 
+  });
+
+  p.loadImage('/sprites/enemies/efects/nubes_de_cloro/2.png', (img) => {
+    loadEnemySprite(img, 'chlorineCloud2');
+    checkComplete();
+  }, (error) => {
+    console.error('Error cargando sprite chlorineCloud2:', error);
+    checkComplete(); 
+  });
+
+  p.loadImage('/sprites/enemies/efects/nubes_de_cloro/3.png', (img) => {
+    loadEnemySprite(img, 'chlorineCloud3');
+    checkComplete();
+  }, (error) => {
+    console.error('Error cargando sprite chlorineCloud3:', error);
     checkComplete(); 
   });
 }
