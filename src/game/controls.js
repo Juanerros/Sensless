@@ -17,7 +17,7 @@ export function handleKeyReleased(key) {
 }
 
 export function updateControls(player, getBodies) {
-  if (!player || gameState.isPaused) return;
+  if (!player || gameState.isPaused || !player.isAlive) return;
 
   const force = 0.02;
   const jumpForce = 0.03;
@@ -59,6 +59,8 @@ export function updateControls(player, getBodies) {
 }
 
 export function handleMousePressed(p, player) {
+  if (!player || !player.isAlive) return;
+  
   const worldCoords = screenToWorldCoordinates(p.mouseX, p.mouseY);
   const worldX = worldCoords.x;
   const worldY = worldCoords.y;

@@ -24,7 +24,7 @@ const sketch = (p) => {
     p.noSmooth();
 
     // Crear jugador PRIMERO
-    player = createPlayer(400, 600, getWorld());
+    player = createPlayer(400, 600, getWorld(), p);
     // Cargar sprites básicos
     loadSpritesAsync(p, () => {
       basicSpritesLoaded = true;
@@ -73,12 +73,6 @@ const sketch = (p) => {
       return;
     }
 
-    // Verificar si el juego ha terminado
-    if (gameState.isGameOver) {
-      drawGameOverScreen(p);
-      return;
-    }
-
     p.background(135, 206, 235);
     
     updatePhysics();
@@ -88,15 +82,15 @@ const sketch = (p) => {
     if (player && player.position) {
       updateWorldGeneration(player.position.x);
     }
+    
+    updateEnemies();
+    updateBullets(); // Actualizar balas
 
     p.push();
     moveCamera(p);
 
     drawBodies(p);
     drawPlayer(p);
-    
-    updateEnemies();
-    updateBullets(); // Actualizar balas
     
     drawEnemies(p);
     drawBullets(p); // Dibujar balas
@@ -106,6 +100,11 @@ const sketch = (p) => {
     
     // Dibujar la barra de vida (fuera del sistema de cámara)
     drawHealthBar(p);
+    
+    // Si el juego ha terminado, dibujar la pantalla de game over encima
+    if (gameState.isGameOver) {
+      drawGameOverScreen(p);
+    }
   };
 
   p.keyPressed = () => {
@@ -232,8 +231,12 @@ function drawGameOverScreen(p) {
     });
   }
   
-  // Fondo blanco
-  p.background(255);
+  // Fondo semitransparente con blur
+  p.push();
+  p.fill(255, 255, 255, 200); 
+  p.noStroke();
+  p.rect(0, 0, p.width, p.height);
+  p.pop();
   
   // Usar dimensiones de la ventana para centrado correcto
   const centerX = window.innerWidth / 2;

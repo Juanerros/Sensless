@@ -11,7 +11,7 @@ let world;
 let playerHealth = 100;
 let maxHealth = 100;
 
-export function createPlayer(x, y, worldRef) {
+export function createPlayer(x, y, worldRef, p5Instance = null) {
   const playerWidth = 42;
   const playerHeight = 80;
 
@@ -28,6 +28,17 @@ export function createPlayer(x, y, worldRef) {
   player.width = playerWidth;
   player.height = playerHeight;
   player.isPlayer = true;
+  
+  // Precargar sprite de muerte
+  player.deadSprite = null;
+
+  if (p5Instance) {
+
+    p5Instance.loadImage('./sprites/zenithTakeDamage/dead.png', (img) => {
+      player.deadSprite = img;
+      
+    });
+  }
   player.label = "player";
   player.sprite = getSpriteByName('player');
   player.direction = 'right';
@@ -60,22 +71,10 @@ export function takeDamage(damage){
     player.isAlive = false;
     console.log("Jugador ripeo");
     
-    // Hacer que el jugador desaparezca del mundo físico
-    if(player.body) {
-
-      Matter.World.remove(world, player.body);
-      const bodies = getBodies();
-      const index = bodies.indexOf(player);
-
-      if (index > -1) {
-
-        bodies.splice(index, 1);
-        
-      }
-    }
+    player.sprite = null; // Resetear sprite para forzar recarga
     
-    // Establecer estado de muerte en el gameState
     gameState.isGameOver = true;
+    
   }
 
   return playerHealth > 0;
@@ -133,7 +132,7 @@ function drawBorderBox(p) {
 }
 
 export function drawPlayer(p) {
-  if (!player || !player.isAlive) return;
+  if (!player) return;
 
   const pos = player.position;
   const angle = player.angle;
@@ -147,11 +146,35 @@ export function drawPlayer(p) {
     p.scale(1, 1);
   }
 
-  player.sprite = getSpriteByName('player');
+  if (!player.isAlive) {
+    // Usar sprite de muerte si está disponible
+    if (player.deadSprite) {
+      player.sprite = player.deadSprite;
+    } else {
+      return; // No dibujar si el sprite de muerte no está cargado
+    }
+
+  } else {
+    player.sprite = getSpriteByName('player');
+  }
 
   if (player.sprite && player.sprite.width > 0) {
     p.imageMode(p.CENTER);
-    p.image(player.sprite, 0, 0, player.width, player.height);
+    
+    // Ajustar tamaño para sprite de muerte
+    if (!player.isAlive && player.deadSprite) {
+
+      // Calcular dimensiones proporcionales para el sprite de muerte
+      const aspectRatio = player.deadSprite.height / player.deadSprite.width + 1;
+      const deadWidth = player.width;
+      const deadHeight = deadWidth * aspectRatio;
+      p.image(player.sprite, 0, 0, deadWidth, deadHeight);
+
+    } else {
+
+      p.image(player.sprite, 0, 0, player.width, player.height);
+
+    }
   } else {
     p.fill(0, 0, 0);
     p.rectMode(p.CENTER);
