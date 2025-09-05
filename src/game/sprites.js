@@ -18,6 +18,10 @@ const elements = [
   {
     name: 'player',
     sprite: null,
+  },
+  {
+    name: 'playerIdleGif',
+    sprite: null,
   }
 ];
 
@@ -67,9 +71,11 @@ export function loadSpritesAsync(p, onComplete) {
     checkComplete();
   });
 
-
-
-  
+  // Cargar GIF idle
+  p.loadImage('/animation/idle.gif', (img) => {
+    loadSprite(img, 'playerIdleGif');
+    checkComplete();
+  });
 
 }
 

@@ -151,15 +151,25 @@ export function updatePlayer(p) {
   drawInventoryUI(p);
   grabObject();
   
-  // Actualizar dirección del jugador
+  // Actualizar dirección del jugador y estado de movimiento
   const velocity = player.velocity;
+  const isMoving = Math.abs(velocity.x) > 0.1 || Math.abs(velocity.y) > 0.1;
+  
   if (velocity.x > 0.1) {
     player.direction = 'right';
   } else if (velocity.x < -0.1) {
     player.direction = 'left';
   }
   
+  // Actualizar sprite según movimiento
+  if (isMoving) {
+    player.sprite = getSpriteByName('player');
+  } else {
+    player.sprite = getSpriteByName('playerIdleGif');
+  }
+  
   player.lastVelocity = { x: velocity.x, y: velocity.y };
+  player.isMoving = isMoving;
 }
 
 function grabObject() {
@@ -216,13 +226,14 @@ export function drawPlayer(p) {
         p.scale(1, 1);
       }
       
-      // Solo asignar sprite normal si no hay un sprite de daño activo
-      if (!player.sprite || player.sprite === getSpriteByName('player')) {
-        player.sprite = getSpriteByName('player');
-      }
+      // El sprite ya se asigna dinámicamente en updatePlayer
+      // No necesitamos reasignarlo aquí a menos que sea un sprite de daño
       
       if (player.sprite && player.sprite.width > 0) {
+        
          p.imageMode(p.CENTER);
+         
+         // Usar siempre las dimensiones normales del personaje
          p.image(player.sprite, 0, 0, player.width, player.height);
        } else {
           p.fill(0, 0, 0);
