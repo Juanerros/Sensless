@@ -36,9 +36,19 @@ export function createPlayer(x, y, worldRef, p5Instance = null) {
 
     p5Instance.loadImage('./sprites/zenithTakeDamage/dead.png', (img) => {
       player.deadSprite = img;
-      
+
     });
+
+    p5Instance.loadImage('./sprites/zenithTakeDamage/zenith_hurt_1.png', (img) => {
+      player.hurtSprite1 = img;
+    });
+
+     p5Instance.loadImage('./sprites/zenithTakeDamage/zenith_hurt_2.png', (img) => {
+      player.hurtSprite2 = img;
+    });
+
   }
+
   player.label = "player";
   player.sprite = getSpriteByName('player');
   player.direction = 'right';
@@ -61,9 +71,36 @@ export function createPlayer(x, y, worldRef, p5Instance = null) {
 export function takeDamage(damage){
 
   if(!player || !player.isAlive) return false;
+
   //Esto resta la vida del jugador con el daño que recibe, y el Math.max Evita que el numero se vaya a negativo
   playerHealth = Math.max(0, playerHealth - damage);
   player.health = playerHealth;
+  
+  // Sistema de sprites de daño
+  if (player.hurtSprite2) {
+
+    player.sprite = player.hurtSprite2;
+
+    setTimeout(() => {
+
+      if (player.hurtSprite1) {
+
+        player.sprite = player.hurtSprite1;
+
+        setTimeout(() => {
+
+          // Volver al sprite normal después del daño
+          if (player.isAlive) {
+
+            player.sprite = getSpriteByName('player');
+            
+          }
+
+        }, 200);
+      }
+
+    }, 150);
+  }
   console.log(playerHealth);
 
   if(playerHealth <= 0){
@@ -155,7 +192,10 @@ export function drawPlayer(p) {
     }
 
   } else {
-    player.sprite = getSpriteByName('player');
+    // Solo asignar sprite normal si no hay un sprite de daño activo
+    if (!player.sprite || player.sprite === getSpriteByName('player')) {
+      player.sprite = getSpriteByName('player');
+    }
   }
 
   if (player.sprite && player.sprite.width > 0) {
