@@ -79,7 +79,8 @@ class OptimizedNoise {
     }
 }
 
-const randomSeed = Math.floor(Math.random() * 10000) + 1;
+const randomSeed = Math.ceil(Math.random() * 10000);
+// const randomSeed = 12345
 const noiseGenerator = new OptimizedNoise(randomSeed);
 
 // Estructura de un chunk
@@ -89,6 +90,7 @@ class Chunk {
         this.worldX = chunkX * CHUNK_SIZE;
         this.bodies = [];
         this.generated = false;
+        this.seed = getSeed()
     }
 
     generate() {
@@ -147,8 +149,9 @@ class Chunk {
     }
 
     generateElements() {
-        // Generar elementos aleatorios en el chunk
-        const elementCount = Math.floor(Math.random() * 3) + 1; // 2-6 elementos por chunk
+        // Generar elementos "aleatorios" segun la semilla en el chunk
+
+        const elementCount = Math.round(this.seed / 10000) + 1;
 
         for (let i = 0; i < elementCount; i++) {
             const x = this.worldX + Math.random() * CHUNK_SIZE;
@@ -232,6 +235,10 @@ class Chunk {
             }
         }
     }
+}
+
+export function getSeed() {
+    return randomSeed
 }
 
 // Funciones principales del sistema
