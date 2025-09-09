@@ -22,6 +22,10 @@ const elements = [
   {
     name: 'playerIdleGif',
     sprite: null,
+  },
+  {
+    name: 'playerMoveGif',
+    sprite: null,
   }
 ];
 
@@ -71,9 +75,14 @@ export function loadSpritesAsync(p, onComplete) {
     checkComplete();
   });
 
-  // Cargar GIF idle
+  // Cargar GIF
   p.loadImage('/animation/idle.gif', (img) => {
     loadSprite(img, 'playerIdleGif');
+    checkComplete();
+  });
+
+  p.loadImage('/animation/correr.gif', (img) => {
+    loadSprite(img, 'playerMoveGif');
     checkComplete();
   });
 

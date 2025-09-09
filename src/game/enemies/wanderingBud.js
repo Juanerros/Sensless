@@ -18,8 +18,8 @@ export class WanderingBud extends Enemy {
     this.circleRadius = 150;    // Radio para dibujar el círculo
     this.speed = 0.005;
     this.health = 50;
-    this.name = 'olvido';
-    this.type = "wanderer";
+    this.name = 'wanderingBud';
+    this.type = "wanderingBud";
     this.playerInCircle = false;
     this.hasExploded = false; // Nueva bandera para evitar múltiples explosiones
   }

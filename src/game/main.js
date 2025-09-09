@@ -51,8 +51,14 @@ const sketch = (p) => {
       if (olvidoSprite) {
         chaser.sprite = olvidoSprite;
         chaser.body.sprite = olvidoSprite;
-        wanderer.sprite = olvidoSprite;
-        wanderer.body.sprite = olvidoSprite;
+      }
+
+      const wanderingBud = getEnemySpriteByName('wanderingBud');
+      if(wanderingBud){
+
+        wanderer.sprite = wanderingBud;
+        wanderer.body.sprite = wanderingBud;
+
       }
       
       enemiesCreated = true;

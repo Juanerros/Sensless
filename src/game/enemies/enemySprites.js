@@ -4,6 +4,10 @@ let enemyElements = [
     sprite: null,
   },
   {
+    name: 'wanderingBud',
+    sprite: null,
+  },
+  {
     name: 'chlorineCloud1',
     sprite: null,
   },
@@ -48,8 +52,18 @@ export function loadEnemySprites(p, onComplete) {
   p.loadImage('/sprites/enemies/olvido.png', (img) => {
     loadEnemySprite(img, 'olvido');
     checkComplete();
+
   }, (error) => {
     console.error('Error cargando sprite olvido:', error);
+    checkComplete(); 
+  });
+
+   p.loadImage('/sprites/enemies/wanderingbud.png', (img) => {
+    loadEnemySprite(img, 'wanderingBud');
+    checkComplete();
+    
+  }, (error) => {
+    console.error('Error cargando sprite wandering:', error);
     checkComplete(); 
   });
 
