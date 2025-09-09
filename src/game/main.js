@@ -228,7 +228,7 @@ function drawGameOverScreen(p) {
   // Cargar logo si no está cargado
   if (!logoImage && !logoLoaded) {
     logoLoaded = true; 
-    p.loadImage('./sprites/interfas/logo.png', (img) => {
+    p.loadImage('sprites/interfas/logo.png', (img) => {
       logoImage = img;
       console.log('Logo cargado exitosamente');
     }, () => {

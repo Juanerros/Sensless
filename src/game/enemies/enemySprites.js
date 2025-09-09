@@ -49,7 +49,7 @@ export function loadEnemySprites(p, onComplete) {
     return;
   }
 
-  p.loadImage('/sprites/enemies/olvido.png', (img) => {
+  p.loadImage('sprites/enemies/olvido.png', (img) => {
     loadEnemySprite(img, 'olvido');
     checkComplete();
 
@@ -58,7 +58,7 @@ export function loadEnemySprites(p, onComplete) {
     checkComplete(); 
   });
 
-   p.loadImage('/sprites/enemies/wanderingbud.png', (img) => {
+   p.loadImage('sprites/enemies/wanderingbud.png', (img) => {
     loadEnemySprite(img, 'wanderingBud');
     checkComplete();
     
@@ -68,7 +68,7 @@ export function loadEnemySprites(p, onComplete) {
   });
 
   // Cargar sprites de nubes de cloro
-  p.loadImage('/sprites/enemies/efects/nubes_de_cloro/1.png', (img) => {
+  p.loadImage('sprites/enemies/efects/nubes_de_cloro/1.png', (img) => {
     loadEnemySprite(img, 'chlorineCloud1');
     checkComplete();
   }, (error) => {
@@ -76,7 +76,7 @@ export function loadEnemySprites(p, onComplete) {
     checkComplete(); 
   });
 
-  p.loadImage('/sprites/enemies/efects/nubes_de_cloro/2.png', (img) => {
+  p.loadImage('sprites/enemies/efects/nubes_de_cloro/2.png', (img) => {
     loadEnemySprite(img, 'chlorineCloud2');
     checkComplete();
   }, (error) => {
@@ -84,7 +84,7 @@ export function loadEnemySprites(p, onComplete) {
     checkComplete(); 
   });
 
-  p.loadImage('/sprites/enemies/efects/nubes_de_cloro/3.png', (img) => {
+  p.loadImage('sprites/enemies/efects/nubes_de_cloro/3.png', (img) => {
     loadEnemySprite(img, 'chlorineCloud3');
     checkComplete();
   }, (error) => {

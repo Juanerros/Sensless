@@ -50,38 +50,38 @@ export function loadSpritesAsync(p, onComplete) {
     }
   };
 
-  p.loadImage('/sprites/Zenith.png', (img) => {
+  p.loadImage('sprites/Zenith.png', (img) => {
     loadSprite(img, 'player');
     checkComplete();
   });
   
-  p.loadImage('/sprites/box-a.png', (img) => {
+  p.loadImage('sprites/box-a.png', (img) => {
     loadSprite(img, 'box');
     checkComplete();
   });
   
-  p.loadImage('/sprites/quimic/hidrogeno-pixel.png', (img) => {
+  p.loadImage('sprites/quimic/hidrogeno-pixel.png', (img) => {
     loadSprite(img, 'hidrogeno');
     checkComplete();
   });
   
-  p.loadImage('/sprites/quimic/oxigeno-pixel.png', (img) => {
+  p.loadImage('sprites/quimic/oxigeno-pixel.png', (img) => {
     loadSprite(img, 'oxigeno');
     checkComplete();
   });
 
-   p.loadImage('/sprites/spells/chispa-agua.png', (img) => {
+   p.loadImage('sprites/spells/chispa-agua.png', (img) => {
     loadSprite(img, 'water');
     checkComplete();
   });
 
   // Cargar GIF
-  p.loadImage('/animation/idle.gif', (img) => {
+  p.loadImage('animation/idle.gif', (img) => {
     loadSprite(img, 'playerIdleGif');
     checkComplete();
   });
 
-  p.loadImage('/animation/correr.gif', (img) => {
+  p.loadImage('animation/correr.gif', (img) => {
     loadSprite(img, 'playerMoveGif');
     checkComplete();
   });
