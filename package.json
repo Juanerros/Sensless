@@ -9,10 +9,10 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^7.1.0"
+    "vite": "7.1.0"
   },
   "dependencies": {
-    "matter-js": "^0.20.0",
-    "p5": "^2.0.4"
+    "matter-js": "0.20.0",
+    "p5": "2.0.4"
   }
 }
