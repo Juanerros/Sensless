@@ -1,0 +1,148 @@
+.personaje-fade-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background-image: url("../img/personajes.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  will-change: opacity, transform;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+}
+
+.personaje-fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.personaje-img {
+  position: relative;
+  width: calc(50% - 100px);
+  height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: none;
+  background-size: cover;
+  overflow: hidden;
+}
+
+.character {
+  max-width: calc(100% - 80px);
+  height: calc(100% - 80px);
+  filter: drop-shadow(0 0 20px rgba(2, 98, 143, 0.7));
+  transition: transform 0.5s, opacity 0.5s;
+  transform: translateY(var(--character-translate, 40px));
+  opacity: var(--character-opacity, 1);
+  z-index: 2;
+}
+
+.personaje-content {
+  position: relative;
+  max-width: 600px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  flex: none;
+  padding: calc(2rem + 2vw);
+  color: #fff;
+  background-image: url("../img/background-personajes-content.png"),
+    linear-gradient(rgba(5, 3, 32, 0.5));
+  backdrop-filter: blur(12px);
+  border-radius: 18px;
+  border-left: 3px solid #060935;
+  box-shadow: 0 0 10px rgba(8, 9, 85, 0.25);
+  transform: translateX(60px);
+  transition: opacity 0.7s 0.4s, transform 0.7s 0.4s;
+  opacity: 0;
+}
+
+.theme span {
+  margin-bottom: calc(0.5rem + 0.2vw);
+  font-size: calc(1rem + 0.3vw);
+  font-family: "playfair display", serif;
+  font-weight: bold;
+  letter-spacing: 1px;
+  opacity: 0.85;
+}
+
+.title h2 {
+  margin: 0 0 1.2rem 0;
+  color: #fff;
+  font-size: calc(6rem + 1vw);
+  font-weight: 900;
+  font-family: "playfair display", serif;
+  line-height: 1;
+  letter-spacing: calc(0.1rem + 0.1vw);
+  text-shadow: 0 2px 0 #000, 0 0px 8px #164681;
+}
+
+.description {
+  max-width: calc(100% - 80px);
+  margin-top: calc(0.5rem + 0.2vw);
+  font-size: calc(0.6rem + 0.2vw);
+  font-family: "inter", sans-serif;
+  line-height: calc(1.7rem + 0.2vw);
+  letter-spacing: calc(0.05rem + 0.05vw);
+  text-shadow: 0 2px 0 #280a94, 0 0px 8px #164681;
+  opacity: 0.92;
+}
+
+.personaje-fade-section .character {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity 0.7s 0.2s, transform 0.7s 0.2s;
+}
+.personaje-fade-section.visible .character {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.personaje-fade-section.visible .personaje-content {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.personaje-fade-section .slide-right {
+  opacity: 0;
+  transition: opacity 0.7s 0.4s, transform 0.7s 0.4s;
+}
+.personaje-fade-section.visible .slide-right {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.personaje-fade-section[data-idx="0"] .slide-right {
+  transform: translateX(60px);
+}
+.personaje-fade-section.visible[data-idx="0"] .slide-right {
+  transform: translateX(0);
+}
+
+.personaje-fade-section[data-idx="1"] .slide-right {
+  transform: translateX(-60px);
+}
+.personaje-fade-section.visible[data-idx="1"] .slide-right {
+  transform: translateX(0);
+}
+
+.personaje-fade-section[data-idx="2"] .slide-right {
+  transform: translateX(60px);
+}
+.personaje-fade-section.visible[data-idx="2"] .slide-right {
+  transform: translateX(0);
+}
+
+.personajes-scroll-container {
+  position: relative;
+  width: 100vw;
+  min-height: 300vh;
+  background: #181028;
+}

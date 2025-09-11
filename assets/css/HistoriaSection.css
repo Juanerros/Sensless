@@ -1,0 +1,158 @@
+.historia-section {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding:calc(4rem + 2vw) ;
+  background-image: url("../img/background-histor.png");
+  background-position: center;
+  background-size: cover;
+  animation: FadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+.historia-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6rem;
+}
+
+.historia-card {
+  position: relative;
+  max-width: 800px;
+  flex: 1;
+  padding: calc(1.5rem + 1vw) calc(1rem + 1vw);
+  color: #fff;
+  background: transparent; 
+  border: none; 
+  border-radius: 12px;
+  z-index: 1;
+}
+
+.historia-papiro-bg {
+  position: absolute;
+  top:calc(-160px - 1vw);
+  left:calc(-130px - 1vw);
+  width: 800px;
+  height: 800px;
+  object-fit: cover;
+  opacity: 0.9;
+  z-index: -1;
+}
+
+.historia-card-content{
+  width: 500px;
+  height: auto;
+}
+
+.historia-card h2 {
+  margin-bottom: 1rem;
+  color: #03E2FF;
+  font-size: calc(2rem + 1vw);
+  font-weight: 700;
+  font-family: "playfair display", serif;
+  line-height: calc(2.5rem + 0.5vw);
+}
+
+.historia-item {margin-bottom: 1.5rem;}
+
+.historia-item h3 {
+  margin-bottom: calc(0.5rem + 0.2vw);
+  color: #70C6FF;
+  font-size: calc(1rem + 0.5vw);
+  font-family: "playfair display", serif;
+  line-height: calc(1.4rem + 0.2vw);
+}
+
+.historia-item p {
+  color: #dcdcdc;
+  font-size: calc(0.6rem + 0.3vw);
+  font-family: "inter", sans-serif;
+  line-height: calc(1rem + 0.3vw);
+}
+
+.historia-lampara {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.historia-lampara img {
+  position: relative;
+  width: 500px;
+  filter: drop-shadow(0 0 80px rgba(255, 200, 120, 1));
+  opacity: 0;
+  z-index: 1;
+}
+
+.historia-lampara::after {
+  position: absolute;
+  content: "";
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle,rgba(255, 220, 180, 0.8) 0%,rgba(255, 154, 114, 0.5) 25%,rgba(255, 60, 0, 0.25) 50%,transparent 100%);
+  border-radius: 50%;
+  filter: blur(150px);
+  animation: FadeIn 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+  z-index: 2;
+}
+
+.historia-lampara::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-image: repeating-radial-gradient(circle,rgba(255, 60, 0, 0.25) 0,rgba(255, 60, 0, 0.25) 1px,transparent 1px,transparent 3px);
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.05;
+  z-index: 2;
+}
+
+.lampara-animate {animation: lampara-fade-blink 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;}
+.historia-title-animate {opacity: 0;transform: translateY(40px) scale(0.85);}
+.historia-title-animate.animate {animation: historiaTitleUpScale 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards}
+
+.historia-card-animate {opacity: 0;transform: translateY(40px)}
+.historia-card-animate.animate {animation: FadeInUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;}
+
+.historia-item-title-animate {opacity: 0;transform: scale(0.85)}
+.historia-item-title-animate.animate {animation: historiaItemTitleScale 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards}
+
+.historia-item-desc-animate {opacity: 0}
+.historia-item-desc-animate.animate {animation: FadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards}
+
+@keyframes historiaTitleUpScale {
+  0% {opacity: 0;transform: translateY(40px) scale(0.85)}
+  60% {opacity: 1;transform: translateY(0) scale(1.05)}
+  100% {opacity: 1;transform: translateY(0) scale(1)}
+}
+
+
+@keyframes lampara-fade-blink {
+  0% {opacity: 0;filter: drop-shadow(0 0 10px rgba(255, 200, 120, 0.2))}
+  30% {opacity: 1;filter: drop-shadow(0 0 80px rgba(255, 200, 120, 1))}
+  45% {opacity: 0.7;filter: drop-shadow(0 0 30px rgba(255, 200, 120, 0.5))}
+  60% {opacity: 1;filter: drop-shadow(0 0 120px rgba(255, 220, 180, 1))}
+  100% {opacity: 1;filter: drop-shadow(0 0 80px rgba(255, 200, 120, 1))}
+}
+
+@keyframes lampara-blink {
+  0%,
+  100% {opacity: 1;filter: drop-shadow(0 0 80px rgba(255, 200, 120, 1))}
+  40% {opacity: 0.7;filter: drop-shadow(0 0 30px rgba(255, 200, 120, 0.5))}
+  60% {opacity: 1;filter: drop-shadow(0 0 120px rgba(255, 220, 180, 1))}
+}
+
+@keyframes historiaItemTitleScale {
+  0% {opacity: 0;transform: scale(0.85)}
+  60% {opacity: 1;transform: scale(1.05)}
+  100% {opacity: 1;transform: scale(1)}
+}
+

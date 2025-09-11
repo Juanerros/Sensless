@@ -1,14 +1,312 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/src/style.css" />
-    <title>Sensless</title>
+    <title>The Senseless</title>
+    <link rel="stylesheet" href="./assets/css/index.css" />
+    <link rel="stylesheet" href="./assets/css/HeroSection.css" />
+    <link rel="stylesheet" href="./assets/css/EquipoSection.css" />
+    <link rel="stylesheet" href="./assets/css/HistoriaSection.css" />
+    <link rel="stylesheet" href="./assets/css/PersonajesSection.css">
+    <link rel="stylesheet" href="./assets/css/MecanicaSection.css">
+    <link rel="stylesheet" href="./assets/css/JuegoSection.css" />
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/game/main.js"></script>
+    <section class="hero-section" id="inicio">
+      <header class="hero-header">
+        <div class="header-container">
+          <div class="logo header-animate" style="animation-delay: 0.1s">
+            <img src="./assets/img/logo.png" alt="">
+          </div>
+          <nav class="nav-menu">
+            <a href="#inicio" class="header-animate" style="animation-delay: 0.3s" >Inicio</a>
+            <a href="#historia" class="header-animate" style="animation-delay: 0.45s" >Historia</a>
+            <a href="#personajes" class="header-animate" style="animation-delay: 0.6s" >Personajes</a>
+            <a href="#equipo" class="header-animate" style="animation-delay: 0.75s" >Equipo</a>
+            <a href="#mecanicas" class="header-animate" style="animation-delay: 0.9s" >Mecanicas</a>
+          </nav>
+          <div class="header-buttons">
+            <a href="./pages/Login.html" class="nav-login-btn " style="animation-delay: 0.9s" >Iniciar sesión</a>
+            <a href="./pages/Register.html" class="nav-register-btn " style="animation-delay: 0.9s" >
+                Comenzar
+                <div class="hoverEffect">
+                    <div></div>
+                </div>
+            </a>
+          </div>
+        </div>
+      </header>
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title fade-in-scale">
+            <span class="title-the fade-in-scale">The</span>
+            <span class="title-senseless fade-in-scale">SensLess</span>
+          </h1>
+          <p class="hero-description fade-in">
+            En un mundo fracturado por recuerdos perdidos y sombras que
+            acechan, tu única misión es encontrar el sentido antes de
+            perderte en el vacío.
+          </p>
+          <button class="btn-play btn-play-animate">
+            <svg height="24" width="24" viewBox="0 0 24 24" class="sparkle" fill="#AAAAAA">
+              <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
+            </svg>
+            <a class="text" href="./dist/index.html">Jugar Ahora</a>
+          </button>
+        </div>
+      </div>
+    </section>
+    <section class="equipo-section" id="equipo">
+        <div class="equipo-container">
+            <div class="equipo-header">
+                <h2 class="section-title equipo-title-animate">NUESTRO EQUIPO</h2>
+            </div>
+            <div class="equipo-content">
+                <div class="equipo-grid">
+                    <div class="miembro-card">
+                        <div class="avatar-container">
+                            <div class="avatar juan-avatar equipo-avatar-animate"></div>
+                        </div>
+                        <h3 class="miembro-nombre equipo-nombre-animate">Juan Cottier</h3>
+                        <p class="miembro-rol equipo-rol-animate">Líder de Proyecto y Programador Principal</p>
+                        <a class="miembro-github" href="https://github.com/Juanerros" target="_blank" rel="noopener noreferrer">
+                            <div class="github-button-container">
+                                <button class="github-icon-button">
+                                  <svg stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" fill="none" viewBox="0 0 24 24" class="github-icon">
+                                    <path
+                                      d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
+                                    ></path>
+                                  </svg>
+                                </button>
+                                <span class="tooltip">GitHub</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="miembro-card">
+                        <div class="avatar-container">
+                            <div class="avatar mateo-avatar equipo-avatar-animate"></div>
+                        </div>
+                        <h3 class="miembro-nombre equipo-nombre-animate">Mateo Palacio</h3>
+                        <p class="miembro-rol equipo-rol-animate">Programador de Sistemas y Mecánicas</p>
+                        <a class="miembro-github" href="https://github.com/palateo8967" target="_blank" rel="noopener noreferrer">
+                            <div class="github-button-container">
+                                <button class="github-icon-button">
+                                  <svg stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" fill="none" viewBox="0 0 24 24" class="github-icon">
+                                    <path
+                                      d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
+                                    ></path>
+                                  </svg>
+                                </button>
+                                <span class="tooltip">GitHub</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="miembro-card">
+                        <div class="avatar-container">
+                            <div class="avatar farias-avatar equipo-avatar-animate"></div>
+                        </div>
+                        <h3 class="miembro-nombre equipo-nombre-animate">Farias Tomas</h3>
+                        <p class="miembro-rol equipo-rol-animate">Diseñador de Juego y Arte Conceptual</p>
+                        <a class="miembro-github" href="#" target="_blank" rel="noopener noreferrer">
+                            <div class="github-button-container">
+                                <button class="github-icon-button">
+                                  <svg stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" fill="none" viewBox="0 0 24 24" class="github-icon">
+                                    <path
+                                      d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
+                                    ></path>
+                                  </svg>
+                                </button>
+                                <span class="tooltip">GitHub</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="miembro-card">
+                        <div class="avatar-container">
+                            <div class="avatar jesus-avatar equipo-avatar-animate"></div>
+                        </div>
+                        <h3 class="miembro-nombre equipo-nombre-animate">Jesus Leto</h3>
+                        <p class="miembro-rol equipo-rol-animate">Diseñador Web y Experiencia de Usuario</p>
+                        <a class="miembro-github" href="https://github.com/thebiped" target="_blank" rel="noopener noreferrer">
+                            <div class="github-button-container">
+                                <button class="github-icon-button">
+                                  <svg stroke-linejoin="round" stroke-linecap="round" stroke-width="2" stroke="currentColor" fill="none" viewBox="0 0 24 24" class="github-icon">
+                                    <path
+                                      d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"
+                                    ></path>
+                                  </svg>
+                                </button>
+                                <span class="tooltip">GitHub</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="historia-section" id="historia">
+      <div class="historia-container">
+        <div class="historia-card historia-card-animate">
+          <img src="../assets/img/background-history-content.png" alt="Papiro de fondo" class="historia-papiro-bg"/>
+          <div class="historia-card-content">
+            <h2 class="historia-title historia-title-animate">
+              <span>EL</span> ORIGEN
+            </h2>
+            <div class="historia-item">
+              <h3 class="historia-item-title-animate">
+                Memoria Fragmentada
+              </h3>
+              <p class="historia-item-desc-animate">
+                Luna despierta en un mundo donde sus recuerdos se
+                desvanecen. Cada muerte la regresa al inicio, pero con
+                nuevos hechizos y sinergias mágicas que debe redescubrir.
+              </p>
+            </div>
+            <div class="historia-item">
+              <h3 class="historia-item-title-animate">
+                El Poder del Olvido
+              </h3>
+              <p class="historia-item-desc-animate">
+                Olvido esparce escritos mágicos por los niveles, olvidándose
+                de recogerlos. Estos pergaminos contienen hechizos poderosos
+                que Luna debe encontrar para sobrevivir.
+              </p>
+            </div>
+            <div class="historia-item">
+              <h3 class="historia-item-title-animate">
+                Sinergias Infinitas
+              </h3>
+              <p class="historia-item-desc-animate">
+                Cada run es único. Las combinaciones de hechizos crean
+                sinergias impredecibles que transforman completamente el
+                gameplay y las estrategias de combate.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="historia-lampara">
+          <img src="../assets/img/luz.png" alt="Lámpara mágica" class="lampara-animate"/>
+        </div>
+      </div>
+    </section>
+    <section class="personaje-fade-section" data-idx="0">
+        <div class="personaje-img">
+        <img src="../assets/img/zenith.png" alt="Zenith" class="character" />
+        </div>
+        <div class="personaje-content">
+        <div class="theme">
+            <span>Protagonista</span>
+        </div>
+        <div class="title">
+            <h2>Zenith</h2>
+        </div>
+        <div class="description">
+            <h4>Género: <span>Trans</span></h4>
+            <h4>Edad: <span>18 años</span></h4>
+            <br>
+            <p>
+            Zenith usa una varita mágica que canaliza hechizos y combina elementos
+            químicos y mágicos para crear efectos ofensivos y defensivos,
+            permitiéndole interactuar estratégicamente con el entorno y los
+            enemigos.
+            </p>
+        </div>
+        </div>
+    </section>
+    <section class="personaje-fade-section" data-idx="1">
+        <div class="personaje-img">
+            <img src="../assets/img/sombra-tributante.png" alt="Sombra Tributante" class="character"/>
+        </div>
+        <div class="personaje-content">
+            <div class="theme"><span>Enemigo de la Arboleda</span></div>
+            <div class="title"><h2>Sombra Tributante</h2></div>
+            <div class="description">
+                <p>Cuando detecta a un jugador, "wendigo" corre en línea recta tratando de
+                embestir al jugador. si el wendigo choca contra un obstáculo, el
+                wendigo queda paralizado por un par de segundos.
+                </p>
+            </div>
+        </div>
+    </section>
+    <section class="personaje-fade-section" data-idx="2">
+        <div class="personaje-img">
+        <img src="../assets/img/olvido.png" alt="Olvido" class="character" />
+        </div>
+        <div class="personaje-content">
+            <div class="theme"><span>Jefe del primer nivel (primera forma)</span></div>
+            <div class="title"><h2>OLVIDO</h2></div>
+            <div class="description">
+                <h4>Edad: <span> 200 años</span></h4>
+                <h4>Condición: <span>Alzheimer</span></h4>
+                <br>
+                <p>Olvido es un anciano fabricante de armas mutado tras sobrevivir al incidente de 
+                la llama blanca. En su primera forma, dispara ráfagas de balas en zigzag y salta 
+                para aplastar al jugador.
+                </p>
+            </div>
+        </div>
+    </section>
+    <section class="mecanicas-section" id="mecanicas">
+        <div class="mecanicas-bg"></div>
+        <h2 class="mecanicas-title mecanicas-title-animate">MECANICAS DE JUEGO</h2>
+        <div class="mecanicas-cards">
+            <div class="mecanica-card mecanica-card-animate" data-index="0">
+                <img src="../assets/img/rayo.png" alt="Sinergias" class="mecanica-card-icon"/>
+                <h3 class="mecanica-card-title mecanica-card-title-animate">SINERGIAS MÁGICAS</h3>
+                <p class="mecanica-card-desc mecanica-card-desc-animate">
+                    Combina hechizos para crear efectos únicos e impredecibles en cada run.
+                </p>
+            </div>
+            <div class="mecanica-card mecanica-card-animate" data-index="1">
+                <img src="../assets/img/ovni.png" alt="Físicas" class="mecanica-card-icon"/>
+                <h3 class="mecanica-card-title mecanica-card-title-animate">FÍSICAS REALISTAS</h3>
+                <p class="mecanica-card-desc mecanica-card-desc-animate">
+                    Mundo 2D con físicas avanzadas estilo Noita. Cada elemento interactúa de
+                    forma realista.
+                </p>
+            </div>
+            <div class="mecanica-card mecanica-card-animate" data-index="2">
+                <img src="../assets/img/calavera.png" alt="Roguelike" class="mecanica-card-icon"/>
+                <h3 class="mecanica-card-title mecanica-card-title-animate">ROGUELIKE PURO</h3>
+                <p class="mecanica-card-desc mecanica-card-desc-animate">
+                    Cada muerte es permanente, pero cada run ofrece nuevas combinaciones y
+                    secretos.
+                </p>
+            </div>
+            <div class="mecanica-card mecanica-card-animate" data-index="3">
+                <img src="../assets/img/libro.png" alt="Enemigos" class="mecanica-card-icon"/>
+                <h3 class="mecanica-card-title mecanica-card-title-animate">ENEMIGOS ADAPTATIVOS</h3>
+                <p class="mecanica-card-desc mecanica-card-desc-animate">
+                    Bandidos bullet-hell, Sombras Titubeantes y criaturas que evolucionan
+                    por nivel.
+                </p>
+            </div>
+        </div>
+    </section>
+    <section class="juego-section" id="juego">
+        <div class="overlay"></div>
+        <div class="juego-content">
+            <div class="content">
+                <h2 class="juego-title juego-title-animate">¿LISTO PARA RECORDAR?</h2>
+                <p class="juego-description juego-description-animate">
+                    Sumérgete en un mundo donde cada muerte te acerca más a la verdad.
+                    Descubre los secretos de Luna y enfrenta el poder del Olvido.
+                </p>
+            </div>
+            <button class="btn-play juego-btn-animate">
+                <svg height="24" width="24" viewBox="0 0 24 24" class="sparkle" fill="#AAAAAA">
+                    <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
+                </svg>
+                <span class="text">Jugar Ahora</span>
+            </button>
+        </div>
+    </section>
+    
+    <script src="./assets/js/hero-section.js"></script>
+    <script src="./assets/js/equipo-section.js"></script>
+    <script src="./assets/js/historia-section.js"></script>
+    <script src="./assets/js/personajes-section.js"></script>
+    <script src="./assets/js/mecanicas-section.js"></script>
+    <script src="./assets/js/juego-section.js"></script>
   </body>
 </html>

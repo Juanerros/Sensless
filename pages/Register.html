@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../assets/css/index.css">
+    <link rel="stylesheet" href="../assets/css/Register.css">
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="register-bg-main">
+      <div class="register-container">
+        <div class="register-form-section">
+          <h1 class="register-title anim-title">SENSELESS</h1>
+          <h2 class="register-subtitle anim-title" style="animation-delay: 0.1s">CREAR UNA CUENTA</h2>
+          <form class="register-form" id="register-form">
+            <div class="input-group">
+              <label for="username" class="anim-label" style="animation-delay: 0.2s">
+                Username
+              </label>
+              <div class="register-input-wrapper anim-input" style="animation-delay: 0.3s">
+                <img src="../assets/img/icon_pixelart-user.png" class="register-icon"/>
+                <input type="text" id="username" placeholder="name20..." autocomplete="username"/>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="password" class="anim-label" style="animation-delay: 0.4s">
+                Contraseña
+              </label>
+              <div class="register-input-wrapper anim-input" style="animation-delay: 0.5s">
+                <img src="../assets/img/icon_pixelart-keyhole.png" class="register-icon"/>
+                <input type="password" id="password" placeholder="contraseña..." autocomplete="current-password"/>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="password" class="anim-label" style="animation-delay: 0.4s">
+                Confirmar Contraseña
+              </label>
+              <div class="register-input-wrapper anim-input" style="animation-delay: 0.5s">
+                <img src="../assets/img/icon_pixelart-keyhole.png" class="register-icon"/>
+                <input type="password" id="password" placeholder="confirmar contraseña..." autocomplete="current-password"/>
+              </div>
+            </div>
+            <div class="login-options anim-label" style="animation-delay: 0.6s">
+              <label class="remember-label">
+                <input type="checkbox" id="accept-terms" />
+                <span class="checkmark"></span>
+                Acepto los
+                <a href="#" class="checkbox-text">Terminos y condiciones</a>
+              </label>
+            </div>
+            <div class="form-btn">
+              <button type="submit" class="register-btn anim-btn" style="animation-delay: 0.7s">
+                Registrarse
+              </button>
+            </div>
+          </form>
+          <div class="register-bottom anim-label" style="animation-delay: 0.8s">
+            <span>¿Ya tienes una cuenta? </span>
+            <a href="./Login.html" class="register-link">Inicia Sesión</a>
+          </div>
+        </div>
+        <div class="register-image-section anim-img">
+          <img src="../assets/img/background-register-olvido.png" alt="Olvido"/>
+        </div>
+      </div>
+    </div>
+    <script src="../assets/js/register.js"></script>
+  </body>
+</html>

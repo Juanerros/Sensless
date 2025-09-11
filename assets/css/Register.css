@@ -1,0 +1,341 @@
+.register-bg-main {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url("../img/background-login1.png");
+  overflow: hidden;
+}
+
+.register-container {
+  position: relative;
+  width: 1200px;
+  display: flex;
+  filter: drop-shadow(10px 10px 30px rgba(89, 16, 108, 0.3)),drop-shadow(-10px -10px 30px rgba(89, 16, 108, 0.3));
+  border-radius: 20px;
+  box-shadow: 0 5px 40px 10px rgba(60, 0, 120, 0.4);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.register-container::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: transparent;
+  background-size: 400% 400%;
+  border: 3px solid transparent;
+  border-radius: 22px;
+  box-shadow: 0 0 0 4px transparent, 0 0 16px 2px rgba(94, 0, 255, 0.15);
+  animation: borderMove 3s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+.register-form-section {
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1.2;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  background-image: url("../img/background-login.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.register-title {
+  margin-bottom: 0.5rem;
+  color: #ff4fa3;
+  font-family: "Playfair Display", serif;
+  font-size: calc(2.5rem + 0.3vw);
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: calc(2px + 0.1vw);
+}
+
+.register-subtitle {
+  margin-bottom: 1.2rem;
+  color: #fff;
+  font-family: "Playfair Display", serif;
+  font-size: calc(1.1rem + 0.1vw);
+  font-weight: 700;
+  text-align: center;
+}
+
+.register-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.register-form label {
+  color: #fff;
+  font-size: calc(0.8rem + 0.1vw);
+  font-weight: medium;
+}
+
+.register-input-wrapper {
+  position: relative;
+  width: calc(100% - 10px);
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.3rem;
+  padding: 0.3rem 0.7rem;
+  background: rgba(12, 18, 78, 0.9);
+  border: 1px solid #27489e;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.register-input-wrapper::before {
+  position: absolute;
+  content: "";
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(to right, #2b4bff, #0084ff);
+  transition: width 0.4s ease;
+}
+
+.register-input-wrapper:focus-within::before {width: 100%;}
+
+.register-input-wrapper:hover {
+  border-color: #402bff;
+  box-shadow: 0 0 8px rgba(43, 110, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.register-input-wrapper:focus-within {
+  border-color: #2b52ff;
+  box-shadow: 0 0 12px rgba(43, 110, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.register-input-wrapper input {
+  flex: 1;
+  padding: 0.3rem 0.1rem;
+  color: #e0e8ff;
+  font-size: calc(0.95rem + 0.1vw);
+  font-family: "inter", sans-serif;
+  font-weight: regular;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.register-icon {
+  max-width: 20px;
+  max-height: 20px;
+  margin-right: 0.7rem;
+}
+
+.register-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.register-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.register-options .remember-label {
+  font-size: calc(0.8rem + 0.1vw);
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  color: #27489e;
+}
+
+.remember-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.remember-label:hover {color: #752bff;}
+
+.remember-label input {
+  position: absolute;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.remember-label .checkmark {
+  position: absolute;
+  left: -20px;
+  top: 1px;
+  height: 18px;
+  width: 18px;
+  background-color: #2d3644;
+  border: 1px solid #6b2bff;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.remember-label:hover .checkmark {transform: scale(1.1);box-shadow: 0 0 8px rgba(43, 153, 255, 0.4)}
+
+.remember-label input:checked ~ .checkmark {background-color: #522bff;box-shadow: 0 0 0 2px #592bff inset;}
+
+.remember-label .checkmark::after {
+  position: absolute;
+  content: "";
+  display: none;
+  animation: checkmark 0.2s ease-in-out;
+}
+
+.remember-label input:checked ~ .checkmark:after {display: block;}
+
+.remember-label .checkmark::after {
+  left: 4px;
+  top: 0;
+  width: 5px;
+  height: 10px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.forgot-link {
+  position: relative;
+  color: #27489e;
+  font-size: calc(0.8rem + 0.1vw);
+  font-family: "inter", sans-serif;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.forgot-link::after {
+  position: absolute;
+  content: "";
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #2b6eff;
+  transition: width 0.3s ease;
+}
+
+.forgot-link:hover {color: rgb(79, 135, 255);transform: translateY(-1px);}
+
+.forgot-link:hover::after {width: 100%;}
+
+.form-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.register-btn {
+  position: relative;
+  margin-top: 0.7rem;
+  padding: 0.7rem 2rem;
+  background: rgba(12, 18, 78, 0.9);
+  color: #fff;
+  font-size: calc(1rem + 0.1vw);
+  font-weight: 700;
+  border: 1px solid #27489e;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(10, 26, 60, 0.15);
+  animation: fadedown 0.8s cubic-bezier(0.5, 0.2, 0.2, 1) both,fadescaleup 0.8s cubic-bezier(0.5, 0.2, 0.2, 1) both;
+  transition: background 0.3s, color 0.3s, transform 0.2s;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.register-btn::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,rgba(255, 255, 255, 0) 0%,rgba(255, 255, 255, 0.2) 50%,rgba(255, 255, 255, 0) 100%);
+  transition: left 0.7s ease;
+}
+
+.register-btn:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(to right,rgba(12, 18, 78, 0.9),rgba(12, 41, 78, 0.9));
+  box-shadow: 0 6px 15px rgba(10, 37, 60, 0.15);
+}
+
+.register-btn:hover::before {left: 100%;}
+
+.register-btn:active {transform: translateY(1px); box-shadow: 0 2px 8px rgba(255, 75, 43, 0.3);}
+
+.register-bottom {
+  margin-top: 2rem;
+  color: #fff;
+  font-size: calc(0.8rem + 0.1vw);
+  text-align: center;
+}
+.register-link {
+  position: relative;
+  margin-left: 0.3rem;
+  color: #7a4fff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.register-link::after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: #6b2bff;
+  transition: width 0.3s ease;
+}
+
+.register-link:hover { color: #6f20f7;transform: translateX(-1px);}
+.register-link:hover::after { width: 100%;}
+
+.register-image-section {
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background: transparent;
+  overflow: hidden;
+}
+.register-image-section img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: drop-shadow(0 0 40px #7a4fff);
+}
+
+.anim-btn {animation: fadedown 0.8s cubic-bezier(0.5, 0.2, 0.2, 1) both,fadescaleup 0.8s cubic-bezier(0.5, 0.2, 0.2, 1) both;}
+.anim-img {animation: fadein 1s cubic-bezier(0.5, 0.2, 0.2, 1) both;}
+.anim-title {animation: titlescalefade 0.8s cubic-bezier(0.5, 0.2, 0.2, 1) both;}
+.anim-label {animation: fadeinup 0.7s cubic-bezier(0.5, 0.2, 0.2, 1) both;}
+.anim-input {animation: fadescaleup 0.8s cubic-bezier(0.5, 0.2, 0.2, 1) both;}
+.anim-btn {animation: fadedown 0.8s cubic-bezier(0.5, 0.2, 0.2, 1) both,fadescaleup 0.8s cubic-bezier(0.5, 0.2, 0.2, 1) both;}
+
+@keyframes checkmark {
+  0% {opacity: 0;transform: scale(0.5) rotate(45deg)}
+  100% {opacity: 1;transform: scale(1) rotate(45deg)}
+}
+@keyframes borderMove {
+  0% {background-position: 0% 50%}
+  50% {background-position: 100% 50%}
+  100% {background-position: 0% 50%}
+}

@@ -1,0 +1,134 @@
+.juego-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url("../img/cloud.jpg") no-repeat center center/cover;
+  animation: FadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120%;
+  background: linear-gradient(
+    135deg,
+    rgba(4, 1, 28, 0.4) 0%,
+    rgba(33, 2, 37, 1) 100%
+  );
+  animation: floating 20s ease-in-out infinite alternate;
+}
+
+.juego-content {
+  position: relative;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  color: #fff;
+  text-align: center;
+  z-index: 2;
+}
+
+.juego-title {
+  font-size: calc(2rem + 1vw);
+  font-family: "playfair display", serif;
+  font-weight: bold;
+  letter-spacing:calc(0.2rem + 0.02vw);
+  text-transform: uppercase;
+}
+
+.juego-description {
+  margin-bottom: 2rem;
+  color: #ddd;
+  font-size: calc(1rem + 0.3vw);
+  line-height: calc(1.5rem + 0.5vw);
+}
+
+.juego-btn {
+  position: relative;
+  width: calc(10rem + 5vw);
+  height: calc(5rem + 1vw);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  background: #030431;
+  border: none;
+  border-radius: 3em;
+  cursor: pointer;
+  transition: all 450ms ease-in-out;
+  overflow: hidden;
+}
+
+.juego-btn::before {
+  position: absolute;
+  content: "";
+  inset: 0;
+  background: linear-gradient(0deg, #a47cf3, #683fea);
+  border-radius: 3em;
+  transition: opacity 0.45s ease-in-out;
+  opacity: 0;
+  z-index: 0;
+}
+
+.juego-btn:hover::before {opacity: 1;}
+
+.juego-btn:hover {box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.4),inset 0px -4px 0px 0px rgba(0, 0, 0, 0.2),0px 0px 0px 4px rgba(255, 255, 255, 0.2), 0px 0px 180px 0px #9917ff;transform: translateY(-2px);}
+
+.juego-btn .text {
+  position: relative;
+  color: #aaaaaa;
+  font-weight: 600;
+  font-size: calc(1rem + 0.2vw);
+  transition: color 0.45s ease-in-out;
+  z-index: 1;
+}
+
+.juego-btn:hover .text {color: #fff;}
+
+.juego-btn .sparkle {
+  position: relative;
+  fill: #aaaaaa;
+  transition: all 800ms ease;
+  z-index: 1;
+}
+
+.juego-btn:hover .sparkle {fill: #fff;transform: scale(1.2);}
+
+.juego-title-animate {opacity: 0;transform: scale(0.85);}
+.juego-title-animate.animate {animation: TitleScaleFade 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;}
+
+.juego-description-animate {opacity: 0;}
+.juego-description-animate.animate {animation: FadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;}
+
+.juego-btn-animate {opacity: 0;transform: translateY(40px);}
+.juego-btn-animate.animate {animation: BtnUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;}
+
+@keyframes TitleScaleFade {
+  0% {opacity: 0;transform: scale(0.85)}
+  60% {opacity: 1;transform: scale(1.05)}
+  100% {opacity: 1;transform: scale(1)}
+}
+
+@keyframes FadeIn {
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+@keyframes BtnUp {
+  0% {opacity: 0;transform: translateY(40px);}
+  100% {opacity: 1;transform: translateY(0);}
+}
+
+@keyframes floating {
+  from {transform: translateY(0)}
+  to {transform: translateY(-30px)}
+}

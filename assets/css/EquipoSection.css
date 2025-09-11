@@ -1,0 +1,151 @@
+.equipo-section {
+  padding: 6rem 0;
+  color: #fff;
+  background-image: url("../img/background-equipo.png");
+  background-position: center;
+  background-size: cover;
+}
+
+.equipo-container {max-width: 1200px;margin: 0 auto;padding: 0 2rem;}
+
+
+.equipo-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.section-title {
+  margin-bottom: 1rem;
+  color: #fff;
+  font-family: "Playfair Display SC", serif;
+  font-size: calc(2.2rem + 1vw);
+  font-weight: 700;
+  letter-spacing: calc(0.1rem + 0.1vw);
+}
+
+.equipo-content {
+  display: flex;
+  justify-content: center;
+}
+
+.equipo-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 6rem;
+}
+
+.miembro-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-container {position: relative;}
+
+.avatar {
+  width: calc(100px + 5vw);
+  height: calc(100px + 5vw);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  border: 3px solid #8b5cf6;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+}
+
+.juan-avatar {background-image: url("../img/juan.png");}
+
+.mateo-avatar {background-image: url("../img/mateo.png");}
+
+.farias-avatar {background-image: url("../img/farias.png");}
+
+.jesus-avatar {background-image: url("../img/jesus.png");}
+
+.miembro-nombre {
+  margin-bottom: 0.5rem;
+  color: #fff;
+  font-family: "Playfair Display SC", serif;
+  font-size: calc(1.2rem + 0.5vw);
+  font-weight: 600;
+  letter-spacing: calc(0.02rem + 0.02vw);
+}
+
+.miembro-rol {
+  max-width: 200px;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: "Inter", sans-serif;
+  font-size: calc(0.8rem + 0.3vw);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.github-button-container {position: relative;display: inline-block;}
+
+.github-icon-button {
+  padding: 0;
+  background: transparent;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+.github-icon {
+  width: 2rem; 
+  height: 2rem; 
+  stroke: #cccccc;
+  transition: transform 0.2s, stroke 0.2s;
+}
+
+.github-button-container:hover .github-icon {transform: scale(1.25);stroke: #4e3bf6; }
+
+.tooltip {
+  position: absolute;
+  top: -3.5rem; 
+  left: 50%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: black;
+  background-color: white;
+  border: 1px solid #d1d5db; 
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  transform: translateX(-50%) scale(0); 
+  transform-origin: center bottom;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 20;
+}
+
+.github-button-container:hover .tooltip {
+  transform: translateX(-50%) scale(1);
+}
+
+.equipo-title-animate,
+.equipo-avatar-animate,
+.equipo-nombre-animate,
+.equipo-rol-animate {animation-play-state: paused;}
+.equipo-title-animate.animate,
+.equipo-avatar-animate.animate,
+.equipo-nombre-animate.animate,
+.equipo-rol-animate.animate {animation-play-state: running;}
+.equipo-title-animate {opacity: 0;transform: scale(0.85);}
+.equipo-title-animate.animate {animation: FadeScale 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;}
+.equipo-avatar-animate {transform: scale(0.6);}
+.equipo-avatar-animate.animate {animation: AvatarScale 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;}
+.equipo-nombre-animate {opacity: 0;transform: translateY(-30px) scale(0.85);}
+.equipo-nombre-animate.animate {animation: FadeDown 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;}
+.equipo-rol-animate { opacity: 0;}
+.equipo-rol-animate.animate {animation: FadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;}
+
+@keyframes FadeScale {
+  0% {opacity: 0;transform: scale(0.85);}
+  60% {opacity: 1;transform: scale(1.05);}
+  100% {opacity: 1;transform: scale(1);}
+}
+
+@keyframes AvatarScale {
+  0% {transform: scale(0.6)}
+  100% {transform: scale(1)}
+}
