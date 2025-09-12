@@ -80,27 +80,21 @@ export function takeDamage(damage) {
 
   // Sistema de sprites de daño
   if (player.hurtSprite2) {
-
+    player.takingDamage = true;
     player.sprite = player.hurtSprite2;
 
     setTimeout(() => {
-
       if (player.hurtSprite1) {
-
         player.sprite = player.hurtSprite1;
 
         setTimeout(() => {
-
           // Volver al sprite normal después del daño
+          player.takingDamage = false;
           if (player.isAlive) {
-
             player.sprite = getSpriteByName('player');
-
           }
-
         }, 200);
       }
-
     }, 150);
   }
   console.log(playerHealth);
@@ -161,15 +155,13 @@ export function updatePlayer(p) {
     player.direction = 'left';
   }
 
-  // Actualizar sprite según movimiento
-  if (isMoving) {
-
-    player.sprite = getSpriteByName('playerMoveGif');
-
-  } else {
-
-    player.sprite = getSpriteByName('playerIdleGif');
-
+  // Actualizar sprite según movimiento (solo si no está en animación de daño)
+  if (!player.takingDamage) {
+    if (isMoving) {
+      player.sprite = getSpriteByName('playerMoveGif');
+    } else {
+      player.sprite = getSpriteByName('playerIdleGif');
+    }
   }
 
   player.lastVelocity = { x: velocity.x };
@@ -205,7 +197,7 @@ export function drawPlayer(p) {
   p.rotate(angle);
 
   if (!player.isAlive) {
-    // Usar sprite de muerte si está disponible
+    
     if (player.deadSprite) {
       player.sprite = player.deadSprite;
 
@@ -223,7 +215,7 @@ export function drawPlayer(p) {
       p.image(player.sprite, 0, 0, deadWidth, deadHeight);
     }
   } else {
-    // Sistema de sprites estáticos
+    
     if (player.direction === 'left') {
       p.scale(-1, 1);
     } else {
