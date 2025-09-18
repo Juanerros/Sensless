@@ -4,20 +4,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Senseless</title>
-    <link rel="stylesheet" href="./assets/css/index.css" />
-    <link rel="stylesheet" href="./assets/css/HeroSection.css" />
-    <link rel="stylesheet" href="./assets/css/EquipoSection.css" />
-    <link rel="stylesheet" href="./assets/css/HistoriaSection.css" />
-    <link rel="stylesheet" href="./assets/css/PersonajesSection.css">
-    <link rel="stylesheet" href="./assets/css/MecanicaSection.css">
-    <link rel="stylesheet" href="./assets/css/JuegoSection.css" />
+    <link rel="stylesheet" href="./view/assets/css/index.css" />
+    <link rel="stylesheet" href="./view/assets/css/HeroSection.css" />
+    <link rel="stylesheet" href="./view/assets/css/EquipoSection.css" />
+    <link rel="stylesheet" href="./view/assets/css/HistoriaSection.css" />
+    <link rel="stylesheet" href="./view/assets/css/PersonajesSection.css">
+    <link rel="stylesheet" href="./view/assets/css/MecanicaSection.css">
+    <link rel="stylesheet" href="./view/assets/css/JuegoSection.css" />
   </head>
+
+  <?php
+    session_start();
+    if (isset($_SESSION['error'])) {
+        echo '<p style="color: red;">' . $_SESSION['error'] . '</p>';
+        unset($_SESSION['error']);
+    }
+    if (isset($_SESSION['msg'])) {
+        echo '<p style="color: green;">' . $_SESSION['msg'] . '</p>';
+        unset($_SESSION['msg']);
+    }
+  ?>
+
   <body>
     <section class="hero-section" id="inicio">
       <header class="hero-header">
         <div class="header-container">
           <div class="logo header-animate" style="animation-delay: 0.1s">
-            <img src="./assets/img/logo.png" alt="">
+            <img src="./view/assets/img/logo.png" alt="">
           </div>
           <nav class="nav-menu">
             <a href="#inicio" class="header-animate" style="animation-delay: 0.3s" >Inicio</a>
@@ -26,15 +39,32 @@
             <a href="#equipo" class="header-animate" style="animation-delay: 0.75s" >Equipo</a>
             <a href="#mecanicas" class="header-animate" style="animation-delay: 0.9s" >Mecanicas</a>
           </nav>
-          <div class="header-buttons">
-            <a href="./pages/Login.html" class="nav-login-btn " style="animation-delay: 0.9s" >Iniciar sesión</a>
-            <a href="./pages/Register.html" class="nav-register-btn " style="animation-delay: 0.9s" >
-                Comenzar
-                <div class="hoverEffect">
-                    <div></div>
-                </div>
-            </a>
-          </div>
+
+          <?php
+            if (isset($_SESSION['id_usuario'])) {
+                echo '<p style="color: green;">Bienvenido, ' . $_SESSION['nombre'] . '!</p>';
+                echo '<button class="nav-logout-btn" style="animation-delay: 0.9s" onclick="handleLogout()">Cerrar sesión</button>';
+            } else {
+              echo '<div class="header-buttons">
+                <a href="./view/pages/Login.php" class="nav-login-btn " style="animation-delay: 0.9s" >Iniciar sesión</a>
+                <a href="./view/pages/Register.php" class="nav-register-btn " style="animation-delay: 0.9s" >
+                    Comenzar
+                    <div class="hoverEffect">
+                        <div></div>
+                    </div>
+                </a>
+              </div>';
+            }
+          ?>
+
+          <script>
+            function handleLogout() {
+                if (confirm('¿Estás seguro de cerrar sesión?')) {
+                    window.location.href = './controller/logout.php';
+                }
+            }
+          </script>
+        
         </div>
       </header>
       <div class="hero-content">
@@ -147,7 +177,7 @@
     <section class="historia-section" id="historia">
       <div class="historia-container">
         <div class="historia-card historia-card-animate">
-          <img src="../assets/img/background-history-content.png" alt="Papiro de fondo" class="historia-papiro-bg"/>
+          <img src="./view/assets/img/background-history-content.png" alt="Papiro de fondo" class="historia-papiro-bg"/>
           <div class="historia-card-content">
             <h2 class="historia-title historia-title-animate">
               <span>EL</span> ORIGEN
@@ -185,13 +215,13 @@
           </div>
         </div>
         <div class="historia-lampara">
-          <img src="../assets/img/luz.png" alt="Lámpara mágica" class="lampara-animate"/>
+          <img src="./view/assets/img/luz.png" alt="Lámpara mágica" class="lampara-animate"/>
         </div>
       </div>
     </section>
     <section class="personaje-fade-section" data-idx="0">
         <div class="personaje-img">
-        <img src="../assets/img/zenith.png" alt="Zenith" class="character" />
+        <img src="./view/assets/img/zenith.png" alt="Zenith" class="character" />
         </div>
         <div class="personaje-content">
         <div class="theme">
@@ -215,7 +245,7 @@
     </section>
     <section class="personaje-fade-section" data-idx="1">
         <div class="personaje-img">
-            <img src="../assets/img/sombra-tributante.png" alt="Sombra Tributante" class="character"/>
+            <img src="./view/assets/img/sombra-tributante.png" alt="Sombra Tributante" class="character"/>
         </div>
         <div class="personaje-content">
             <div class="theme"><span>Enemigo de la Arboleda</span></div>
@@ -230,7 +260,7 @@
     </section>
     <section class="personaje-fade-section" data-idx="2">
         <div class="personaje-img">
-        <img src="../assets/img/olvido.png" alt="Olvido" class="character" />
+        <img src="./view/assets/img/olvido.png" alt="Olvido" class="character" />
         </div>
         <div class="personaje-content">
             <div class="theme"><span>Jefe del primer nivel (primera forma)</span></div>
@@ -251,14 +281,14 @@
         <h2 class="mecanicas-title mecanicas-title-animate">MECANICAS DE JUEGO</h2>
         <div class="mecanicas-cards">
             <div class="mecanica-card mecanica-card-animate" data-index="0">
-                <img src="../assets/img/rayo.png" alt="Sinergias" class="mecanica-card-icon"/>
+                <img src="./view/assets/img/rayo.png" alt="Sinergias" class="mecanica-card-icon"/>
                 <h3 class="mecanica-card-title mecanica-card-title-animate">SINERGIAS MÁGICAS</h3>
                 <p class="mecanica-card-desc mecanica-card-desc-animate">
                     Combina hechizos para crear efectos únicos e impredecibles en cada run.
                 </p>
             </div>
             <div class="mecanica-card mecanica-card-animate" data-index="1">
-                <img src="../assets/img/ovni.png" alt="Físicas" class="mecanica-card-icon"/>
+                <img src="./view/assets/img/ovni.png" alt="Físicas" class="mecanica-card-icon"/>
                 <h3 class="mecanica-card-title mecanica-card-title-animate">FÍSICAS REALISTAS</h3>
                 <p class="mecanica-card-desc mecanica-card-desc-animate">
                     Mundo 2D con físicas avanzadas estilo Noita. Cada elemento interactúa de
@@ -266,7 +296,7 @@
                 </p>
             </div>
             <div class="mecanica-card mecanica-card-animate" data-index="2">
-                <img src="../assets/img/calavera.png" alt="Roguelike" class="mecanica-card-icon"/>
+                <img src="./view/assets/img/calavera.png" alt="Roguelike" class="mecanica-card-icon"/>
                 <h3 class="mecanica-card-title mecanica-card-title-animate">ROGUELIKE PURO</h3>
                 <p class="mecanica-card-desc mecanica-card-desc-animate">
                     Cada muerte es permanente, pero cada run ofrece nuevas combinaciones y
@@ -274,7 +304,7 @@
                 </p>
             </div>
             <div class="mecanica-card mecanica-card-animate" data-index="3">
-                <img src="../assets/img/libro.png" alt="Enemigos" class="mecanica-card-icon"/>
+                <img src="./view/assets/img/libro.png" alt="Enemigos" class="mecanica-card-icon"/>
                 <h3 class="mecanica-card-title mecanica-card-title-animate">ENEMIGOS ADAPTATIVOS</h3>
                 <p class="mecanica-card-desc mecanica-card-desc-animate">
                     Bandidos bullet-hell, Sombras Titubeantes y criaturas que evolucionan
@@ -302,11 +332,11 @@
         </div>
     </section>
     
-    <script src="./assets/js/hero-section.js"></script>
-    <script src="./assets/js/equipo-section.js"></script>
-    <script src="./assets/js/historia-section.js"></script>
-    <script src="./assets/js/personajes-section.js"></script>
-    <script src="./assets/js/mecanicas-section.js"></script>
-    <script src="./assets/js/juego-section.js"></script>
+    <script src="./view/assets/js/hero-section.js"></script>
+    <script src="./view/assets/js/equipo-section.js"></script>
+    <script src="./view/assets/js/historia-section.js"></script>
+    <script src="./view/assets/js/personajes-section.js"></script>
+    <script src="./view/assets/js/mecanicas-section.js"></script>
+    <script src="./view/assets/js/juego-section.js"></script>
   </body>
 </html>

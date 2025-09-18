@@ -7,20 +7,33 @@
     <link rel="stylesheet" href="../assets/css/Register.css">
     <title>Document</title>
   </head>
+  
+  <?php
+      session_start();
+      if (isset($_SESSION['error'])) {
+          echo '<p style="color: red;">' . $_SESSION['error'] . '</p>';
+          unset($_SESSION['error']);
+      }
+      if (isset($_SESSION['msg'])) {
+          echo '<p style="color: green;">' . $_SESSION['msg'] . '</p>';
+          unset($_SESSION['msg']);
+      }
+  ?>
+
   <body>
     <div class="register-bg-main">
       <div class="register-container">
         <div class="register-form-section">
           <h1 class="register-title anim-title">SENSELESS</h1>
           <h2 class="register-subtitle anim-title" style="animation-delay: 0.1s">CREAR UNA CUENTA</h2>
-          <form class="register-form" id="register-form">
+          <form class="register-form" id="register-form" action="./../../controller/register.php" method="POST">
             <div class="input-group">
               <label for="username" class="anim-label" style="animation-delay: 0.2s">
                 Username
               </label>
               <div class="register-input-wrapper anim-input" style="animation-delay: 0.3s">
                 <img src="../assets/img/icon_pixelart-user.png" class="register-icon"/>
-                <input type="text" id="username" placeholder="name20..." autocomplete="username"/>
+                <input type="text" id="username" name="nombre" placeholder="name20..." autocomplete="username"/>
               </div>
             </div>
             <div class="input-group">
@@ -29,7 +42,7 @@
               </label>
               <div class="register-input-wrapper anim-input" style="animation-delay: 0.5s">
                 <img src="../assets/img/icon_pixelart-keyhole.png" class="register-icon"/>
-                <input type="password" id="password" placeholder="contraseña..." autocomplete="current-password"/>
+                <input type="password" id="password" name="clave" placeholder="contraseña..." autocomplete="current-password"/>
               </div>
             </div>
             <div class="input-group">
@@ -57,7 +70,7 @@
           </form>
           <div class="register-bottom anim-label" style="animation-delay: 0.8s">
             <span>¿Ya tienes una cuenta? </span>
-            <a href="./Login.html" class="register-link">Inicia Sesión</a>
+            <a href="./Login.php" class="register-link">Inicia Sesión</a>
           </div>
         </div>
         <div class="register-image-section anim-img">
@@ -65,6 +78,5 @@
         </div>
       </div>
     </div>
-    <script src="../assets/js/register.js"></script>
   </body>
 </html>
