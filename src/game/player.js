@@ -34,16 +34,16 @@ export function createPlayer(x, y, worldRef, p5Instance = null) {
 
   if (p5Instance) {
 
-    p5Instance.loadImage('sprites/zenithTakeDamage/dead.png', (img) => {
+    p5Instance.loadImage('sprites/zenith/dead.png', (img) => {
       player.deadSprite = img;
 
     });
 
-    p5Instance.loadImage('sprites/zenithTakeDamage/zenith_hurt_1.png', (img) => {
+    p5Instance.loadImage('sprites/zenith/zenith_hurt_1.png', (img) => {
       player.hurtSprite1 = img;
     });
 
-    p5Instance.loadImage('sprites/zenithTakeDamage/zenith_hurt_2.png', (img) => {
+    p5Instance.loadImage('sprites/zenith/zenith_hurt_2.png', (img) => {
       player.hurtSprite2 = img;
     });
 

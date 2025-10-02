@@ -16,7 +16,7 @@ export function togglePauseGame() {
     gameState.timeScale = gameState.isPaused ? 0 : 1;
 }
 
-export function restartGame() {
+export function  restartGame() {
     // Reiniciar el estado del juego
     gameState.isGameOver = false;
     gameState.isPaused = false;

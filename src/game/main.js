@@ -114,6 +114,10 @@ const sketch = (p) => {
   };
 
   p.keyPressed = () => {
+    if (p.key === 'r' || p.key === 'R') {
+      restartGame();
+      return;
+    }
     handleKeyPressed(p.key);
   };
 

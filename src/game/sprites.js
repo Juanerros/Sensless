@@ -76,12 +76,12 @@ export function loadSpritesAsync(p, onComplete) {
   });
 
   // Cargar GIF
-  p.loadImage('animation/idle.gif', (img) => {
+  p.loadImage('sprites/zenith/idle.gif', (img) => {
     loadSprite(img, 'playerIdleGif');
     checkComplete();
   });
 
-  p.loadImage('animation/correr.gif', (img) => {
+  p.loadImage('sprites/zenith/correr.gif', (img) => {
     loadSprite(img, 'playerMoveGif');
     checkComplete();
   });
