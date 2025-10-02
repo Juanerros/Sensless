@@ -143,6 +143,7 @@ export function drawInventoryUI(p) {
       p.fill(0)
       p.strokeWeight(0)
       if (inventory?.slots[i]?.name) {
+        p.fill(255, 255, 255);
         p.textSize(18)
         p.text(inventory.slots[i].name, x + 10, y + 70);
       }
@@ -160,7 +161,7 @@ export function drawInventoryUI(p) {
     if (inventory.slots[i]) {
       const sprite = getSpriteByName(inventory.slots[i].name);
       if (sprite) {
-        p.image(sprite, x + 7, y + 5, slotSize - 14, slotSize - 10);
+        p.image(sprite, x + 6, y + 6, slotSize - 12, slotSize - 12);
       } else {
         p.fill(0);
       }
@@ -172,7 +173,7 @@ export function drawInventoryUI(p) {
         p.strokeWeight(1);
         p.textAlign(p.RIGHT, p.BOTTOM);
         p.textSize(22);
-        p.text(inventory.slots[i].quantity, x + slotSize - 5, y + slotSize - 5);
+        p.text(inventory.slots[i].quantity, x + slotSize + 8, y + slotSize + 10);
         p.textAlign(p.LEFT, p.BASELINE); // Resetear alineación
       }
     }
