@@ -1,16 +1,24 @@
 import Matter from "matter-js";
 import { getBodies, removeFromWorld } from "./physics.js";
 import { gameState } from "./state.js";
-import { updateControls } from "./controls.js";
+import { updateControls, isOnGround } from "./controls.js";
 import { getSpriteByName } from "./sprites.js";
 import { initializeInventory, drawInventoryUI, addItemToInventory } from "./inventory.js";
 import { Vector2 } from "../utils/Vector2.js";
 
+// ============================
+// VARIABLES GLOBALES
+// ============================
 let player;
 let world;
 let playerHealth = 100;
 let maxHealth = 100;
 
+// ============================
+// INICIALIZACIÓN DEL JUGADOR
+// ============================
+
+// Función para crear y configurar el jugador
 export function createPlayer(x, y, worldRef, p5Instance = null) {
   const playerWidth = 42;
   const playerHeight = 80;
@@ -28,15 +36,11 @@ export function createPlayer(x, y, worldRef, p5Instance = null) {
   player.width = playerWidth;
   player.height = playerHeight;
   player.isPlayer = true;
-
-  // Precargar sprite de muerte
   player.deadSprite = null;
 
   if (p5Instance) {
-
     p5Instance.loadImage('sprites/zenith/dead.png', (img) => {
       player.deadSprite = img;
-
     });
 
     p5Instance.loadImage('sprites/zenith/zenith_hurt_1.png', (img) => {
@@ -46,7 +50,6 @@ export function createPlayer(x, y, worldRef, p5Instance = null) {
     p5Instance.loadImage('sprites/zenith/zenith_hurt_2.png', (img) => {
       player.hurtSprite2 = img;
     });
-
   }
 
   player.label = "player";
@@ -56,11 +59,7 @@ export function createPlayer(x, y, worldRef, p5Instance = null) {
   player.maxHealth = maxHealth;
   player.isAlive = true;
 
-
-
   initializeInventory();
-
-  // Se guarda en el estado global
   gameState.player = player;
 
   getBodies().push(player);
@@ -68,17 +67,22 @@ export function createPlayer(x, y, worldRef, p5Instance = null) {
   return player;
 }
 
-//Funciones para manejar la vida:
-//Funciones 
-export function takeDamage(damage) {
+// Función para obtener la referencia al jugador
+export function getPlayer() {
+  return player;
+}
 
+// ============================
+// FUNCIONES DE VIDA
+// ============================
+
+// Función para aplicar daño al jugador
+export function takeDamage(damage) {
   if (!player || !player.isAlive) return false;
 
-  //Esto resta la vida del jugador con el daño que recibe, y el Math.max Evita que el numero se vaya a negativo
   playerHealth = Math.max(0, playerHealth - damage);
   player.health = playerHealth;
 
-  // Sistema de sprites de daño
   if (player.hurtSprite2) {
     player.takingDamage = true;
     player.sprite = player.hurtSprite2;
@@ -88,7 +92,6 @@ export function takeDamage(damage) {
         player.sprite = player.hurtSprite1;
 
         setTimeout(() => {
-          // Volver al sprite normal después del daño
           player.takingDamage = false;
           if (player.isAlive) {
             player.sprite = getSpriteByName('player');
@@ -100,43 +103,67 @@ export function takeDamage(damage) {
   console.log(playerHealth);
 
   if (playerHealth <= 0) {
-
     player.isAlive = false;
     console.log("Jugador ripeo");
-
-    player.sprite = null; // Resetear sprite para forzar recarga
-
+    player.sprite = null; 
     gameState.isGameOver = true;
-
   }
 
   return playerHealth > 0;
-
 }
 
-//Funcion para el sistema de curacion
+// Función para curar al jugador
 export function heal(amount) {
-
   if (!player) return;
-  //Esto suma la vida del jugador con la curacion y evita que se exeda de su vida maxima
   playerHealth = Math.min(maxHealth, playerHealth + amount);
   player.health = playerHealth;
+}
 
-};
-
-//Funcion para devolver el estado de vida del jugador 
+// Función para obtener el estado de salud del jugador
 export function getPlayerHealth() {
-
   return {
-
     current: playerHealth,
     max: maxHealth,
     isAlive: player?.isAlive || false
-
   };
-
 }
 
+// Función para dibujar la barra de vida
+export function drawHealthBar(p) {
+  if (!player || !player.isAlive) return;
+
+  const barWidth = 200;
+  const barHeight = 20;
+  const barX = 20;
+  const barY = 100;
+
+  const healthPercentage = playerHealth / maxHealth;
+
+  p.fill(255, 0, 0);
+  p.noStroke();
+  p.rectMode(p.CORNER);
+  p.rect(barX, barY, barWidth, barHeight);
+
+  p.fill(0, 255, 0);
+  p.rect(barX, barY, barWidth * healthPercentage, barHeight);
+
+  p.stroke(255);
+  p.strokeWeight(2);
+  p.noFill();
+  p.rect(barX, barY, barWidth, barHeight);
+
+  p.fill(255);
+  p.noStroke();
+  p.textAlign(p.LEFT, p.CENTER);
+  p.textSize(16);
+  p.text(`${playerHealth}/${maxHealth}`, barX + barWidth + 10, barY + barHeight / 2);
+}
+
+// ============================
+// FUNCIONES DE MOVIMIENTO Y ACTUALIZACIÓN
+// ============================
+
+// Función principal de actualización del jugador
 export function updatePlayer(p) {
   if (!player) return;
 
@@ -145,7 +172,6 @@ export function updatePlayer(p) {
   drawInventoryUI(p);
   grabObject();
 
-  // Actualizar dirección del jugador y estado de movimiento
   const velocity = player.velocity;
   const isMoving = Math.abs(velocity.x) > 0.1;
 
@@ -155,12 +181,23 @@ export function updatePlayer(p) {
     player.direction = 'left';
   }
 
-  // Actualizar sprite según movimiento (solo si no está en animación de daño)
   if (!player.takingDamage) {
-    if (isMoving) {
-      player.sprite = getSpriteByName('playerMoveGif');
+    const isJumping = velocity.y < -0.5;
+    const isFalling = velocity.y > 0.5;
+    
+    if (isJumping) {
+      player.sprite = getSpriteByName('playerJump1');
+      player.isJumping = true;
+    } else if (isFalling || (player.isJumping && !isOnGround(player, getBodies()))) {
+      player.sprite = getSpriteByName('playerJump2');
     } else {
-      player.sprite = getSpriteByName('playerIdleGif');
+      player.isJumping = false;
+      
+      if (isMoving) {
+        player.sprite = getSpriteByName('playerMoveGif');
+      } else {
+        player.sprite = getSpriteByName('playerIdleGif');
+      }
     }
   }
 
@@ -168,6 +205,7 @@ export function updatePlayer(p) {
   player.isMoving = isMoving;
 }
 
+// Función para recoger objetos cercanos
 function grabObject() {
   const bodies = getBodies();
 
@@ -180,12 +218,18 @@ function grabObject() {
   }
 }
 
+// ============================
+// FUNCIONES DE RENDERIZADO
+// ============================
+
+// Función para dibujar el borde de interacción
 function drawBorderBox(p) {
   p.noFill();
   p.stroke(0);
   p.rect(p.mouseX - 25, p.mouseY - 25, 50, 50);
 }
 
+// Función para renderizar el jugador
 export function drawPlayer(p) {
   if (!player) return;
 
@@ -197,7 +241,6 @@ export function drawPlayer(p) {
   p.rotate(angle);
 
   if (!player.isAlive) {
-    
     if (player.deadSprite) {
       player.sprite = player.deadSprite;
 
@@ -208,53 +251,42 @@ export function drawPlayer(p) {
       }
 
       p.imageMode(p.CENTER);
-      // Calcular dimensiones proporcionales para el sprite de muerte
       const aspectRatio = player.deadSprite.height / player.deadSprite.width + 1;
       const deadWidth = player.width;
       const deadHeight = deadWidth * aspectRatio;
       p.image(player.sprite, 0, 0, deadWidth, deadHeight);
     }
   } else {
-    
     if (player.direction === 'left') {
       p.scale(-1, 1);
     } else {
       p.scale(1, 1);
     }
 
-    // El sprite ya se asigna dinámicamente en updatePlayer
-    // No necesitamos reasignarlo aquí a menos que sea un sprite de daño
-
     if (player.sprite && player.sprite.width > 0) {
-
       p.imageMode(p.CENTER);
 
-      // Usar siempre las dimensiones normales del personaje
-      if (player.sprite === getSpriteByName('playerIdleGif')) {
-        // Obtener dimensiones originales del GIF
-        const originalWidth = player.sprite.width;
-        const originalHeight = player.sprite.height;
+      if (player.sprite === getSpriteByName('playerJump1') || 
+          player.sprite === getSpriteByName('playerJump2')) {
 
-        // Calcular la escala necesaria para que coincida con el jugador
-        const scaleX = player.width / originalWidth;
-        const scaleY = player.height / originalHeight;
+        const spriteWidth = player.width * 1.5;  
+        const spriteHeight = player.height * 1.5;
+        p.image(player.sprite, 0, 0, spriteWidth, spriteHeight);
 
-        const scale = Math.min(scaleX, scaleY);
+      } else if (player.sprite === getSpriteByName('playerIdleGif')) {
 
-        const gifWidth = originalWidth * scale;
-        const gifHeight = originalHeight * scale;
+        const spriteWidth = player.width * 1.1;  
+        const spriteHeight = player.height * 1.1;
+        p.image(player.sprite, 0, 0, spriteWidth, spriteHeight);
 
-        p.image(player.sprite, 0, 0, gifWidth + 10, gifHeight + 20);
-        
       } else {
-        // Para sprites estáticos, usar dimensiones normales
-        p.image(player.sprite, 0, 0, player.width, player.height);
-      }
 
+        p.image(player.sprite, 0, 0, player.width, player.height);
+
+      }
     } else {
       p.fill(0, 0, 0);
       p.rectMode(p.CENTER);
-      // Validar dimensiones antes de dibujar
       if (player.width !== undefined && player.height !== undefined &&
         player.width > 0 && player.height > 0) {
         p.rect(0, 0, player.width, player.height);
@@ -268,45 +300,4 @@ export function drawPlayer(p) {
   }
 
   p.pop();
-}
-
-// Función para dibujar la barra de vida
-export function drawHealthBar(p) {
-
-  if (!player || !player.isAlive) return;
-
-  const barWidth = 200;
-  const barHeight = 20;
-  const barX = 20;
-  const barY = 100;
-
-  // Calcular el porcentaje de vida
-  const healthPercentage = playerHealth / maxHealth;
-
-  // Dibujar el fondo de la barra (rojo)
-  p.fill(255, 0, 0);
-  p.noStroke();
-  p.rectMode(p.CORNER);
-  p.rect(barX, barY, barWidth, barHeight);
-
-  // Dibujar la barra de vida (verde)
-  p.fill(0, 255, 0);
-  p.rect(barX, barY, barWidth * healthPercentage, barHeight);
-
-  // Dibujar el borde de la barra
-  p.stroke(255);
-  p.strokeWeight(2);
-  p.noFill();
-  p.rect(barX, barY, barWidth, barHeight);
-
-  // Mostrar texto de vida
-  p.fill(255);
-  p.noStroke();
-  p.textAlign(p.LEFT, p.CENTER);
-  p.textSize(16);
-  p.text(`${playerHealth}/${maxHealth}`, barX + barWidth + 10, barY + barHeight / 2);
-}
-
-export function getPlayer() {
-  return player;
 }

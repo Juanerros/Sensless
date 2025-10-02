@@ -85,20 +85,34 @@ function dash(player, worldX, worldY) {
   });
 }
 
-function isOnGround(player, allBodies) {
+export function isOnGround(player, allBodies) {
   const offset = 50;
   const tolerance = 15;
   const px = player.position.x;
   const py = player.position.y + offset;
 
-  return allBodies.some((body) => {
+  // Verificar que allBodies sea un array
+  if (!Array.isArray(allBodies)) {
+    console.warn('isOnGround: allBodies no es un array', allBodies);
+    return false;
+  }
+
+  // Verificar si hay algún cuerpo debajo del jugador
+  for (let i = 0; i < allBodies.length; i++) {
+    const body = allBodies[i];
+    if (!body || !body.bounds) continue;
+    
     const bounds = body.bounds;
-    return (
+    if (
       px > bounds.min.x &&
       px < bounds.max.x &&
       Math.abs(py - bounds.min.y) <= tolerance
-    );
-  });
+    ) {
+      return true;
+    }
+  }
+  
+  return false;
 }
 
 function toggleTimeScale(newTimeScale) {

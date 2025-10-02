@@ -26,6 +26,14 @@ const elements = [
   {
     name: 'playerMoveGif',
     sprite: null,
+  },
+  {
+    name: 'playerJump1',
+    sprite: null,
+  },
+  {
+    name: 'playerJump2',
+    sprite: null,
   }
 ];
 
@@ -83,6 +91,17 @@ export function loadSpritesAsync(p, onComplete) {
 
   p.loadImage('sprites/zenith/correr.gif', (img) => {
     loadSprite(img, 'playerMoveGif');
+    checkComplete();
+  });
+  
+  // Cargar sprites de salto
+  p.loadImage('sprites/zenith/salto 1.png', (img) => {
+    loadSprite(img, 'playerJump1');
+    checkComplete();
+  });
+  
+  p.loadImage('sprites/zenith/salto 2.png', (img) => {
+    loadSprite(img, 'playerJump2');
     checkComplete();
   });
 
