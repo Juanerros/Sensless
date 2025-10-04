@@ -10,16 +10,27 @@
 </head>
 
 <?php
-    session_start();
-    if (isset($_SESSION['error'])) {
-        echo '<p style="color: red;">' . $_SESSION['error'] . '</p>';
-        unset($_SESSION['error']);
-    }
-    if (isset($_SESSION['msg'])) {
-        echo '<p style="color: green;">' . $_SESSION['msg'] . '</p>';
-        unset($_SESSION['msg']);
-    }
+session_start();
+
+if (isset($_SESSION['error']) || isset($_SESSION['msg'])) {
+    $isError = isset($_SESSION['error']);
+    $message = $isError ? $_SESSION['error'] : $_SESSION['msg'];
+    $type = $isError ? 'error' : 'success';
+
+    echo <<<HTML
+    <div class="toast $type">
+        <div class="toast-border"></div>
+        <div class="toast-content">
+            <p class="toast-message">$message</p>
+        </div>
+    </div>
+    HTML;
+
+    unset($_SESSION['error']);
+    unset($_SESSION['msg']);
+}
 ?>
+
 
 <body>
   <div class="login-bg-main">
@@ -33,13 +44,13 @@
           <label for="username" class="anim-label" style="animation-delay: 0.2s">Username</label>
           <div class="login-input-wrapper anim-input" style="animation-delay: 0.3s">
             <img src="../assets/img/icon_pixelart-user.png" class="login-icon" />
-            <input type="text" id="username" name="nombre" placeholder="name20..." autocomplete="username" />
+            <input type="text" id="username" name="nombre" placeholder="name20..." autocomplete="username" require/>
           </div>
 
           <label for="password" class="anim-label" style="animation-delay: 0.4s">Contraseña</label>
           <div class="login-input-wrapper anim-input" style="animation-delay: 0.5s">
             <img src="../assets/img/icon_pixelart-keyhole.png" class="login-icon" />
-            <input type="password" id="password" name="clave" placeholder="contraseña..." autocomplete="current-password" />
+            <input type="password" id="password" name="clave" placeholder="contraseña..." autocomplete="current-password" require/>
           </div>
 
           <div class="login-options anim-label" style="animation-delay: 0.6s">
@@ -66,6 +77,7 @@
       </div>
     </div>
   </div>
+
 </body>
 
 </html>
