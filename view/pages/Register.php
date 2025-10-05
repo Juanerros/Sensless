@@ -9,16 +9,27 @@
   </head>
   
   <?php
-      session_start();
-      if (isset($_SESSION['error'])) {
-          echo '<p style="color: red;">' . $_SESSION['error'] . '</p>';
-          unset($_SESSION['error']);
-      }
-      if (isset($_SESSION['msg'])) {
-          echo '<p style="color: green;">' . $_SESSION['msg'] . '</p>';
-          unset($_SESSION['msg']);
-      }
-  ?>
+session_start();
+
+if (isset($_SESSION['error']) || isset($_SESSION['msg'])) {
+    $isError = isset($_SESSION['error']);
+    $message = $isError ? $_SESSION['error'] : $_SESSION['msg'];
+    $type = $isError ? 'error' : 'success';
+
+    echo <<<HTML
+    <div class="toast $type">
+        <div class="toast-border"></div>
+        <div class="toast-content">
+            <p class="toast-message">$message</p>
+        </div>
+    </div>
+    HTML;
+
+    unset($_SESSION['error']);
+    unset($_SESSION['msg']);
+}
+?>
+
 
   <body>
     <div class="register-bg-main">
@@ -33,7 +44,7 @@
               </label>
               <div class="register-input-wrapper anim-input" style="animation-delay: 0.3s">
                 <img src="../assets/img/icon_pixelart-user.png" class="register-icon"/>
-                <input type="text" id="username" name="nombre" placeholder="name20..." autocomplete="username"/>
+                <input type="text" id="username" name="nombre" placeholder="name20..." autocomplete="username" require/>
               </div>
             </div>
             <div class="input-group">
@@ -42,7 +53,7 @@
               </label>
               <div class="register-input-wrapper anim-input" style="animation-delay: 0.5s">
                 <img src="../assets/img/icon_pixelart-keyhole.png" class="register-icon"/>
-                <input type="password" id="password" name="clave" placeholder="contraseña..." autocomplete="current-password"/>
+                <input type="password" id="password" name="clave" placeholder="contraseña..." autocomplete="current-password" require/>
               </div>
             </div>
             <div class="input-group">
@@ -51,12 +62,12 @@
               </label>
               <div class="register-input-wrapper anim-input" style="animation-delay: 0.5s">
                 <img src="../assets/img/icon_pixelart-keyhole.png" class="register-icon"/>
-                <input type="password" id="password" placeholder="confirmar contraseña..." autocomplete="current-password"/>
+                <input type="password" id="password" placeholder="confirmar contraseña..." autocomplete="current-password" require/>
               </div>
             </div>
             <div class="login-options anim-label" style="animation-delay: 0.6s">
               <label class="remember-label">
-                <input type="checkbox" id="accept-terms" />
+                <input type="checkbox" id="accept-terms" require/>
                 <span class="checkmark"></span>
                 Acepto los
                 <a href="#" class="checkbox-text">Terminos y condiciones</a>
@@ -78,5 +89,12 @@
         </div>
       </div>
     </div>
+
+    <script>
+      setTimeout(() => {
+        const toast = document.querySelector('.toast');
+        if (toast) toast.remove();
+      }, 4800); 
+    </script>
   </body>
 </html>

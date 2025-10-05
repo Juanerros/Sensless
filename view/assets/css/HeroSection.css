@@ -42,7 +42,7 @@
 }
 
 .logo img {
-  width: 120px;
+  width: 50px;
 }
 
 .nav-menu {
@@ -70,67 +70,112 @@
   gap: 0.6rem;
 }
 
+.header-buttons{
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/*====Botón de Login====*/
 .nav-login-btn {
-  padding: 0.5em 1.2em;
-  font-family: inherit;
-  font-size: 17px;
-  color: #fff;
-  background-image: linear-gradient(30deg, #020088, #0089d8);
-  background-size: 100% auto;
-  border: none;
-  border-radius: 20px;
+  display: inline-block;
+  margin: 0;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+  font-family: 'Inter';
+  font-weight: 600;
+  color: #c481d8;
+  background-color: transparent;
+  border: 2px solid rgba(154, 0, 255,0.5);
+  border-radius: 24px;
+  box-shadow: 0 0 2px #6f00ff, 0 0 1px #8a2be2;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  outline: none;
 }
 
 .nav-login-btn:hover {
-  color: #ffffff;
-  background-position: right center;
-  background-size: 200% auto;
-  animation: pulse512 1.5s infinite;
-  transition: all 0.2s ease-out;
+  color: #fff;
+  background-color: #12003b;
+  box-shadow: 0 0 6px #6f00ff, 0 0 8px #8a2be2, 0 0 9px #4b00ff;
+  transform: translateY(-2px) scale(1.05);
 }
 
+.nav-login-btn:active {
+  box-shadow: 0 0 8px #6f00ff, 0 0 15px #8a2be2;
+  transform: translateY(0) scale(1);
+}
+
+/*=====Botón de register====*/
 .nav-register-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: calc(0.4rem + 0.1vw) calc(1.2rem + 0.5vw);
+  padding: 0.5rem 1.2rem;  
+  font-size: 0.9rem;
   font-weight: bold;
-  color: rgb(255, 255, 255);
-  border: 0;
-  border-radius: 10rem;
-  box-shadow: 0 0px 7px -5px rgba(2, 0, 97, 0.5);
-  transition: all 0.02s;
+  color: #fff;
+  background: linear-gradient(to bottom, #1a001a, #2b002b);
+  border-radius: 24px;
+  border: 2px solid rgba(154, 0, 255,0.5);
+  box-shadow: 0 0 1px #9a00ff, 0 0 2px #5e00ff;
+  transition: all 0.3s ease;
   overflow: hidden;
   cursor: pointer;
-  z-index: 0;
 }
 
-.nav-login-btn:active{transform: scale(0.97);}
-.nav-register-btn:hover {background: rgb(199, 193, 248);}
-
-.hoverEffect {
+.nav-register-btn::before {
   position: absolute;
-  bottom: 0;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  content: "";
+  inset: -2px;
+  filter: blur(12px);
+  background: linear-gradient(45deg, #6f00ff, #8a2be2, #4b00ff);
+  border-radius: 9999px;
+  transition: opacity 0.3s ease;
+  opacity: 0;
   z-index: -1;
 }
 
-.hoverEffect div {
-  width: 10rem;
-  height: 10rem;
-  background: rgb(159, 0, 222);
-  background: linear-gradient(90deg,rgb(96, 0, 222) 0%,rgb(70, 82, 255) 49%,rgb(0, 26, 255) 100%);
-  border-radius: 40rem;
-  filter: blur(20px);
-  animation: effectWave infinite 3s linear;
-  transition: 0.4s;
-  opacity: 0.5;
+.nav-register-btn:hover::before {
+  opacity: 1;
+}
+
+.nav-register-btn:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 2px #9a00ff, 0 0 4px #5e00ff, 0 0 5px #8a2be2;
+}
+
+.nav-register-btn:active {
+  transform: translateY(2px) scale(1);
+  box-shadow: 0 0 2px #9a00ff, 0 0 4px #5e00ff;
+}
+
+/* Boton de cerrar sesión */
+.logout-btn {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: #fff;
+  background-color: #050047;
+  border: 2px solid rgba(0, 137, 216,0.8);
+  border-radius: 12px;
+  box-shadow: 0px 8px 15px rgba(80, 0, 145, 0.1);
+  transition: all 0.3s ease 0s;
+  outline: none;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  color: #fff;
+  background-color: #150046;
+  box-shadow: 0px 0px 12px rgba(46, 64, 229, 0.4);
+  transform: translateY(-7px);
+}
+
+.logout-btn:active {
+  transform: translateY(-1px);
 }
 
 .nav-register-btn:hover .hoverEffect div {
@@ -138,6 +183,55 @@
   height: 8rem;
   animation: effectWave infinite 1.5s linear;
   opacity: 1;
+}
+
+/* === Notificacion Login === */
+.welcome-toast {
+  position: fixed;
+  top: 25px;
+  right: 25px;
+  width: 300px;
+  font-family: "Inter", sans-serif;
+  color: #fff;
+  background: rgba(0, 6, 51, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 0px 24px rgba(3, 0, 192, 0.25);
+  animation: toastSlideIn 0.5s ease forwards, toastFadeOut 0.6s ease 5s forwards;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+}
+
+.toast-content {
+  padding: 1rem 1.2rem;
+}
+
+.toast-title {
+  margin: 0;
+  font-family: "Inter";
+  font-size: 0.85rem;
+  color: #c5c6e1;
+}
+
+.toast-subtitle {
+  margin: 0.3rem 0 0;
+  font-size: 1rem;
+  font-family: "Playfair Display SC";
+  font-weight: 600;
+  color: #ffffff;
+}
+/* === Borde progresivo === */
+
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 0;
+  background: linear-gradient(90deg, #4b00ff, #1e00a1);
+  animation: progressFill 5s linear forwards;
+  border-radius: 0 0 10px 10px;
 }
 
 /* Hero Content */
@@ -260,6 +354,194 @@
   font-size: calc(0.9rem + 0.1vw);
 }
 
+
+/*=== Modal de confirmacion de cerrar sesión ===*/
+.logout-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 50, 0.7);
+  z-index: 9999;
+}
+
+.logout-modal-content {
+  padding: 2rem;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  background: rgba(0, 10, 102, 0.5);
+  border: 3px solid rgba(125, 0, 228, 0.2);
+  border-radius: 15px;
+  box-shadow: 2px 2px 25px rgba(49, 0, 112, 0.5),
+    inset 0 0 10px rgba(17, 0, 94, 0.2);
+  animation: modalFadeIn 0.3s ease forwards;
+}
+
+.logout-modal h3 {
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+.logout-modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btn-logout-confirm,
+.btn-logout-cancel {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.btn-logout-confirm {
+  color: #fff;
+  backdrop-filter: blur(10px);
+  background: rgba(225, 0, 255, 0.8);
+  border: 2px solid #4400ff;
+}
+
+.btn-logout-confirm:hover {
+  filter: brightness(1.2);
+}
+
+.btn-logout-cancel {
+  color: #fff;
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 105, 0.8);
+  border: 2px solid #683fea;
+}
+
+.btn-logout-cancel:hover {
+  filter: brightness(1.2);
+}
+
+
+/*=== Splash Screen o Loader animation === */
+.logout-toast {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.6);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 9999;
+  opacity: 0;
+}
+
+.logout-toast::before{
+  position: absolute;
+  content: "";
+  top :0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(20px);
+  z-index: -1;
+}
+
+.logout-toast.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.loader-content {
+  text-align: center;
+  color: #fff;
+  font-family: sans-serif;
+}
+
+.dot {
+  fill: #4B22B5;
+  transform-origin: center;
+  animation: bounce 1s infinite;
+}
+
+.loader-text .dots {
+  display: inline-block;
+  animation: dotsAnim 1s steps(3,end) infinite;
+}
+
+#svg-global {
+  zoom: 1.2;
+  overflow: visible;
+}
+
+#particles {
+  animation: fade-particles 5s infinite alternate;
+}
+.particle {
+  animation: floatUp linear infinite;
+}
+
+.p1 {
+  animation-duration: 2.2s;
+  animation-delay: 0s;
+}
+.p2 {
+  animation-duration: 2.5s;
+  animation-delay: 0.3s;
+}
+.p3 {
+  animation-duration: 2s;
+  animation-delay: 0.6s;
+}
+.p4 {
+  animation-duration: 2.8s;
+  animation-delay: 0.2s;
+}
+.p5 {
+  animation-duration: 2.3s;
+  animation-delay: 0.4s;
+}
+.p6 {
+  animation-duration: 3s;
+  animation-delay: 0.1s;
+}
+.p7 {
+  animation-duration: 2.1s;
+  animation-delay: 0.5s;
+}
+.p8 {
+  animation-duration: 2.6s;
+  animation-delay: 0.2s;
+}
+.p9 {
+  animation-duration: 2.4s;
+  animation-delay: 0.3s;
+}
+
+#line-v1,
+#line-v2,
+#node-server,
+#panel-rigth,
+#reflectores,
+#particles {
+  animation: bounce-lines 3s ease-in-out infinite alternate;
+}
+#line-v2 {
+  animation-delay: 0.2s;
+}
+
+#node-server,
+#panel-rigth,
+#reflectores,
+#particles {
+  animation-delay: 0.4s;
+}
+
+/*=== Animaciones generales ===*/
+
 .btn-play-animate {
   opacity: 0;
   transform: scale(0.85) translateY(40px);
@@ -344,12 +626,151 @@
 }
 
 @keyframes pulse512 {
-  0% {box-shadow: 0 0 0 0 #05bada66;}
-  70% {box-shadow: 0 0 0 10px rgb(218 103 68 / 0%);}
-  100% {box-shadow: 0 0 0 0 rgb(218 103 68 / 0%);}
+  0% {
+    box-shadow: 0 0 0 0 #05bada66;
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgb(218 103 68 / 0%);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(218 103 68 / 0%);
+  }
 }
 
 @keyframes effectWave {
-  0% {transform: rotate(0deg);}
-  100% {transform: rotate(360deg);}
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes toastSlideIn {
+  0% {
+    transform: translateX(60px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastFadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+}
+
+@keyframes borderFill {
+  0% {
+    background-position: 0% 50%;
+    opacity: 1;
+  }
+  100% {
+    background-position: 100% 50%;
+    opacity: 0.8;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastFadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-particles {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px);
+    opacity: 0;
+  }
+}
+@keyframes bounce-lines {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes dotsAnim {
+  0%, 20% { content: "."; }
+  40% { content: ".."; }
+  60% { content: "..."; }
+  80%, 100% { content: ""; }
+}
+@keyframes bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.3; }
+  40% { transform: translateY(-15px); opacity: 1; }
 }

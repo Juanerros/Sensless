@@ -16,7 +16,7 @@ if ($stmt->execute()) {
     $id_usuario = $conex->insert_id;
     $_SESSION['id_usuario'] = $id_usuario;
     $_SESSION['nombre'] = $name;
-    header('Location: ./../index.php');
+    header('Location: ./../view/pages/Login.php');
     exit();
 } else {
     echo 'Error en el registro: ' . $stmt->error;
