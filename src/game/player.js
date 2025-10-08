@@ -123,8 +123,7 @@ export function heal(amount) {
 export function getPlayerHealth() {
   return {
     current: playerHealth,
-    max: maxHealth,
-    isAlive: player?.isAlive || false
+    max: maxHealth
   };
 }
 
@@ -167,9 +166,7 @@ export function drawHealthBar(p) {
 export function updatePlayer(p) {
   if (!player) return;
 
-  drawBorderBox(p);
   updateControls(player, getBodies);
-  drawInventoryUI(p);
   grabObject();
 
   const velocity = player.velocity;

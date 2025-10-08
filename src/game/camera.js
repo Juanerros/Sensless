@@ -1,4 +1,4 @@
-import { getPlayer } from "./player";
+import { getPlayer } from "./player.js";
 
 export function moveCamera(p) {
     const player = getPlayer();

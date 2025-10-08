@@ -20,7 +20,7 @@ export function updateControls(player, getBodies) {
   if (!player || gameState.isPaused || !player.isAlive) return;
 
   const force = 0.02;
-  const jumpForce = 0.03;
+  const jumpForce = 0.05;
   const playerVelocity = 7;
 
   if (keys['g'] && !keysPressed['g']) {

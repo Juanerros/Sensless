@@ -1,40 +1,46 @@
 import p5 from 'p5';
-import { setupPhysics, updatePhysics, getBodies, getWorld } from './physics.js';
-import { loadSpritesAsync } from './sprites.js';
-import { loadEnemySprites, getEnemySpriteByName } from './enemies/enemySprites.js';
-import { createPlayer, updatePlayer, drawPlayer, drawHealthBar } from './player.js';
+import { setupPhysics, getWorld } from './physics.js';
+import { initializeWorldGeneration } from './worldGeneration.js';
+import { createPlayer, updatePlayer, drawPlayer, getPlayerHealth } from './player.js';
 import { handleKeyPressed, handleKeyReleased, handleMousePressed } from './controls.js';
-import { moveCamera } from './camera.js';
-import { updateEnemies, drawEnemies, ChaserEnemy, getEnemies } from './enemies/enemy.js';
-import { WanderingBud } from './enemies/wanderingBud.js';
-import { drawPersistentActions } from './enemies/persintentActions.js';
-import { updateWorldGeneration } from './worldGeneration.js';
-import { Bandit, updateBullets, drawBullets } from './enemies/bandit.js';
-import { gameState, restartGame } from './state.js';
+import SpriteLoader from './spriteLoader.js';
+import GameLoop from './gameLoop.js';
+import Renderer from './renderer.js';
+import GameOverScreen from './gameOverScreen.js';
+import HUD from './hud.js';
 
 let player;
-let enemiesCreated = false;
-let basicSpritesLoaded = false;
-let enemySpritesLoaded = false;
+let gameLoop;
+let renderer;
+let gameOverScreen;
+let spriteLoader;
+let spritesLoaded = false;
+let hud;
 
 const sketch = (p) => {
   p.setup = () => {
     p.createCanvas(1800, 900);
-    setupPhysics();
     p.noSmooth();
-
-    // Crear jugador PRIMERO
-    player = createPlayer(400, 600, getWorld(), p);
-    // Cargar sprites básicos
-    loadSpritesAsync(p, () => {
-      basicSpritesLoaded = true;
-      checkAllSpritesLoaded();
-    });
-
-    // Cargar sprites de enemigos
-    loadEnemySprites(p, () => {
-      enemySpritesLoaded = true;
-      checkAllSpritesLoaded();
+    setupPhysics();
+    initializeWorldGeneration();
+    
+    player = createPlayer(400, 200, getWorld(), p);
+    
+    gameLoop = new GameLoop();
+    gameLoop.setPlayer(player);
+    
+    renderer = new Renderer();
+    renderer.setPlayer(player);
+    
+    gameOverScreen = new GameOverScreen();
+    
+    hud = new HUD();
+    
+    spriteLoader = new SpriteLoader();
+    spriteLoader.loadAllSprites(p, () => {
+      spritesLoaded = true;
+      spriteLoader.createEnemies();
+      gameLoop.setEnemies([]);
     });
   };
 
@@ -66,59 +72,37 @@ const sketch = (p) => {
   }
 
   p.draw = () => {
+    if (!spritesLoaded) return;
     
-    // Mostrar progreso de carga
-    if (!basicSpritesLoaded || !enemySpritesLoaded) {
-      p.background(100, 100, 100);
-      p.fill(255);
-      p.textAlign(p.CENTER, p.CENTER);
-      let loadingText = 'Cargando';
-      if (basicSpritesLoaded) loadingText += ' - Sprites básicos ✓';
-      if (enemySpritesLoaded) loadingText += ' - Sprites enemigos ✓';
-      p.text(loadingText, p.width/2, p.height/2);
-      return;
-    }
-
-    p.background(135, 206, 235);
+    renderer.drawBackground(p);
     
-    updatePhysics();
-    updatePlayer(p);
-
-    // Actualizar generación del mundo basada en posición del jugador
-    if (player && player.position) {
-      updateWorldGeneration(player.position.x);
+    gameLoop.update(p);
+    
+    if (player) {
+      updatePlayer(p);
+      drawPlayer(p);
     }
     
-    updateEnemies();
-    updateBullets(); // Actualizar balas
-
-    p.push();
-    moveCamera(p);
-
-    drawBodies(p);
-    drawPlayer(p);
+    renderer.drawBodies(p);
     
-    drawEnemies(p);
-    drawBullets(p); // Dibujar balas
-    drawPersistentActions(p);
-
-    p.pop();
-    
-    // Dibujar la barra de vida (fuera del sistema de cámara)
-    drawHealthBar(p);
-    
-    // Si el juego ha terminado, dibujar la pantalla de game over encima
-    if (gameState.isGameOver) {
-      drawGameOverScreen(p);
+    if (player) {
+      const playerHealth = getPlayerHealth();
+      hud.drawAll(p, playerHealth.current, playerHealth.max);
     }
+    
+    if (gameLoop.isGameOver()) {
+      gameOverScreen.show();
+    }
+    
+    gameOverScreen.draw(p);
   };
 
   p.keyPressed = () => {
-    if (p.key === 'r' || p.key === 'R') {
-      restartGame();
-      return;
-    }
     handleKeyPressed(p.key);
+    
+    if (gameOverScreen.handleKeyPressed(p.key)) {
+      gameLoop.resetGame();
+    }
   };
 
   p.keyReleased = () => {
@@ -126,21 +110,7 @@ const sketch = (p) => {
   };
 
   p.mousePressed = () => {
-    // Si el juego ha terminado, verificar si se hizo clic en el botón de reinicio
-    if (gameState.isGameOver) {
-      const buttonX = window.innerWidth / 2;
-      const buttonY = window.innerHeight / 2 + 100;
-      const buttonWidth = 300;
-      const buttonHeight = 60;
-      
-      // Verificar si el clic está dentro del botón
-      if (p.mouseX >= buttonX - buttonWidth/2 && p.mouseX <= buttonX + buttonWidth/2 &&
-          p.mouseY >= buttonY - buttonHeight/2 && p.mouseY <= buttonY + buttonHeight/2) {
-        restartGame();
-      }
-    } else {
-      handleMousePressed(p, player);
-    }
+    handleMousePressed(p, player);
   };
 };
 
