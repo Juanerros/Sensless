@@ -26,7 +26,7 @@ class Renderer {
     const bottomBound = cameraY + screenHeight / 2 + margin;
 
     bodies.forEach(body => {
-      if (body.isPlayer || body.isEnemy || body.label === 'bullet') return;
+      if (body.isPlayer) return; // Solo excluimos al jugador, permitimos enemigos y balas
       
       const pos = body.position;
       

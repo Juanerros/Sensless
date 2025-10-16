@@ -49,16 +49,16 @@ export function loadEnemySprites(p, onComplete) {
     return;
   }
 
-  p.loadImage('sprites/enemies/olvido.png', (img) => {
+  p.loadImage('sprites/enemies/Wendigo/Wendingo_idle.gif', (img) => {
     loadEnemySprite(img, 'olvido');
     checkComplete();
 
   }, (error) => {
-    console.error('Error cargando sprite olvido:', error);
+    console.error('Error cargando sprite wendigo:', error);
     checkComplete(); 
   });
 
-   p.loadImage('sprites/enemies/wanderingbud.png', (img) => {
+   p.loadImage('sprites/enemies/Tronco/tronco.png', (img) => {
     loadEnemySprite(img, 'wanderingBud');
     checkComplete();
     

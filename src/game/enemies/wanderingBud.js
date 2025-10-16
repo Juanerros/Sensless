@@ -81,7 +81,7 @@ export class WanderingBud extends Enemy {
     
     // Si el jugador está dentro del círculo, aplicar efectos
     if (dist < this.circleRadius && !this.hasExploded) {
-      takeDamage(100);
+      takeDamage(90);
       // Calcular el ángulo desde el jugador hacia el enemigo (dirección opuesta)
       const angle = Math.atan2(dy, dx);
       // Crear una fuerza para empujar al jugador hacia afuera

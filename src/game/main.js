@@ -3,6 +3,7 @@ import { setupPhysics, getWorld } from './physics.js';
 import { initializeWorldGeneration } from './worldGeneration.js';
 import { createPlayer, updatePlayer, drawPlayer, getPlayerHealth } from './player.js';
 import { handleKeyPressed, handleKeyReleased, handleMousePressed } from './controls.js';
+import { enemies, drawEnemies } from './enemies/enemy.js';
 import SpriteLoader from './spriteLoader.js';
 import GameLoop from './gameLoop.js';
 import Renderer from './renderer.js';
@@ -40,7 +41,7 @@ const sketch = (p) => {
     spriteLoader.loadAllSprites(p, () => {
       spritesLoaded = true;
       spriteLoader.createEnemies();
-      gameLoop.setEnemies([]);
+      gameLoop.setEnemies(enemies); // Usar el array de enemies importado
     });
   };
 
@@ -84,6 +85,7 @@ const sketch = (p) => {
     }
     
     renderer.drawBodies(p);
+    drawEnemies(p);
     
     if (player) {
       const playerHealth = getPlayerHealth();
