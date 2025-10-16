@@ -4,27 +4,27 @@ import { gameState } from './state.js';
 import { screenToWorldCoordinates } from './camera.js';
 import { selectInventorySlot, useSelectedItem } from './inventory.js';
 
+// ===== Variables Globales =====
 let keys = {};
 let keysPressed = {};
-let lastHorizontalKey = null; // 'left' | 'right' | null
-// Salto más fluido: jump buffer y coyote time
+let lastHorizontalKey = null;
 let lastJumpPressedTime = 0;
 let lastGroundedTime = 0;
-const jumpBufferMs = 140; // aceptar salto poco antes de tocar suelo
-const coyoteTimeMs = 140; // permitir salto poco después de dejar el suelo
-// Suavizado de movimiento horizontal
-const smoothingAlpha = 0.35; // respuesta más rápida (0.15-0.45 recomendado)
 
-// Normaliza las teclas para evitar inconsistencias (mayúsculas, alias)
+// ===== Configuración =====
+const jumpBufferMs = 140;
+const coyoteTimeMs = 140;
+const smoothingAlpha = 0.45; // Aumentado para respuesta más inmediata
+const airControlMultiplier = 0.8; // Control en el aire
+const groundAcceleration = 0.8; // Aceleración en suelo
+const airAcceleration = 0.6; // Aceleración en aire
+
+// ===== Gestión de Input =====
 function normalizeKey(key) {
   if (!key) return '';
   const k = String(key).toLowerCase();
-  if (k === ' ') return 'space';
-  if (k === 'spacebar') return 'space';
-  if (k === 'arrowleft') return 'arrowleft';
-  if (k === 'arrowright') return 'arrowright';
-  if (k === 'arrowup') return 'arrowup';
-  if (k === 'arrowdown') return 'arrowdown';
+  if (k === ' ' || k === 'spacebar') return 'space';
+  if (['arrowleft', 'arrowright', 'arrowup', 'arrowdown'].includes(k)) return k;
   return k;
 }
 
@@ -32,32 +32,19 @@ export function handleKeyPressed(key) {
   const k = normalizeKey(key);
   keys[k] = true;
 
-  // Registrar última dirección horizontal pulsada
   if (k === 'a' || k === 'arrowleft' || k === 'left') {
     lastHorizontalKey = 'left';
-    // Al presionar izquierda, desactivar derecha para evitar estados pegados
-    keys['d'] = false;
-    keys['arrowright'] = false;
-    keys['right'] = false;
+    keys['d'] = keys['arrowright'] = keys['right'] = false;
   } else if (k === 'd' || k === 'arrowright' || k === 'right') {
     lastHorizontalKey = 'right';
-    // Al presionar derecha, desactivar izquierda para evitar estados pegados
-    keys['a'] = false;
-    keys['arrowleft'] = false;
-    keys['left'] = false;
+    keys['a'] = keys['arrowleft'] = keys['left'] = false;
   }
 }
 
 export function handleKeyReleased(key) {
   const k = normalizeKey(key);
-  keys[k] = false;
-  keysPressed[k] = false;
+  keys[k] = keysPressed[k] = false;
 
-  // Actualizar última dirección horizontal según teclas aún activas
-  const leftActive = keys['a'] || keys['arrowleft'] || keys['left'];
-  const rightActive = keys['d'] || keys['arrowright'] || keys['right'];
-
-  // Si se suelta la tecla correspondiente a la última dirección, limpiar prioridad
   if ((k === 'a' || k === 'arrowleft' || k === 'left') && lastHorizontalKey === 'left') {
     lastHorizontalKey = null;
   } else if ((k === 'd' || k === 'arrowright' || k === 'right') && lastHorizontalKey === 'right') {
@@ -65,141 +52,156 @@ export function handleKeyReleased(key) {
   }
 }
 
+// ===== Movimiento y Física =====
 export function updateControls(player, getBodies) {
   if (!player || gameState.isPaused || !player.isAlive) return;
 
-  const force = 0.02;
   const jumpForce = 0.2;
-  const playerVelocity = 10; // más velocidad para evitar sensación de lentitud
+  const playerVelocity = 10;
+  const bodies = getBodies();
+  const onGround = isOnGround(player, bodies);
 
   if (keys['g'] && !keysPressed['g']) {
     toggleTimeScale(0.25);
     keysPressed['g'] = true;
   }
 
-  // Movimiento horizontal suavizado (lerp) con prioridad a la última tecla
-  const leftActive = keys['a'] || keys['arrowleft'] || keys['left'];
-  const rightActive = keys['d'] || keys['arrowright'] || keys['right'];
-  let axis = 0;
-  if (leftActive && rightActive) {
-    axis = lastHorizontalKey === 'left' ? -1 : lastHorizontalKey === 'right' ? 1 : 0;
-  } else if (leftActive) {
-    axis = -1;
-  } else if (rightActive) {
-    axis = 1;
-  }
-  // Calcular nueva velocidad suavizada
-  const currentVx = player.velocity.x;
-  const targetVx = axis * playerVelocity;
-  const newVx = currentVx + (targetVx - currentVx) * smoothingAlpha;
-  // Intento de “step-up” para pequeños salientes
-  const bodies = getBodies();
-  attemptStepUp(player, bodies, axis);
-  // Dirección para sprites
-  if (axis < 0) player.direction = 'left';
-  else if (axis > 0) player.direction = 'right';
-  // Aplicar velocidad suavizada y cancelar deriva si está casi en reposo
-  if (axis === 0 && Math.abs(newVx) < 0.2) {
-    Matter.Body.setVelocity(player, { x: 0, y: player.velocity.y });
-  } else {
-    Matter.Body.setVelocity(player, { x: newVx, y: player.velocity.y });
-  }
-
-  // Salto con jump buffer y coyote time (más responsivo)
-  const now = Date.now();
-  const onGround = isOnGround(player, bodies);
-  if (onGround) {
-    lastGroundedTime = now;
-  }
-  const spaceActive = keys['space'] || keys[' '];
-  // Registrar transición de pulsación para crear buffer de salto
-  if (spaceActive && !keysPressed['space']) {
-    lastJumpPressedTime = now;
-    keysPressed['space'] = true;
-  } else if (!spaceActive && keysPressed['space']) {
-    keysPressed['space'] = false;
-  }
-  const canJumpFromBuffer = (now - lastJumpPressedTime) <= jumpBufferMs;
-  const hasCoyoteTime = (now - lastGroundedTime) <= coyoteTimeMs;
-  if (canJumpFromBuffer && (onGround || hasCoyoteTime)) {
-    Matter.Body.applyForce(player, player.position, { x: 0, y: -jumpForce });
-    lastJumpPressedTime = 0; // consumir buffer para evitar saltos repetidos si se mantiene pulsado
-  }
-
-  for (let i = 1; i <= 9; i++) {
-    if (keys[i.toString()] && !keysPressed[i.toString()]) {
-      selectInventorySlot(i - 1);
-      keysPressed[i.toString()] = true;
-    }
-  }
-
-  if (player.velocity.x > playerVelocity) {
-    Matter.Body.setVelocity(player, { x: playerVelocity, y: player.velocity.y });
-  }
-
-  if (player.velocity.x < -playerVelocity) {
-    Matter.Body.setVelocity(player, { x: -playerVelocity, y: player.velocity.y });
-  }
+  updateHorizontalMovement(player, playerVelocity, onGround);
+  attemptStepUp(player, bodies, getMovementAxis());
+  updateJump(player, bodies, jumpForce);
+  updateInventorySelection();
+  clampVelocity(player, playerVelocity);
 }
 
-// Intenta subir pequeños salientes automáticamente cuando estás muy cerca del borde frontal
+function updateHorizontalMovement(player, playerVelocity, onGround) {
+  const axis = getMovementAxis();
+  const currentVx = player.velocity.x;
+  const targetVx = axis * playerVelocity;
+  
+  // Aplicar aceleración diferente en aire/suelo
+  const acceleration = onGround ? groundAcceleration : airAcceleration;
+  const velocityMultiplier = onGround ? 1 : airControlMultiplier;
+  
+  // Calcular nueva velocidad con aceleración apropiada
+  let newVx;
+  if (axis !== 0) {
+    // Si hay input, acelerar hacia la dirección deseada
+    const maxSpeed = playerVelocity * velocityMultiplier;
+    const accelerationForce = acceleration * (axis > 0 ? 1 : -1);
+    newVx = currentVx + accelerationForce;
+    // Limitar a la velocidad máxima
+    newVx = axis > 0 ? Math.min(newVx, maxSpeed) : Math.max(newVx, -maxSpeed);
+  } else {
+    // Si no hay input, frenar suavemente
+    const friction = onGround ? 0.85 : 0.95;
+    newVx = currentVx * friction;
+    // Detener completamente si la velocidad es muy baja
+    if (Math.abs(newVx) < 0.1) newVx = 0;
+  }
+
+  // Actualizar dirección para sprites
+  if (axis < 0) player.direction = 'left';
+  else if (axis > 0) player.direction = 'right';
+
+  Matter.Body.setVelocity(player, { x: newVx, y: player.velocity.y });
+}
+
+function getMovementAxis() {
+  const leftActive = keys['a'] || keys['arrowleft'] || keys['left'];
+  const rightActive = keys['d'] || keys['arrowright'] || keys['right'];
+
+  if (leftActive && rightActive) {
+    return lastHorizontalKey === 'left' ? -1 : lastHorizontalKey === 'right' ? 1 : 0;
+  }
+  return leftActive ? -1 : rightActive ? 1 : 0;
+}
+
 function attemptStepUp(player, allBodies, axis) {
   if (axis === 0 || !Array.isArray(allBodies)) return false;
 
   const stepMax = Math.max(12, Math.min(player.height * 0.3, 24));
-  const horizontalGap = 8; // distancia mínima al frente para considerar escalón
+  const horizontalGap = 8;
 
-  const playerMinX = player.bounds?.min?.x ?? player.position.x - player.width / 2;
-  const playerMaxX = player.bounds?.max?.x ?? player.position.x + player.width / 2;
-  const playerBottomY = player.bounds?.max?.y ?? player.position.y + player.height / 2;
-  const playerTopY = player.bounds?.min?.y ?? player.position.y - player.height / 2;
+  const playerBounds = {
+    minX: player.bounds?.min?.x ?? player.position.x - player.width / 2,
+    maxX: player.bounds?.max?.x ?? player.position.x + player.width / 2,
+    bottomY: player.bounds?.max?.y ?? player.position.y + player.height / 2,
+    topY: player.bounds?.min?.y ?? player.position.y - player.height / 2
+  };
 
   let stepDelta = 0;
 
-  for (let i = 0; i < allBodies.length; i++) {
-    const body = allBodies[i];
-    if (!body || body === player || !body.bounds) continue;
-    if (body.isSensor) continue;
-    if (body.label === 'spell') continue;
+  for (const body of allBodies) {
+    if (!body || body === player || !body.bounds || body.isSensor || body.label === 'spell') continue;
 
-    const bodyMinX = body.bounds.min.x;
-    const bodyMaxX = body.bounds.max.x;
-    const bodyTopY = body.bounds.min.y;
+    const nearFront = axis > 0 ? 
+      body.bounds.min.x - playerBounds.maxX : 
+      playerBounds.minX - body.bounds.max.x;
 
-    const nearFront = axis > 0 ? bodyMinX - playerMaxX : playerMinX - bodyMaxX;
     if (nearFront < 0 || nearFront > horizontalGap) continue;
 
-    const neededRise = playerBottomY - bodyTopY; // cuánto hay que subir
+    const neededRise = playerBounds.bottomY - body.bounds.min.y;
     if (neededRise <= 0 || neededRise > stepMax) continue;
 
-    // Comprobar que no golpearemos con la “cabeza” al subir
-    const newTopY = playerTopY - neededRise;
-    if (newTopY <= bodyTopY - 2) {
+    const newTopY = playerBounds.topY - neededRise;
+    if (newTopY <= body.bounds.min.y - 2) {
       stepDelta = Math.max(stepDelta, neededRise);
     }
   }
 
   if (stepDelta > 0) {
-    Matter.Body.setPosition(player, { x: player.position.x, y: player.position.y - stepDelta });
+    Matter.Body.setPosition(player, { 
+      x: player.position.x, 
+      y: player.position.y - stepDelta 
+    });
     return true;
   }
   return false;
 }
 
+function updateJump(player, bodies, jumpForce) {
+  const now = Date.now();
+  const onGround = isOnGround(player, bodies);
+  
+  if (onGround) lastGroundedTime = now;
+
+  const spaceActive = keys['space'] || keys[' '];
+  if (spaceActive && !keysPressed['space']) {
+    lastJumpPressedTime = now;
+    keysPressed['space'] = true;
+  } else if (!spaceActive) {
+    keysPressed['space'] = false;
+  }
+
+  const canJumpFromBuffer = (now - lastJumpPressedTime) <= jumpBufferMs;
+  const hasCoyoteTime = (now - lastGroundedTime) <= coyoteTimeMs;
+
+  if (canJumpFromBuffer && (onGround || hasCoyoteTime)) {
+    Matter.Body.applyForce(player, player.position, { x: 0, y: -jumpForce });
+    lastJumpPressedTime = 0;
+  }
+}
+
+function clampVelocity(player, maxVelocity) {
+  const maxAirVelocity = maxVelocity * airControlMultiplier;
+  const currentMax = isOnGround(player, []) ? maxVelocity : maxAirVelocity;
+  
+  if (player.velocity.x > currentMax) {
+    Matter.Body.setVelocity(player, { x: currentMax, y: player.velocity.y });
+  }
+  if (player.velocity.x < -currentMax) {
+    Matter.Body.setVelocity(player, { x: -currentMax, y: player.velocity.y });
+  }
+}
+
+// ===== Interacción =====
 export function handleMousePressed(p, player) {
   if (!player || !player.isAlive) return;
   
-  const worldCoords = screenToWorldCoordinates(p.mouseX, p.mouseY);
-  const worldX = worldCoords.x;
-  const worldY = worldCoords.y;
+  const { x: worldX, y: worldY } = screenToWorldCoordinates(p.mouseX, p.mouseY);
 
-  if (p.mouseButton.left) {
-    useSelectedItem(worldX, worldY);
-  }
-
-  if (p.mouseButton.right) {
-    dash(player, worldX, worldY);
-  }
+  if (p.mouseButton.left) useSelectedItem(worldX, worldY);
+  if (p.mouseButton.right) dash(player, worldX, worldY);
 }
 
 function dash(player, worldX, worldY) {
@@ -213,40 +215,41 @@ function dash(player, worldX, worldY) {
   });
 }
 
+// ===== Utilidades =====
 export function isOnGround(player, allBodies) {
-  // Verificar que allBodies sea un array
-  if (!Array.isArray(allBodies)) {
-    console.warn('isOnGround: allBodies no es un array', allBodies);
-    return false;
-  }
+  if (!Array.isArray(allBodies)) return false;
 
-  // Usar los bounds del jugador para mayor precisión
-  const playerMinX = player.bounds?.min?.x ?? player.position.x - player.width / 2;
-  const playerMaxX = player.bounds?.max?.x ?? player.position.x + player.width / 2;
-  const playerBottomY = player.bounds?.max?.y ?? player.position.y + player.height / 2;
+  const playerBounds = {
+    minX: player.bounds?.min?.x ?? player.position.x - player.width / 2,
+    maxX: player.bounds?.max?.x ?? player.position.x + player.width / 2,
+    bottomY: player.bounds?.max?.y ?? player.position.y + player.height / 2
+  };
+
   const verticalTolerance = Math.max(8, Math.min(player.height * 0.15, 18));
 
-  // Verificar si hay algún cuerpo justo debajo del jugador
-  for (let i = 0; i < allBodies.length; i++) {
-    const body = allBodies[i];
-    if (!body || body === player || !body.bounds) continue;
-    if (body.isSensor) continue; // ignorar sensores
-    if (body.label === 'spell') continue; // ignorar hechizos/objetos no sólidos
+  for (const body of allBodies) {
+    if (!body || body === player || !body.bounds || body.isSensor || body.label === 'spell') continue;
 
-    const bodyMinX = body.bounds.min.x;
-    const bodyMaxX = body.bounds.max.x;
-    const bodyTopY = body.bounds.min.y;
+    const horizontallyOverlaps = 
+      playerBounds.maxX > body.bounds.min.x && 
+      playerBounds.minX < body.bounds.max.x;
 
-    const horizontallyOverlaps = playerMaxX > bodyMinX && playerMinX < bodyMaxX;
-    // Aceptar ligera penetración o pequeño espacio por diferencias numéricas
-    const isJustAbove = Math.abs(bodyTopY - playerBottomY) <= verticalTolerance;
+    const isJustAbove = 
+      Math.abs(body.bounds.min.y - playerBounds.bottomY) <= verticalTolerance;
 
-    if (horizontallyOverlaps && isJustAbove) {
-      return true;
-    }
+    if (horizontallyOverlaps && isJustAbove) return true;
   }
 
   return false;
+}
+
+function updateInventorySelection() {
+  for (let i = 1; i <= 9; i++) {
+    if (keys[i.toString()] && !keysPressed[i.toString()]) {
+      selectInventorySlot(i - 1);
+      keysPressed[i.toString()] = true;
+    }
+  }
 }
 
 function toggleTimeScale(newTimeScale) {
