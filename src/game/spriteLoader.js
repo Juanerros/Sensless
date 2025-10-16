@@ -1,9 +1,10 @@
 import { loadSpritesAsync } from './sprites.js';
-import { loadEnemySprites, getEnemySpriteByName } from './enemies/enemySprites.js';
+import { loadAllGameSprites } from './enemies/spriteLoader.js';
 import { ChaserEnemy } from './enemies/enemy.js';
 import { WanderingBud } from './enemies/wanderingBud.js';
 import { Bandit } from './enemies/bandit.js';
 import { getWorld } from './physics.js';
+import { getEnemySpriteByName } from './enemies/enemySprites.js';
 
 class SpriteLoader {
   constructor() {
@@ -21,7 +22,7 @@ class SpriteLoader {
       this.checkAllSpritesLoaded();
     });
 
-    loadEnemySprites(p5Instance, () => {
+    loadAllGameSprites(p5Instance, () => {
       this.enemySpritesLoaded = true;
       this.checkAllSpritesLoaded();
     });
@@ -45,10 +46,10 @@ class SpriteLoader {
     const wanderer = new WanderingBud(700, 700, world);
     const bandit = new Bandit(1200, 600, world);
     
-    this.assignSpritesToEnemies(chaser, wanderer);
+    this.assignSpritesToEnemies(chaser, wanderer, bandit);
   }
 
-  assignSpritesToEnemies(chaser, wanderer) {
+  assignSpritesToEnemies(chaser, wanderer, bandit) {
     const olvidoSprite = getEnemySpriteByName('olvido');
     if (olvidoSprite) {
       chaser.sprite = olvidoSprite;
@@ -59,6 +60,12 @@ class SpriteLoader {
     if (wanderingBudSprite) {
       wanderer.sprite = wanderingBudSprite;
       wanderer.body.sprite = wanderingBudSprite;
+    }
+    
+    const banditSprite = getEnemySpriteByName('bandit');
+    if (banditSprite) {
+      bandit.sprite = banditSprite;
+      bandit.body.sprite = banditSprite;
     }
   }
 

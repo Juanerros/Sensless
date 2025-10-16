@@ -1,102 +1,67 @@
+// ============================
+// CONFIGURACIÓN DE SPRITES DE ENEMIGOS
+// ============================
+
 let enemyElements = [
-  {
-    name: 'olvido',
-    sprite: null,
-  },
-  {
-    name: 'wanderingBud',
-    sprite: null,
-  },
-  {
-    name: 'chlorineCloud1',
-    sprite: null,
-  },
-  {
-    name: 'chlorineCloud2',
-    sprite: null,
-  },
-  {
-    name: 'chlorineCloud3',
-    sprite: null,
-  }
-  // Puedes agregar más tipos de enemigos aquí
+  { name: 'olvido', sprite: null },
+  { name: 'wanderingBud', sprite: null },
+  { name: 'bandit', sprite: null }
 ];
 
+// ============================
+// GESTIÓN DE SPRITES DE ENEMIGOS
+// ============================
+
+// Asigna una imagen como sprite a un enemigo específico
 export function loadEnemySprite(img, name) {
   enemyElements.forEach(e => { 
-    if (e.name === name) {
-      e.sprite = img;
-    }
+    if (e.name === name) e.sprite = img;
   });
 }
 
-// Función para cargar los sprites de enemigos
+// Carga todos los sprites de enemigos desde sus archivos
 export function loadEnemySprites(p, onComplete) {
   let loadedCount = 0;
   
   const checkComplete = () => {
     loadedCount++;
-    console.log(`Sprite de enemigo cargado: ${loadedCount}/${enemyElements.length}`);
     if (loadedCount === enemyElements.length && onComplete) {
-      console.log('Todos los sprites de enemigos cargados');
       onComplete();
     }
   };
 
-  // Si no hay sprites que cargar, completar inmediatamente
   if (enemyElements.length === 0) {
     if (onComplete) onComplete();
     return;
   }
 
-  p.loadImage('sprites/enemies/Wendigo/Wendingo_idle.gif', (img) => {
-    loadEnemySprite(img, 'olvido');
-    checkComplete();
+  const spriteConfigs = [
+    { path: 'sprites/enemies/Wendigo/Wendingo_idle.gif', name: 'olvido' },
+    { path: 'sprites/enemies/Tronco/tronco.png', name: 'wanderingBud' },
+    { path: 'sprites/enemies/olvido.png', name: 'bandit' }
+  ];
 
-  }, (error) => {
-    console.error('Error cargando sprite wendigo:', error);
-    checkComplete(); 
-  });
-
-   p.loadImage('sprites/enemies/Tronco/tronco.png', (img) => {
-    loadEnemySprite(img, 'wanderingBud');
-    checkComplete();
-    
-  }, (error) => {
-    console.error('Error cargando sprite wandering:', error);
-    checkComplete(); 
-  });
-
-  // Cargar sprites de nubes de cloro
-  p.loadImage('sprites/enemies/efects/nubes_de_cloro/1.png', (img) => {
-    loadEnemySprite(img, 'chlorineCloud1');
-    checkComplete();
-  }, (error) => {
-    console.error('Error cargando sprite chlorineCloud1:', error);
-    checkComplete(); 
-  });
-
-  p.loadImage('sprites/enemies/efects/nubes_de_cloro/2.png', (img) => {
-    loadEnemySprite(img, 'chlorineCloud2');
-    checkComplete();
-  }, (error) => {
-    console.error('Error cargando sprite chlorineCloud2:', error);
-    checkComplete(); 
-  });
-
-  p.loadImage('sprites/enemies/efects/nubes_de_cloro/3.png', (img) => {
-    loadEnemySprite(img, 'chlorineCloud3');
-    checkComplete();
-  }, (error) => {
-    console.error('Error cargando sprite chlorineCloud3:', error);
-    checkComplete(); 
+  spriteConfigs.forEach(config => {
+    p.loadImage(config.path, 
+      (img) => {
+        loadEnemySprite(img, config.name);
+        checkComplete();
+      },
+      () => checkComplete()
+    );
   });
 }
 
+// ============================
+// UTILIDADES
+// ============================
+
+// Obtiene la lista completa de elementos de enemigos
 export function getEnemyElements() {
   return enemyElements;
 }
 
+// Obtiene el sprite de un enemigo por su nombre
 export function getEnemySpriteByName(name) {
   const element = enemyElements.find(e => e.name === name);
   return element ? element.sprite : null;

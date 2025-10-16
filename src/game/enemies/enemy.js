@@ -2,33 +2,34 @@ import Matter from "matter-js";
 import { getBodies } from "../physics";
 import { gameState } from "../state";
 
-// Array para guardar a los enemigos
+// ============================
+// REGISTRO DE ENEMIGOS
+// ============================
+
 export let enemies = [];
 
-/**
- * Clase base para todos los enemigos del juego
- * Proporciona funcionalidad común como salud, daño y métodos básicos
- */
+// ============================
+// CLASE BASE DE ENEMIGOS
+// ============================
+
 export class Enemy {
-  /**
-   * Constructor de la clase Enemy
-   * @param {number} x - Posición X inicial
-   * @param {number} y - Posición Y inicial
-   * @param {number} w - Ancho del enemigo
-   * @param {number} h - Alto del enemigo
-   * @param {Matter.World} world - Mundo de Matter.js
-   */
   constructor(x, y, w, h, world) {
-    // Propiedades básicas  
+    this.initializeProperties(w, h);
+    this.createPhysicsBody(x, y, w, h, world);
+    this.registerEnemy();
+  }
+
+  initializeProperties(w, h) {
     this.width = w;
     this.height = h;
     this.health = 100;
     this.damage = 10;
     this.sprite = null;
     this.name = null;
-    this.type = "enemy"; // Tipo de enemigo para identificación
+    this.type = "enemy";
+  }
 
-    // Crear cuerpo físico
+  createPhysicsBody(x, y, w, h, world) {
     this.body = Matter.Bodies.rectangle(x, y, w, h, {
       frictionAir: 0.05,
       friction: 0.1,
@@ -37,22 +38,17 @@ export class Enemy {
       inertia: Infinity
     });
     
-    // Etiquetas para identificación
     this.body.label = "enemy";
     this.body.isEnemy = true;
     
-    // Añadir al mundo físico
     Matter.World.add(world, this.body);
     getBodies().push(this.body);
+  }
 
-    // Registrar en la lista de enemigos
+  registerEnemy() {
     enemies.push(this);
   }
 
-  /**
-   * Método para dibujar el enemigo
-   * @param {p5} p - Instancia de p5.js
-   */
   draw(p) {
     const pos = this.body.position;
     const angle = this.body.angle;
@@ -61,34 +57,35 @@ export class Enemy {
     p.translate(pos.x, pos.y);
     p.rotate(angle);
     
-    // Si tiene sprite, dibujarlo
     if (this.sprite && this.sprite.width > 0) {
-      p.imageMode(p.CENTER);
-      p.image(this.sprite, 0, 0, this.width, this.height);
+      this.drawWithSprite(p);
     } else {
-      // Si no tiene sprite, dibujar un rectángulo rojo
-      p.rectMode(p.CENTER);
-      p.fill(255, 0, 0);
-      // Validar dimensiones antes de dibujar
-      if (this.width !== undefined && this.height !== undefined && 
-          this.width > 0 && this.height > 0) {
-        p.rect(0, 0, this.width, this.height);
-      } else {
-        console.log("Enemigo con dimensiones inválidas:", {
-          width: this.width,
-          height: this.height,
-          constructor: this.constructor.name
-        });
-      }
+      this.drawFallback(p);
     }
     
     p.pop();
   }
 
-  /**
-   * Método para recibir daño
-   * @param {number} amount - Cantidad de daño a recibir
-   */
+  drawWithSprite(p) {
+    p.imageMode(p.CENTER);
+    p.image(this.sprite, 0, 0, this.width, this.height);
+  }
+
+  drawFallback(p) {
+    if (this.hasValidDimensions()) {
+      p.rectMode(p.CENTER);
+      p.fill(255, 0, 0);
+      p.rect(0, 0, this.width, this.height);
+    }
+  }
+
+  hasValidDimensions() {
+    return this.width !== undefined && 
+           this.height !== undefined && 
+           this.width > 0 && 
+           this.height > 0;
+  }
+
   takeDamage(amount) {
     this.health -= amount;
     if (this.health <= 0) {
@@ -96,40 +93,34 @@ export class Enemy {
     }
   }
 
-  /**
-   * Método para destruir el enemigo
-   */
   destroy() {
-    // Remover del array de enemigos
+    this.removeFromEnemies();
+    this.removeFromPhysics();
+  }
+
+  removeFromEnemies() {
     const index = enemies.indexOf(this);
     if (index > -1) {
       enemies.splice(index, 1);
     }
-    
-    // Remover del mundo físico
+  }
+
+  removeFromPhysics() {
     if (gameState.world && this.body) {
       Matter.World.remove(gameState.world, this.body);
-    }
-    
-    // Remover del array de cuerpos físicos
-    const bodies = getBodies();
-    const bodyIndex = bodies.indexOf(this.body);
-    if (bodyIndex > -1) {
-      bodies.splice(bodyIndex, 1);
+      
+      const bodies = getBodies();
+      const bodyIndex = bodies.indexOf(this.body);
+      if (bodyIndex > -1) {
+        bodies.splice(bodyIndex, 1);
+      }
     }
   }
 
-
-  // * Método de actualización base (a implementar por subclases)
-  
   update() {
-    // Método base a ser sobrescrito por las subclases
+    // Método base para ser sobrescrito
   }
 
-  /**
-   * Calcula la distancia al jugador
-   * @returns {Object} Objeto con distancia y componentes dx, dy
-   */
   getDistanceToPlayer() {
     const player = gameState.player;
     if (!player) return { dist: Infinity, dx: 0, dy: 0 };
@@ -142,16 +133,11 @@ export class Enemy {
   }
 }
 
-/**
- * Clase para enemigos que persiguen al jugador
- */
+// ============================
+// ENEMIGO PERSEGUIDOR
+// ============================
+
 export class ChaserEnemy extends Enemy {
-  /**
-   * Constructor de ChaserEnemy
-   * @param {number} x - Posición X inicial
-   * @param {number} y - Posición Y inicial
-   * @param {Matter.World} world - Mundo de Matter.js
-   */
   constructor(x, y, world) {
     super(x, y, 40, 60, world);
     this.detectionRadius = 300;
@@ -160,60 +146,35 @@ export class ChaserEnemy extends Enemy {
     this.type = "chaser";
   }
 
-  /**
-   * Actualización específica para enemigos perseguidores
-   */
   update() {
     const { dist, dx, dy } = this.getDistanceToPlayer();
     
-    // Si el jugador está dentro del radio de detección, perseguirlo
     if (dist < this.detectionRadius) {
-      const angle = Math.atan2(dy, dx);
-      const forceX = Math.cos(angle) * this.speed;
-      const forceY = Math.sin(angle) * this.speed;
-
-      Matter.Body.applyForce(this.body, this.body.position, { x: forceX, y: forceY });
+      this.chasePlayer(dx, dy);
     }
+  }
+
+  chasePlayer(dx, dy) {
+    const angle = Math.atan2(dy, dx);
+    const forceX = Math.cos(angle) * this.speed;
+    const forceY = Math.sin(angle) * this.speed;
+
+    Matter.Body.applyForce(this.body, this.body.position, { x: forceX, y: forceY });
   }
 }
 
-/**
- * Asigna sprites a los enemigos según su nombre
- * @param {p5.Image} img - Imagen a asignar como sprite
- * @param {string} name - Nombre del tipo de enemigo
- */
-export function loadSpriteEnemies(img, name) {
-  enemies.forEach(e => { 
-    if (e.name === name) {
-      e.sprite = img;
-      e.body.sprite = img; // Asignar también al cuerpo físico
-    }
-  });
-}
+// ============================
+// GESTIÓN GLOBAL DE ENEMIGOS
+// ============================
 
-/**
- * Actualiza todos los enemigos
- */
 export function updateEnemies() {
-  for (let e of enemies) {
-    e.update();
-  }
+  enemies.forEach(enemy => enemy.update());
 }
 
-/**
- * Dibuja todos los enemigos
- * @param {p5} p - Instancia de p5.js
- */
 export function drawEnemies(p) {
-  for (let e of enemies) {
-    e.draw(p);
-  }
+  enemies.forEach(enemy => enemy.draw(p));
 }
 
-/**
- * Devuelve el array de enemigos
- * @returns {Array} Array de enemigos
- */
 export function getEnemies() {
   return enemies;
 }
