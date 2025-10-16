@@ -81,7 +81,7 @@ const sketch = (p) => {
   p.keyPressed = () => {
     handleKeyPressed(p.key);
     
-    if (gameOverScreen.handleKeyPressed(p.key)) {
+    if (p.key === 'r' || p.key === 'R') {
       gameLoop.resetGame();
     }
   };

@@ -73,10 +73,7 @@ class GameLoop {
 
   resetGame() {
     this.gameState.gameOver = false;
-    const player = getPlayer();
-    if (player) {
-      player.health = 100;
-    }
+    window.location.reload();
   }
 
   getGameState() {

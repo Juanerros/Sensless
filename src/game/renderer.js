@@ -105,12 +105,6 @@ class Renderer {
     if (body.width !== undefined && body.height !== undefined && 
         body.width > 0 && body.height > 0) {
       p.rect(0, 0, body.width, body.height);
-    } else {
-      console.log("Cuerpo con dimensiones inválidas:", {
-        label: body.label,
-        width: body.width,
-        height: body.height
-      });
     }
   }
 
