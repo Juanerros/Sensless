@@ -105,7 +105,7 @@ export function takeDamage(damage) {
   if (playerHealth <= 0) {
     player.isAlive = false;
     console.log("Jugador ripeo");
-    player.sprite = null; 
+    player.sprite = null;
     gameState.isGameOver = true;
   }
 
@@ -181,7 +181,7 @@ export function updatePlayer(p) {
   if (!player.takingDamage) {
     const isJumping = velocity.y < -0.5;
     const isFalling = velocity.y > 0.5;
-    
+
     if (isJumping) {
       player.sprite = getSpriteByName('playerJump1');
       player.isJumping = true;
@@ -189,7 +189,7 @@ export function updatePlayer(p) {
       player.sprite = getSpriteByName('playerJump2');
     } else {
       player.isJumping = false;
-      
+
       if (isMoving) {
         player.sprite = getSpriteByName('playerMoveGif');
       } else {
@@ -260,26 +260,32 @@ export function drawPlayer(p) {
       p.scale(1, 1);
     }
 
+
+    const velocity = player.velocity;
+    const isMoving = Math.abs(velocity.x) > 0.1;
+
     if (player.sprite && player.sprite.width > 0) {
       p.imageMode(p.CENTER);
 
-      if (player.sprite === getSpriteByName('playerJump1') || 
-          player.sprite === getSpriteByName('playerJump2')) {
+      if (player.sprite === getSpriteByName('playerJump1') ||
+        player.sprite === getSpriteByName('playerJump2')) {
 
-        const spriteWidth = player.width * 1.5;  
+        const spriteWidth = player.width * 2.3;
         const spriteHeight = player.height * 1.5;
         p.image(player.sprite, 0, 0, spriteWidth, spriteHeight);
 
       } else if (player.sprite === getSpriteByName('playerIdleGif')) {
 
-        const spriteWidth = player.width * 1.1;  
+        const spriteWidth = player.width * 1.3;
+        const spriteHeight = player.height * 1.2;
+        p.image(player.sprite, 0, -8, spriteWidth, spriteHeight);
+
+      } else if (isMoving) {
+        const spriteWidth = player.width * 1.1;
         const spriteHeight = player.height * 1.1;
         p.image(player.sprite, 0, 0, spriteWidth, spriteHeight);
-
       } else {
-
         p.image(player.sprite, 0, 0, player.width, player.height);
-
       }
     } else {
       p.fill(0, 0, 0);

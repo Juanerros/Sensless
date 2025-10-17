@@ -14,6 +14,7 @@ const LAYER_HEIGHT = 50; // Altura de cada capa subterránea
 // Almacenamiento de chunks generados
 let loadedChunks = new Map();
 let lastPlayerChunk = null;
+let visitedChunks = new Set();
 
 // Generador de ruido simple (Perlin-like)
 class OptimizedNoise {
@@ -98,7 +99,17 @@ class Chunk {
 
         this.generateTerrain();
         this.generateElements();
+        this.generateEvent();
         this.generated = true;
+    }
+
+    generateEvent() {
+        if (visitedChunks.size === 0) return;
+
+        if(visitedChunks.size % 5 === 0) {
+            console.log('Generando quimico en chunk');
+            createQuimic(this.worldX + (CHUNK_SIZE / 2), BASE_TERRAIN_HEIGHT + 1900);
+        }
     }
 
     generateTerrain() {
@@ -250,15 +261,28 @@ export function initializeWorldGeneration() {
             removeFromWorld(body);
         }
     });
+
+    // Reiniciar contador de chunks visitados
+    visitedChunks.clear();
+}
+
+function checkEvent(currentChunk) {
+    return
 }
 
 export function updateWorldGeneration(playerX) {
     const currentChunk = Math.floor(playerX / CHUNK_SIZE);
 
+
     // Solo actualizar si el jugador cambió de chunk
     if (currentChunk === lastPlayerChunk) return;
 
     lastPlayerChunk = currentChunk;
+
+    // Registrar chunk visitado
+    visitedChunks.add(currentChunk);
+
+    checkEvent(currentChunk);
 
     // Cargar chunks necesarios
     for (let dx = -RENDER_DISTANCE; dx <= RENDER_DISTANCE; dx++) {
