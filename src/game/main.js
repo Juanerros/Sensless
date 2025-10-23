@@ -3,7 +3,7 @@ import { setupPhysics, getWorld } from './physics.js';
 import { initializeWorldGeneration } from './worldGeneration.js';
 import { createPlayer, updatePlayer, drawPlayer, getPlayerHealth } from './player.js';
 import { handleKeyPressed, handleKeyReleased, handleMousePressed } from './controls.js';
-import { enemies, drawEnemies } from './enemies/enemy.js';
+import { enemies } from './enemies/enemy.js';
 import { updateTimeEffects, drawTimeEffects } from './enemies/timeEffects.js';
 import SpriteLoader from './spriteLoader.js';
 import GameLoop from './gameLoop.js';
@@ -63,7 +63,7 @@ const sketch = (p) => {
     }
     
     renderer.drawBodies(p);
-    drawEnemies(p);
+    // Enemigos se dibujan solo desde el renderer
     drawTimeEffects(p);
     
     if (player) {

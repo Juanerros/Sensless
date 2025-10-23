@@ -10,7 +10,8 @@ import { createChlorineCloudEffect } from "./timeEffects";
 
 export class WanderingBud extends Enemy {
   constructor(x, y, world) {
-    super(x, y, 100, 90, world);
+    // Aumentamos el tamaño de la hitbox y del sprite
+    super(x, y, 60, 70, world);
     this.initializeProperties();
   }
 

@@ -37,6 +37,9 @@ export function createPlayer(x, y, worldRef, p5Instance = null) {
   player.height = playerHeight;
   player.isPlayer = true;
   player.deadSprite = null;
+  
+  // Depuración: mostrar contorno de hitbox
+  player.showHitbox = true;
 
   if (p5Instance) {
     p5Instance.loadImage('sprites/zenith/dead.png', (img) => {
@@ -300,6 +303,15 @@ export function drawPlayer(p) {
         });
       }
     }
+  }
+
+  // Contorno de hitbox del jugador
+  if (player.showHitbox && player.width && player.height) {
+    p.rectMode(p.CENTER);
+    p.noFill();
+    p.stroke(0, 255, 0);
+    p.strokeWeight(2);
+    p.rect(0, 0, player.width, player.height);
   }
 
   p.pop();

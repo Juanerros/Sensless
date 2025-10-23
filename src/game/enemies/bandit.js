@@ -169,12 +169,13 @@ class Bullet {
 
 export class Bandit extends Enemy {
   constructor(x, y, world) {
-    super(x, y, 40, 60, world);
+    // Aumentamos tamaño para que coincida con el sprite grande
+    super(x, y, 60, 90, world);
     this.initializeProperties();
   }
 
   initializeProperties() {
-    this.detectionRadius = 400;
+    this.detectionRadius = 400; 
     this.shootingRange = 300;
     this.speed = 0.003;
     this.health = 80;

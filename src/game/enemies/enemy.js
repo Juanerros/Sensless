@@ -213,11 +213,22 @@ export class ChaserEnemy extends Enemy {
   }
 
   chasePlayer(dx, dy) {
+    // Solo perseguir en el eje X para evitar que "vuele"
     const angle = Math.atan2(dy, dx);
     const forceX = Math.cos(angle) * this.speed;
-    const forceY = Math.sin(angle) * this.speed;
+    const forceY = 0; // Sin fuerza vertical
 
-    Matter.Body.applyForce(this.body, this.body.position, { x: forceX, y: forceY });
+    // Reducir el control en el aire
+    this.updateJumpState();
+    const onGround = this.isOnGround === true;
+    const appliedX = onGround ? forceX : forceX * 0.2;
+
+    Matter.Body.applyForce(this.body, this.body.position, { x: appliedX, y: forceY });
+
+    // Si el jugador está arriba y cerca en X, intentamos un salto en vez de empujar hacia arriba
+    if (this.detectObstacle()) {
+      this.jump();
+    }
   }
 }
 
