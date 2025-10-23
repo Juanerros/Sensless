@@ -5,7 +5,9 @@
 let enemyElements = [
   { name: 'olvido', sprite: null },
   { name: 'wanderingBud', sprite: null },
-  { name: 'bandit', sprite: null }
+  { name: 'bandit', sprite: null },
+  // Sprite para las balas del bandit (placeholder)
+  { name: 'banditBullet', sprite: null }
 ];
 
 // ============================
@@ -38,7 +40,8 @@ export function loadEnemySprites(p, onComplete) {
   const spriteConfigs = [
     { path: 'sprites/enemies/Wendigo/Wendingo_idle.gif', name: 'olvido' },
     { path: 'sprites/enemies/Tronco/tronco_idle.gif', name: 'wanderingBud' },
-    { path: 'sprites/enemies/Bandido/bandido_idle.gif', name: 'bandit' }
+    { path: 'sprites/enemies/Bandido/bandido_idle.gif', name: 'bandit' },
+    { path: 'sprites/enemies/Bandido/bandido_proyectil.png', name: 'banditBullet' }
   ];
 
   spriteConfigs.forEach(config => {

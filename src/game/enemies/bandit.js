@@ -3,6 +3,7 @@ import { Enemy } from "./enemy";
 import { gameState } from "../state";
 import { getBodies, getWorld } from "../physics";
 import { takeDamage } from "../player";
+import { getScaledEnemySpriteByName } from "./enemySprites";
 
 // ============================
 // GESTIÓN DE PROYECTILES
@@ -20,13 +21,19 @@ class Bullet {
     if (!this.validateParameters(x, y, targetX, targetY)) return;
     this.calculateVelocity(x, y, targetX, targetY);
     this.createPhysicsBody(x, y, targetX, targetY, world);
+    // Asignar sprite (escalado) para que el renderer dibuje la bala como imagen
+    const spr = getScaledEnemySpriteByName('banditBullet', this.width, this.height);
+    if (spr) {
+      this.sprite = spr;
+      this.body.sprite = spr;
+    }
   }
 
   initializeProperties(shooter) {
-    this.width = 8;
-    this.height = 8;
+    this.width = 30;
+    this.height = 10;
     this.damage = 20;
-    this.speed = 0.3;
+    this.speed = 2;
     this.lifeTime = 360;
     this.shooter = shooter;
     this.invulnerabilityFrames = 5;
@@ -54,6 +61,8 @@ class Bullet {
     
     this.velocityX = (dx / distance) * this.speed;
     this.velocityY = (dy / distance) * this.speed;
+    
+    this.angle = Math.atan2(dy, dx);
   }
 
   createPhysicsBody(x, y, targetX, targetY, world) {
@@ -80,12 +89,24 @@ class Bullet {
     
     this.body.label = "bullet";
     this.body.isBullet = true;
-    
-    Matter.World.add(world, this.body);
-    getBodies().push(this.body);
+
     // Sincroniza dimensiones para que el renderer pueda dibujar la bala
     this.body.width = this.width;
     this.body.height = this.height;
+
+    // Aplicar rotación basada en la dirección del disparo
+    if (this.angle !== undefined) {
+      Matter.Body.setAngle(this.body, this.angle);
+    }
+
+    Matter.World.add(world, this.body);
+    getBodies().push(this.body);
+
+    // Establecer velocidad inicial para evitar caída antes del primer update
+    Matter.Body.setVelocity(this.body, {
+      x: this.velocityX,
+      y: this.velocityY
+    });
   }
 
   update() {
@@ -131,7 +152,10 @@ class Bullet {
 
   draw(p) {
     if (!this.isValidForDrawing()) return;
-    
+
+    // Si tenemos sprite, delegamos al renderer; no dibujamos nada aquí
+    if (this.body && this.body.sprite) return;
+
     p.push();
     p.fill(255, 0, 0);
     p.noStroke();

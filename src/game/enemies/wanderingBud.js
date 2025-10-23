@@ -102,7 +102,7 @@ export class WanderingBud extends Enemy {
   }
 
   applyDamageAndKnockback(player, dx, dy) {
-    takeDamage(90);
+    takeDamage(0);
     
     const angle = Math.atan2(dy, dx);
     const repulsionForce = 0.7;

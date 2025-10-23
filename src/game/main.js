@@ -11,6 +11,7 @@ import Renderer from './renderer.js';
 import GameOverScreen from './gameOverScreen.js';
 import HUD from './hud.js';
 import EnemySpawner from './enemies/spawner.js';
+import { updateBullets } from './enemies/bandit.js';
 
 let player;
 let gameLoop;
@@ -71,6 +72,9 @@ const sketch = (p) => {
       updatePlayer(p);
       drawPlayer(p);
     }
+
+    // Actualización de balas (necesaria para que no caigan por gravedad)
+    updateBullets();
     
     // Spawner: genera enemigos de forma gradual
     if (spawner) spawner.update(p);
