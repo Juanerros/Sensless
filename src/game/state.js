@@ -6,9 +6,11 @@ export const gameState = {
   isGameOver: false,
   cameraX: -225,
   cameraY: 70,
+  seed: 0,
   //Cosa para los enemigos
   world: null ,
-  persistentActions: []
+  persistentActions: [],
+  startAt: Date.now()
 };
 
 export function togglePauseGame() {
