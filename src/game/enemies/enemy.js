@@ -27,6 +27,15 @@ export class Enemy {
     this.sprite = null;
     this.name = null;
     this.type = "enemy";
+    
+    this.canJump = true;
+    this.jumpCooldown = 0;
+    this.jumpForce = 0.1;
+    this.maxJumpCooldown = 60; 
+    this.isOnGround = true;
+    this.jumpDetectionDistance = 100; 
+
+    this.showHitbox = true;
   }
 
   createPhysicsBody(x, y, w, h, world) {
@@ -37,6 +46,10 @@ export class Enemy {
       restitution: 0,
       inertia: Infinity
     });
+    
+    // Sincroniza dimensiones en el body para que el renderer pueda dibujar correctamente
+    this.body.width = w;
+    this.body.height = h;
     
     this.body.label = "enemy";
     this.body.isEnemy = true;
@@ -61,6 +74,15 @@ export class Enemy {
       this.drawWithSprite(p);
     } else {
       this.drawFallback(p);
+    }
+
+    // Contorno de hitbox para depuración
+    if (this.showHitbox && this.hasValidDimensions()) {
+      p.rectMode(p.CENTER);
+      p.noFill();
+      p.stroke(0, 255, 0);
+      p.strokeWeight(2);
+      p.rect(0, 0, this.width, this.height);
     }
     
     p.pop();
@@ -130,6 +152,42 @@ export class Enemy {
     const dist = Math.sqrt(dx * dx + dy * dy);
     
     return { dist, dx, dy };
+  }
+  
+  // Detecta si hay un obstáculo o el jugador está en una posición elevada
+  detectObstacle() {
+    const player = gameState.player;
+    if (!player) return false;
+    
+    if (player.position.y < this.body.position.y - this.height/2) {
+      const dx = player.position.x - this.body.position.x;
+      if (Math.abs(dx) < this.jumpDetectionDistance) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  jump() {
+    if (this.canJump && this.isOnGround) {
+      Matter.Body.applyForce(this.body, this.body.position, { x: 0, y: -this.jumpForce });
+      this.canJump = false;
+      this.jumpCooldown = this.maxJumpCooldown;
+      this.isOnGround = false;
+    }
+  }
+  
+  updateJumpState() {
+    if (this.jumpCooldown > 0) {
+      this.jumpCooldown--;
+      if (this.jumpCooldown <= 0) {
+        this.canJump = true;
+      }
+    }
+    
+    if (this.body.velocity.y < 0.01 && this.body.velocity.y > -0.01) {
+      this.isOnGround = true;
+    }
   }
 }
 

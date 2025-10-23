@@ -10,7 +10,7 @@ import { createChlorineCloudEffect } from "./timeEffects";
 
 export class WanderingBud extends Enemy {
   constructor(x, y, world) {
-    super(x, y, 70, 80, world);
+    super(x, y, 100, 90, world);
     this.initializeProperties();
   }
 
@@ -26,8 +26,9 @@ export class WanderingBud extends Enemy {
   }
 
   draw(p) {
-    super.draw(p);
+    // Dibuja primero el efecto para que el contorno quede por encima
     this.drawEffectCircle(p);
+    super.draw(p);
   }
 
   drawEffectCircle(p) {
@@ -72,6 +73,14 @@ export class WanderingBud extends Enemy {
     const { dist, dx, dy } = this.getDistanceToPlayer();
     
     if (dist < this.detectionRadius) {
+    
+      this.updateJumpState();
+      
+      if (this.detectObstacle()) {
+        this.jump();
+      }
+      
+      // Movimiento normal hacia el jugador
       const angle = Math.atan2(dy, dx);
       const forceX = Math.cos(angle) * this.speed;
       const forceY = Math.sin(angle) * this.speed;

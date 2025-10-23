@@ -4,7 +4,7 @@ import { ChaserEnemy } from './enemies/enemy.js';
 import { WanderingBud } from './enemies/wanderingBud.js';
 import { Bandit } from './enemies/bandit.js';
 import { getWorld } from './physics.js';
-import { getEnemySpriteByName } from './enemies/enemySprites.js';
+import { getEnemySpriteByName, getScaledEnemySpriteByName } from './enemies/enemySprites.js';
 
 class SpriteLoader {
   constructor() {
@@ -50,19 +50,19 @@ class SpriteLoader {
   }
 
   assignSpritesToEnemies(chaser, wanderer, bandit) {
-    const olvidoSprite = getEnemySpriteByName('olvido');
+    const olvidoSprite = getScaledEnemySpriteByName('olvido', chaser.width, chaser.height);
     if (olvidoSprite) {
       chaser.sprite = olvidoSprite;
       chaser.body.sprite = olvidoSprite;
     }
 
-    const wanderingBudSprite = getEnemySpriteByName('wanderingBud');
+    const wanderingBudSprite = getScaledEnemySpriteByName('wanderingBud', wanderer.width, wanderer.height);
     if (wanderingBudSprite) {
       wanderer.sprite = wanderingBudSprite;
       wanderer.body.sprite = wanderingBudSprite;
     }
     
-    const banditSprite = getEnemySpriteByName('bandit');
+    const banditSprite = getScaledEnemySpriteByName('bandit', bandit.width, bandit.height);
     if (banditSprite) {
       bandit.sprite = banditSprite;
       bandit.body.sprite = banditSprite;

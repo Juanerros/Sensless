@@ -53,6 +53,15 @@ class Renderer {
       this.drawBodyWithColor(p, body);
     }
 
+    // Contorno de hitbox para enemigos (fallback desde el renderer)
+    if (body.isEnemy && body.width && body.height) {
+      p.rectMode(p.CENTER);
+      p.noFill();
+      p.stroke(0, 255, 0);
+      p.strokeWeight(2);
+      p.rect(0, 0, body.width, body.height);
+    }
+
     p.pop();
   }
 

@@ -37,8 +37,8 @@ export function loadEnemySprites(p, onComplete) {
 
   const spriteConfigs = [
     { path: 'sprites/enemies/Wendigo/Wendingo_idle.gif', name: 'olvido' },
-    { path: 'sprites/enemies/Tronco/tronco.png', name: 'wanderingBud' },
-    { path: 'sprites/enemies/olvido.png', name: 'bandit' }
+    { path: 'sprites/enemies/Tronco/tronco_idle.gif', name: 'wanderingBud' },
+    { path: 'sprites/enemies/Bandido/bandido_idle.gif', name: 'bandit' }
   ];
 
   spriteConfigs.forEach(config => {
@@ -65,4 +65,14 @@ export function getEnemyElements() {
 export function getEnemySpriteByName(name) {
   const element = enemyElements.find(e => e.name === name);
   return element ? element.sprite : null;
+}
+
+// Obtiene una copia escalada del sprite según el tamaño de la hitbox
+// Esto evita mutar el sprite original y permite tamaños por instancia
+export function getScaledEnemySpriteByName(name, width, height) {
+  const base = getEnemySpriteByName(name);
+  if (!base || !width || !height) return base || null;
+  const copy = base.get(0, 0, base.width, base.height);
+  copy.resize(width, height);
+  return copy;
 }
