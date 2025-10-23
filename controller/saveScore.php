@@ -14,7 +14,7 @@ $cause = $_POST['cause'];
 $query = "INSERT INTO partidas (puntos, fecha, tiempo, gano, semilla, causa_muerte, id_usuario) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = $conex->prepare($query);
-$stmt->bind_param("isssssi", $name, $date, $time, $win, $seed, $cause, $_SESSION['id_usuario']);
+$stmt->bind_param("ississi", $name, $date, $time, $win, $seed, $cause, $_SESSION['id_usuario']);
 $stmt->execute();
 $result = $stmt->affected_rows;
 
