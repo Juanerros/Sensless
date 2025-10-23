@@ -81,6 +81,8 @@ class OptimizedNoise {
 }
 
 const randomSeed = Math.ceil(Math.random() * 10000);
+gameState.seed = randomSeed;
+
 // const randomSeed = 12345
 const noiseGenerator = new OptimizedNoise(randomSeed);
 

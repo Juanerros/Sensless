@@ -37,9 +37,9 @@ class GameOverScreen {
     p.rect(0, 0, p.width, p.height);
     p.pop();
 
-    // Usar dimensiones de la ventana para centrado correcto
-  const centerX = window.innerWidth / 2;
-  const centerY = window.innerHeight / 2;
+    // Usar dimensiones de p5 para centrado correcto
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
 
     // Dibujar logo centrado (si ya está cargado)
     p.push();
@@ -60,21 +60,39 @@ class GameOverScreen {
     }
     p.pop();
 
-    // Dibujar botón centrado debajo del logo
+    // Dibujar botones centrados debajo del logo
+    const buttonWidth = 300;
+    const buttonHeight = 60;
+
+    const buttonYRestart = centerY + 100;
+    const buttonYSave = centerY + 180;
+
+    // Botón Reiniciar
     p.push();
     p.fill(100, 100, 100);
     p.stroke(0);
     p.strokeWeight(2);
     p.rectMode(p.CENTER);
-    const buttonY = centerY + 100;
-    p.rect(centerX, buttonY, 300, 60);
-
-    // Texto del botón
+    p.rect(centerX, buttonYRestart, buttonWidth, buttonHeight);
     p.fill(255);
     p.noStroke();
     p.textAlign(p.CENTER, p.CENTER);
     p.textSize(24);
-    p.text("REINICIAR", centerX, buttonY);
+    p.text('REINICIAR', centerX, buttonYRestart);
+    p.pop();
+
+    // Botón Guardar puntuación
+    p.push();
+    p.fill(100, 100, 100);
+    p.stroke(0);
+    p.strokeWeight(2);
+    p.rectMode(p.CENTER);
+    p.rect(centerX, buttonYSave, buttonWidth, buttonHeight);
+    p.fill(255);
+    p.noStroke();
+    p.textAlign(p.CENTER, p.CENTER);
+    p.textSize(24);
+    p.text('Guardar puntuación', centerX, buttonYSave);
     p.pop();
   }
 
@@ -86,18 +104,41 @@ class GameOverScreen {
     return false;
   }
 
-  handleMousePressed() {
-    if (this.isVisible) {
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-      const buttonY = centerY + 100;
-      if (mouseX >= centerX - 150 && mouseX <= centerX + 150 &&
-          mouseY >= buttonY - 30 && mouseY <= buttonY + 30) {
-        this.hide();
-        return true;
-      }
+  handleMousePressed(p) {
+    if (!this.isVisible) return null;
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const buttonWidth = 300;
+    const buttonHeight = 60;
+    const buttonYRestart = centerY + 100;
+    const buttonYSave = centerY + 180;
+
+    const mx = p.mouseX;
+    const my = p.mouseY;
+
+    // Área del botón Reiniciar
+    const restartHit = (
+      mx >= centerX - buttonWidth / 2 && mx <= centerX + buttonWidth / 2 &&
+      my >= buttonYRestart - buttonHeight / 2 && my <= buttonYRestart + buttonHeight / 2
+    );
+
+    if (restartHit) {
+      this.hide();
+      return 'restart';
     }
-    return false;
+
+    // Área del botón Guardar puntuación
+    const saveHit = (
+      mx >= centerX - buttonWidth / 2 && mx <= centerX + buttonWidth / 2 &&
+      my >= buttonYSave - buttonHeight / 2 && my <= buttonYSave + buttonHeight / 2
+    );
+
+    if (saveHit) {
+      return 'save';
+    }
+
+    return null;
   }
 }
 

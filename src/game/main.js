@@ -1,4 +1,5 @@
 import p5 from 'p5';
+import { gameState } from "./state.js";
 import { setupPhysics, getWorld } from './physics.js';
 import { initializeWorldGeneration } from './worldGeneration.js';
 import { createPlayer, updatePlayer, drawPlayer, getPlayerHealth } from './player.js';
@@ -272,6 +273,16 @@ const sketch = (p) => {
   };
 
   p.mousePressed = () => {
+    // Si el Game Over está visible, priorizamos sus clics
+    const action = gameOverScreen.handleMousePressed(p);
+    if (action === 'restart') {
+      gameLoop.resetGame();
+      return;
+    } else if (action === 'save') {
+      gameLoop.saveGame(false, 'Murio');
+    }
+
+    // Si no hubo acción en Game Over, delegar al control normal
     handleMousePressed(p, player);
   };
 };

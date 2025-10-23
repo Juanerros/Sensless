@@ -2,6 +2,7 @@ import { updatePhysics, getBodies } from './physics.js';
 import { updateWorldGeneration } from './worldGeneration.js';
 import { moveCamera } from './camera.js';
 import { getPlayer } from './player.js';
+import { gameState } from './state.js';
 
 class GameLoop {
   constructor() {
@@ -58,6 +59,47 @@ class GameLoop {
     if (player) {
       updateWorldGeneration(player.position.x, player.position.y);
     }
+  }
+
+  saveGame(win, cause) {
+    const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '../controller/saveScore.php';
+
+      const hiddenField = document.createElement('input');
+      hiddenField.type = 'hidden';
+      hiddenField.name = 'score';
+      hiddenField.value = gameState.score; // Ajusta esto al método real de tu GameLoop
+      form.appendChild(hiddenField);
+
+      const time = Date.now() - gameState.startAt;
+
+      const timeField = document.createElement('input');
+      timeField.type = 'hidden';
+      timeField.name = 'time';
+      timeField.value = time;
+      form.appendChild(timeField);
+
+      const winField = document.createElement('input');
+      winField.type = 'hidden';
+      winField.name = 'win';
+      winField.value = win;
+      form.appendChild(winField);
+
+      const seedField = document.createElement('input');
+      seedField.type = 'hidden';
+      seedField.name = 'seed';
+      seedField.value = gameState.seed;
+      form.appendChild(seedField);
+
+      const causeField = document.createElement('input');
+      causeField.type = 'hidden';
+      causeField.name = 'cause';
+      causeField.value = cause;
+      form.appendChild(causeField);
+      document.body.appendChild(form);
+      form.submit();
+      return;
   }
 
   checkPlayerHealth() {
