@@ -83,6 +83,9 @@ class Bullet {
     
     Matter.World.add(world, this.body);
     getBodies().push(this.body);
+    // Sincroniza dimensiones para que el renderer pueda dibujar la bala
+    this.body.width = this.width;
+    this.body.height = this.height;
   }
 
   update() {

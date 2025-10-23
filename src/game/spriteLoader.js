@@ -1,9 +1,5 @@
 import { loadSpritesAsync } from './sprites.js';
 import { loadAllGameSprites } from './enemies/spriteLoader.js';
-import { ChaserEnemy } from './enemies/enemy.js';
-import { WanderingBud } from './enemies/wanderingBud.js';
-import { Bandit } from './enemies/bandit.js';
-import { getWorld } from './physics.js';
 import { getEnemySpriteByName, getScaledEnemySpriteByName } from './enemies/enemySprites.js';
 
 class SpriteLoader {
@@ -30,7 +26,7 @@ class SpriteLoader {
 
   checkAllSpritesLoaded() {
     if (this.basicSpritesLoaded && this.enemySpritesLoaded && !this.enemiesCreated) {
-      this.createEnemies();
+      // Ya no creamos enemigos iniciales aquí; el Spawner se encargará de hacerlo poco a poco
       this.enemiesCreated = true;
       
       if (this.onAllSpritesLoadedCallback) {
@@ -39,34 +35,9 @@ class SpriteLoader {
     }
   }
 
+  // Mantener API por compatibilidad, pero sin crear enemigos
   createEnemies() {
-    const world = getWorld();
-    
-    const chaser = new ChaserEnemy(900, 700, world);
-    const wanderer = new WanderingBud(700, 700, world);
-    const bandit = new Bandit(1200, 600, world);
-    
-    this.assignSpritesToEnemies(chaser, wanderer, bandit);
-  }
-
-  assignSpritesToEnemies(chaser, wanderer, bandit) {
-    const olvidoSprite = getScaledEnemySpriteByName('olvido', chaser.width, chaser.height);
-    if (olvidoSprite) {
-      chaser.sprite = olvidoSprite;
-      chaser.body.sprite = olvidoSprite;
-    }
-
-    const wanderingBudSprite = getScaledEnemySpriteByName('wanderingBud', wanderer.width, wanderer.height);
-    if (wanderingBudSprite) {
-      wanderer.sprite = wanderingBudSprite;
-      wanderer.body.sprite = wanderingBudSprite;
-    }
-    
-    const banditSprite = getScaledEnemySpriteByName('bandit', bandit.width, bandit.height);
-    if (banditSprite) {
-      bandit.sprite = banditSprite;
-      bandit.body.sprite = banditSprite;
-    }
+    // Intencionalmente vacío: los enemigos se crearán con el Spawner
   }
 
   areSpritesLoaded() {

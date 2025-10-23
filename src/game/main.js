@@ -10,6 +10,7 @@ import GameLoop from './gameLoop.js';
 import Renderer from './renderer.js';
 import GameOverScreen from './gameOverScreen.js';
 import HUD from './hud.js';
+import EnemySpawner from './enemies/spawner.js';
 
 let player;
 let gameLoop;
@@ -18,6 +19,7 @@ let gameOverScreen;
 let spriteLoader;
 let spritesLoaded = false;
 let hud;
+let spawner;
 
 const sketch = (p) => {
   p.setup = () => {
@@ -41,8 +43,16 @@ const sketch = (p) => {
     spriteLoader = new SpriteLoader();
     spriteLoader.loadAllSprites(p, () => {
       spritesLoaded = true;
-      spriteLoader.createEnemies();
+
       gameLoop.setEnemies(enemies);
+
+      // Inicializamos el spawner cuando ya cargaron los sprites
+      spawner = new EnemySpawner();
+      spawner.setPlayer(player);
+      spawner.setIntervalMs(2500);
+      spawner.setMaxEnemies(20);   
+      spawner.start();
+
     });
   };
 
@@ -62,6 +72,9 @@ const sketch = (p) => {
       drawPlayer(p);
     }
     
+    // Spawner: genera enemigos de forma gradual
+    if (spawner) spawner.update(p);
+
     renderer.drawBodies(p);
     // Enemigos se dibujan solo desde el renderer
     drawTimeEffects(p);
