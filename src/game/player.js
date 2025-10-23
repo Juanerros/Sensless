@@ -36,24 +36,9 @@ export function createPlayer(x, y, worldRef, p5Instance = null) {
   player.width = playerWidth;
   player.height = playerHeight;
   player.isPlayer = true;
-  player.deadSprite = null;
   
   // Depuración: mostrar contorno de hitbox
   player.showHitbox = true;
-
-  if (p5Instance) {
-    p5Instance.loadImage('sprites/zenith/dead.png', (img) => {
-      player.deadSprite = img;
-    });
-
-    p5Instance.loadImage('sprites/zenith/zenith_hurt_1.png', (img) => {
-      player.hurtSprite1 = img;
-    });
-
-    p5Instance.loadImage('sprites/zenith/zenith_hurt_2.png', (img) => {
-      player.hurtSprite2 = img;
-    });
-  }
 
   player.label = "player";
   player.sprite = getSpriteByName('player');
@@ -86,29 +71,39 @@ export function takeDamage(damage) {
   playerHealth = Math.max(0, playerHealth - damage);
   player.health = playerHealth;
 
-  if (player.hurtSprite2) {
-    player.takingDamage = true;
-    player.sprite = player.hurtSprite2;
+  // Usar los sprites de daño desde el sistema centralizado
+  player.takingDamage = true;
+  const hurtSprite2 = getSpriteByName('playerHurt2');
+  if (hurtSprite2 && hurtSprite2.width > 0) {
+    player.sprite = hurtSprite2;
+  }
+
+  setTimeout(() => {
+    const hurtSprite1 = getSpriteByName('playerHurt1');
+    if (hurtSprite1 && hurtSprite1.width > 0) {
+      player.sprite = hurtSprite1;
+    }
 
     setTimeout(() => {
-      if (player.hurtSprite1) {
-        player.sprite = player.hurtSprite1;
-
-        setTimeout(() => {
-          player.takingDamage = false;
-          if (player.isAlive) {
-            player.sprite = getSpriteByName('player');
-          }
-        }, 200);
+      player.takingDamage = false;
+      if (player.isAlive) {
+        const defaultSprite = getSpriteByName('player');
+        if (defaultSprite && defaultSprite.width > 0) {
+          player.sprite = defaultSprite;
+        }
       }
-    }, 150);
-  }
+    }, 200);
+  }, 150);
+
   console.log(playerHealth);
 
   if (playerHealth <= 0) {
     player.isAlive = false;
     console.log("Jugador ripeo");
-    player.sprite = null;
+    const deadSprite = getSpriteByName('playerDead');
+    if (deadSprite && deadSprite.width > 0) {
+      player.sprite = deadSprite;
+    }
     gameState.isGameOver = true;
   }
 
@@ -174,7 +169,7 @@ export function updatePlayer(p) {
 
   const velocity = player.velocity;
   const isMoving = Math.abs(velocity.x) > 0.1;
-
+  
   if (velocity.x > 0.1) {
     player.direction = 'right';
   } else if (velocity.x < -0.1) {
@@ -186,17 +181,29 @@ export function updatePlayer(p) {
     const isFalling = velocity.y > 0.5;
 
     if (isJumping) {
-      player.sprite = getSpriteByName('playerJump1');
+      const jumpSprite = getSpriteByName('playerJump1');
+      if (jumpSprite && jumpSprite.width > 0) {
+        player.sprite = jumpSprite;
+      }
       player.isJumping = true;
     } else if (isFalling || (player.isJumping && !isOnGround(player, getBodies()))) {
-      player.sprite = getSpriteByName('playerJump2');
+      const fallSprite = getSpriteByName('playerJump2');
+      if (fallSprite && fallSprite.width > 0) {
+        player.sprite = fallSprite;
+      }
     } else {
       player.isJumping = false;
 
       if (isMoving) {
-        player.sprite = getSpriteByName('playerMoveGif');
+        const moveSprite = getSpriteByName('playerMoveGif');
+        if (moveSprite && moveSprite.width > 0) {
+          player.sprite = moveSprite;
+        }
       } else {
-        player.sprite = getSpriteByName('playerIdleGif');
+        const idleSprite = getSpriteByName('playerIdleGif');
+        if (idleSprite && idleSprite.width > 0) {
+          player.sprite = idleSprite;
+        }
       }
     }
   }
@@ -241,8 +248,9 @@ export function drawPlayer(p) {
   p.rotate(angle);
 
   if (!player.isAlive) {
-    if (player.deadSprite) {
-      player.sprite = player.deadSprite;
+    const deadSprite = getSpriteByName('playerDead');
+    if (deadSprite && deadSprite.width && deadSprite.height) {
+      player.sprite = deadSprite;
 
       if (player.direction === 'left') {
         p.scale(-1, 1);
@@ -251,10 +259,15 @@ export function drawPlayer(p) {
       }
 
       p.imageMode(p.CENTER);
-      const aspectRatio = player.deadSprite.height / player.deadSprite.width + 1;
+      const aspectRatio = deadSprite.height / deadSprite.width + 1;
       const deadWidth = player.width;
       const deadHeight = deadWidth * aspectRatio;
       p.image(player.sprite, 0, 0, deadWidth, deadHeight);
+    } else {
+      // Fallback si el sprite de muerte no está disponible
+      p.fill(255, 0, 0);
+      p.rectMode(p.CENTER);
+      p.rect(0, 0, player.width, player.height);
     }
   } else {
     if (player.direction === 'left') {
@@ -272,25 +285,104 @@ export function drawPlayer(p) {
 
       if (player.sprite === getSpriteByName('playerJump1') ||
         player.sprite === getSpriteByName('playerJump2')) {
-
         const spriteWidth = player.width * 2.3;
         const spriteHeight = player.height * 1.5;
-        p.image(player.sprite, 0, 0, spriteWidth, spriteHeight);
-
+        
+        try {
+          // Verificar si es una instancia de GifAnimation
+          if (player.sprite.gifImage) {
+            p.imageMode(p.CENTER);
+            p.image(player.sprite.gifImage, 0, 0, spriteWidth, spriteHeight);
+          } 
+          // Si es una imagen p5 normal
+          else if (player.sprite.width > 0 && player.sprite.height > 0) {
+            p.imageMode(p.CENTER);
+            p.image(player.sprite, 0, 0, spriteWidth, spriteHeight);
+          } else {
+            throw new Error("Sprite sin dimensiones válidas");
+          }
+        } catch (error) {
+          console.warn("Error al dibujar sprite de salto:", error);
+          // Fallback si hay error al dibujar
+          p.fill(255, 255, 0);
+          p.rectMode(p.CENTER);
+          p.rect(0, 0, spriteWidth, spriteHeight);
+        }
       } else if (player.sprite === getSpriteByName('playerIdleGif')) {
-
-        const spriteWidth = player.width * 1.3;
-        const spriteHeight = player.height * 1.2;
-        p.image(player.sprite, 0, -8, spriteWidth, spriteHeight);
+        // Obtener el sprite de idle directamente para comparación
+        const idleSprite = getSpriteByName('playerIdleGif');
+        
+        // Verificar que el sprite de idle existe y tiene dimensiones válidas
+        if (idleSprite && typeof idleSprite === 'object') {
+          const spriteWidth = player.width * 1.3;
+          const spriteHeight = player.height * 1.2;
+          
+          try {
+            // Verificar si es una instancia de GifAnimation
+            if (idleSprite.gifImage) {
+              p.imageMode(p.CENTER);
+              p.image(idleSprite.gifImage, 0, -8, spriteWidth, spriteHeight);
+            } 
+            // Si es una imagen p5 normal
+            else if (idleSprite.width > 0 && idleSprite.height > 0) {
+              p.imageMode(p.CENTER);
+              p.image(idleSprite, 0, -8, spriteWidth, spriteHeight);
+            } else {
+              throw new Error("Sprite sin dimensiones válidas");
+            }
+          } catch (error) {
+            console.warn("Error al dibujar sprite idle:", error);
+            // Fallback si hay error al dibujar
+            p.fill(0, 0, 255);
+            p.rectMode(p.CENTER);
+            p.rect(0, 0, spriteWidth, spriteHeight);
+          }
+        } else {
+          // Si el sprite de idle no existe, usar un rectángulo como fallback
+          const spriteWidth = player.width * 1.1;
+          const spriteHeight = player.height * 1.1;
+          p.fill(0, 0, 255);
+          p.rectMode(p.CENTER);
+          p.rect(0, 0, spriteWidth, spriteHeight);
+        }
 
       } else if (isMoving) {
         const spriteWidth = player.width * 1.1;
         const spriteHeight = player.height * 1.1;
-        p.image(player.sprite, 0, 0, spriteWidth, spriteHeight);
+        
+        try {
+          // Verificar si es una instancia de GifAnimation
+          if (player.sprite.gifImage) {
+            p.imageMode(p.CENTER);
+            p.image(player.sprite.gifImage, 0, 0, spriteWidth, spriteHeight);
+          } 
+          // Si es una imagen p5 normal
+          else if (player.sprite.width > 0 && player.sprite.height > 0) {
+            p.imageMode(p.CENTER);
+            p.image(player.sprite, 0, 0, spriteWidth, spriteHeight);
+          } else {
+            throw new Error("Sprite sin dimensiones válidas");
+          }
+        } catch (error) {
+          console.warn("Error al dibujar sprite de movimiento:", error);
+          // Fallback si hay error al dibujar
+          p.fill(0, 255, 0);
+          p.rectMode(p.CENTER);
+          p.rect(0, 0, spriteWidth, spriteHeight);
+        }
       } else {
-        p.image(player.sprite, 0, 0, player.width, player.height);
+        // Verificar que player.sprite existe y tiene dimensiones válidas
+        if (player.sprite && player.sprite.width > 0 && player.sprite.height > 0) {
+          p.image(player.sprite, 0, 0, player.width, player.height);
+        } else {
+          // Fallback si player.sprite no es válido
+          p.fill(0, 0, 0);
+          p.rectMode(p.CENTER);
+          p.rect(0, 0, player.width, player.height);
+        }
       }
     } else {
+      // Si el sprite no está disponible o no es válido, dibujar un rectángulo como fallback
       p.fill(0, 0, 0);
       p.rectMode(p.CENTER);
       if (player.width !== undefined && player.height !== undefined &&
@@ -301,6 +393,8 @@ export function drawPlayer(p) {
           width: player.width,
           height: player.height
         });
+        // Usar dimensiones por defecto si las del jugador no son válidas
+        p.rect(0, 0, 42, 80);
       }
     }
   }

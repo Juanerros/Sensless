@@ -26,7 +26,7 @@ class Renderer {
     const bottomBound = cameraY + screenHeight / 2 + margin;
 
     bodies.forEach(body => {
-      if (body.isPlayer) return; // Solo excluimos al jugador, permitimos enemigos y balas
+      if (body.isPlayer) return;
       
       const pos = body.position;
       
@@ -47,7 +47,8 @@ class Renderer {
     p.translate(pos.x, pos.y);
     p.rotate(angle);
 
-    if (body.sprite && body.sprite.width > 0) {
+    // Verificar que el sprite existe y es válido antes de intentar dibujarlo
+    if (this.isValidSprite(body.sprite)) {
       this.drawBodyWithSprite(p, body);
     } else {
       this.drawBodyWithColor(p, body);
@@ -65,9 +66,36 @@ class Renderer {
     p.pop();
   }
 
+  // Método para verificar si un sprite es válido para dibujar
+  isValidSprite(sprite) {
+    if (!sprite) return false;
+    
+    // Verificar si es una instancia de GifAnimation
+    if (sprite.gifImage) {
+      return sprite.gifImage && typeof sprite.gifImage === 'object' && sprite.gifImage.width > 0;
+    }
+    
+    // Verificar si es una imagen p5 normal
+    return typeof sprite === 'object' && sprite.width > 0;
+  }
+
   drawBodyWithSprite(p, body) {
-    p.imageMode(p.CENTER);
-    p.image(body.sprite, 0, 0, body.width, body.height);
+    try {
+      // Verificar si es una instancia de GifAnimation
+      if (body.sprite.gifImage) {
+        p.imageMode(p.CENTER);
+        p.image(body.sprite.gifImage, 0, 0, body.width, body.height);
+      } 
+      // Si es una imagen p5 normal
+      else {
+        p.imageMode(p.CENTER);
+        p.image(body.sprite, 0, 0, body.width, body.height);
+      }
+    } catch (error) {
+      console.error("Error dibujando sprite:", error, "Body:", body.label);
+      // Si hay un error al dibujar el sprite, usamos el color como fallback
+      this.drawBodyWithColor(p, body);
+    }
   }
 
   drawBodyWithColor(p, body) {

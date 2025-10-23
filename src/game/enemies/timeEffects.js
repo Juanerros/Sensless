@@ -98,7 +98,24 @@ function drawChlorineCloud(p, effect) {
     p.tint(255, alpha);
     
     const size = sprite.scale * 20;
-    p.image(spriteImg, 0, 0, size, size);
+    try {
+      // Verificar si es una instancia de GifAnimation
+      if (spriteImg.gifImage) {
+        p.image(spriteImg.gifImage, 0, 0, size, size);
+      } 
+      // Si es una imagen p5 normal
+      else if (spriteImg.width > 0 && spriteImg.height > 0) {
+        p.image(spriteImg, 0, 0, size, size);
+      } else {
+        throw new Error("Sprite sin dimensiones válidas");
+      }
+    } catch (error) {
+      console.warn("Error al dibujar nube de cloro:", error);
+      // Fallback si hay error al dibujar
+      p.fill(0, 255, 255, alpha);
+      p.noStroke();
+      p.ellipse(0, 0, size, size);
+    }
     p.pop();
   });
 }

@@ -58,11 +58,14 @@ class EnemySpawner {
       enemy = new Bandit(x, y, this.world);
     }
 
-    // asignar sprite preescalado
-    const sprite = getScaledEnemySpriteByName(type, enemy.width, enemy.height);
-    if (sprite) {
-      enemy.sprite = sprite;
-      if (enemy.body) enemy.body.sprite = sprite;
+    // Verificar que enemy y sus propiedades existen antes de asignar sprite
+    if (enemy) {
+      // asignar sprite preescalado
+      const sprite = getScaledEnemySpriteByName(type);
+      if (sprite) {
+        enemy.sprite = sprite;
+        if (enemy.body) enemy.body.sprite = sprite;
+      }
     }
   }
 

@@ -2,11 +2,12 @@
 // CONFIGURACIÓN DE SPRITES DE ENEMIGOS
 // ============================
 
+import assetLoader from '../assets/assetLoader.js';
+
 let enemyElements = [
   { name: 'olvido', sprite: null },
   { name: 'wanderingBud', sprite: null },
   { name: 'bandit', sprite: null },
-  // Sprite para las balas del bandit (placeholder)
   { name: 'banditBullet', sprite: null }
 ];
 
@@ -22,37 +23,22 @@ export function loadEnemySprite(img, name) {
 }
 
 // Carga todos los sprites de enemigos desde sus archivos
+// Esta función se mantiene por compatibilidad, pero ahora los sprites
+// se cargan a través del assetLoader
 export function loadEnemySprites(p, onComplete) {
-  let loadedCount = 0;
-  
-  const checkComplete = () => {
-    loadedCount++;
-    if (loadedCount === enemyElements.length && onComplete) {
-      onComplete();
+  // Los sprites ya deberían estar cargados por el assetLoader
+  // Asignamos los sprites desde el caché del assetLoader
+  enemyElements.forEach(element => {
+    const sprite = assetLoader.getAsset(element.name);
+    if (sprite) {
+      element.sprite = sprite;
     }
-  };
-
-  if (enemyElements.length === 0) {
-    if (onComplete) onComplete();
-    return;
-  }
-
-  const spriteConfigs = [
-    { path: 'sprites/enemies/Wendigo/Wendingo_idle.gif', name: 'olvido' },
-    { path: 'sprites/enemies/Tronco/tronco_idle.gif', name: 'wanderingBud' },
-    { path: 'sprites/enemies/Bandido/bandido_idle.gif', name: 'bandit' },
-    { path: 'sprites/enemies/Bandido/bandido_proyectil.png', name: 'banditBullet' }
-  ];
-
-  spriteConfigs.forEach(config => {
-    p.loadImage(config.path, 
-      (img) => {
-        loadEnemySprite(img, config.name);
-        checkComplete();
-      },
-      () => checkComplete()
-    );
   });
+  
+  // Llamar al callback de completado inmediatamente
+  if (onComplete) {
+    onComplete();
+  }
 }
 
 // ============================
@@ -66,16 +52,72 @@ export function getEnemyElements() {
 
 // Obtiene el sprite de un enemigo por su nombre
 export function getEnemySpriteByName(name) {
+  // Primero intentamos obtener del caché local
   const element = enemyElements.find(e => e.name === name);
-  return element ? element.sprite : null;
+  if (element && element.sprite && typeof element.sprite === 'object' && element.sprite.width > 0) {
+    return element.sprite;
+  }
+  
+  // Si no está en el caché local, lo obtenemos del assetLoader
+  const sprite = assetLoader.getAsset(name);
+  
+  // Verificar que el sprite es válido
+  if (sprite && typeof sprite === 'object' && (sprite.width > 0 || (sprite.gifImage && sprite.gifImage.width > 0))) {
+    // Actualizar el caché local
+    if (element) {
+      element.sprite = sprite;
+    }
+    return sprite;
+  }
+  
+  console.warn(`Sprite no encontrado o inválido para: ${name}`);
+  return null;
 }
 
 // Obtiene una copia escalada del sprite según el tamaño de la hitbox
 // Esto evita mutar el sprite original y permite tamaños por instancia
 export function getScaledEnemySpriteByName(name, width, height) {
-  const base = getEnemySpriteByName(name);
-  if (!base || !width || !height) return base || null;
-  const copy = base.get(0, 0, base.width, base.height);
-  copy.resize(width, height);
-  return copy;
+  // Verificar parámetros
+  if (!name) {
+    console.warn(`Parámetros inválidos para getScaledEnemySpriteByName: nombre faltante`);
+    return null;
+  }
+  
+  // Valores por defecto para width y height si no se proporcionan
+  const defaultSizes = {
+    'olvido': { width: 160, height: 160 },
+    'wanderingBud': { width: 160, height: 160 },
+    'bandit': { width: 70, height: 105 },
+    'banditBullet': { width: 30, height: 5 }
+  };
+  
+  // Si width o height no están definidos, usar valores por defecto
+  if (!width || !height) {
+    const defaultSize = defaultSizes[name];
+    if (defaultSize) {
+      width = defaultSize.width;
+      height = defaultSize.height;
+      console.log(`Usando tamaño por defecto para ${name}: ${width}x${height}`);
+    } else {
+      console.warn(`Parámetros inválidos para getScaledEnemySpriteByName: ${name}, ${width}, ${height}`);
+      return null;
+    }
+  }
+  
+  try {
+    // Usamos directamente el assetLoader para obtener una copia escalada
+    const scaledSprite = assetLoader.getScaledAsset(name, width, height);
+    
+    // Verificar que el sprite escalado es válido
+    if (scaledSprite && typeof scaledSprite === 'object' && 
+        (scaledSprite.width > 0 || (scaledSprite.gifImage && scaledSprite.gifImage.width > 0))) {
+      return scaledSprite;
+    } else {
+      console.warn(`Sprite escalado inválido para: ${name}`);
+      return null;
+    }
+  } catch (error) {
+    console.error(`Error al escalar sprite ${name}:`, error);
+    return null;
+  }
 }

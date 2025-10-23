@@ -12,6 +12,7 @@
     "vite": "7.1.0"
   },
   "dependencies": {
+    "gifuct-js": "^2.1.2",
     "matter-js": "0.20.0",
     "p5": "2.0.4"
   }

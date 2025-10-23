@@ -1,44 +1,23 @@
-const elements = [
-  {
-    name: 'box',
-    sprite: null,
-  },
-  {
-    name: 'hidrogeno',
-    sprite: null,
-  },
-  {
-    name: 'oxigeno',
-    sprite: null,
-  },
-  {
-    name: 'water',
-    sprite: null,
-  },
-  {
-    name: 'player',
-    sprite: null,
-  },
-  {
-    name: 'playerIdleGif',
-    sprite: null,
-  },
-  {
-    name: 'playerMoveGif',
-    sprite: null,
-  },
-  {
-    name: 'playerJump1',
-    sprite: null,
-  },
-  {
-    name: 'playerJump2',
-    sprite: null,
-  }
+import assetLoader from './assets/assetLoader.js';
+
+// Lista de nombres de sprites para mantener compatibilidad
+export const elements = [
+  { name: 'box', sprite: null },
+  { name: 'hidrogeno', sprite: null },
+  { name: 'oxigeno', sprite: null },
+  { name: 'water', sprite: null },
+  { name: 'player', sprite: null },
+  { name: 'playerIdleGif', sprite: null },
+  { name: 'playerMoveGif', sprite: null },
+  { name: 'playerJump1', sprite: null },
+  { name: 'playerJump2', sprite: null },
+  { name: 'playerHurt1', sprite: null },
+  { name: 'playerHurt2', sprite: null },
+  { name: 'playerDead', sprite: null },
+  { name: 'gameLogo', sprite: null }
 ];
 
-
-
+// Función para asignar un sprite al caché local
 export function loadSprite(img, name) {
   elements.forEach(e => { 
     if (e.name === name) {
@@ -47,71 +26,43 @@ export function loadSprite(img, name) {
   });
 }
 
-// Funcion para cargar los sprites
+// Esta función ahora es un adaptador que mantiene compatibilidad con el código existente
+// pero no carga realmente los sprites, ya que eso lo hace assetLoader
 export function loadSpritesAsync(p, onComplete) {
-  let loadedCount = 0;
-  
-  const checkComplete = () => {
-    loadedCount++;
-    if (loadedCount === elements.length && onComplete) {
+  // Simulamos la carga para mantener compatibilidad
+  setTimeout(() => {
+    if (onComplete) {
       onComplete();
     }
-  };
-
-  p.loadImage('sprites/Zenith.png', (img) => {
-    loadSprite(img, 'player');
-    checkComplete();
-  });
-  
-  p.loadImage('sprites/box-a.png', (img) => {
-    loadSprite(img, 'box');
-    checkComplete();
-  });
-  
-  p.loadImage('sprites/quimic/hidrogeno-pixel.png', (img) => {
-    loadSprite(img, 'hidrogeno');
-    checkComplete();
-  });
-  
-  p.loadImage('sprites/quimic/oxigeno-pixel.png', (img) => {
-    loadSprite(img, 'oxigeno');
-    checkComplete();
-  });
-
-   p.loadImage('sprites/spells/chispa-agua.png', (img) => {
-    loadSprite(img, 'water');
-    checkComplete();
-  });
-
-  // Cargar GIF
-  p.loadImage('sprites/zenith/idle.gif', (img) => {
-    loadSprite(img, 'playerIdleGif');
-    checkComplete();
-  });
-
-  p.loadImage('sprites/zenith/correr.gif', (img) => {
-    loadSprite(img, 'playerMoveGif');
-    checkComplete();
-  });
-  
-  // Cargar sprites de salto
-  p.loadImage('sprites/zenith/salto 1.png', (img) => {
-    loadSprite(img, 'playerJump1');
-    checkComplete();
-  });
-  
-  p.loadImage('sprites/zenith/salto 2.png', (img) => {
-    loadSprite(img, 'playerJump2');
-    checkComplete();
-  });
-
+  }, 100);
 }
 
+// Obtener la lista de elementos (para compatibilidad)
 export function getElements() {
   return elements;
 }
 
+// Obtener un sprite por su nombre
+// Primero busca en el caché local, luego en assetLoader
 export function getSpriteByName(name) {
+  // Buscar en el caché local primero
   const element = elements.find(e => e.name === name);
-  return element ? element.sprite : null;
+  if (element && element.sprite) {
+    return element.sprite;
+  }
+  
+  // Si no está en el caché local, intentar obtenerlo del assetLoader
+  try {
+    const sprite = assetLoader.getAsset(name);
+    
+    // Si se encontró en assetLoader, guardarlo en el caché local
+    if (sprite && element) {
+      element.sprite = sprite;
+    }
+    
+    return sprite;
+  } catch (error) {
+    console.error(`Error al obtener sprite ${name}:`, error);
+    return null;
+  }
 }
