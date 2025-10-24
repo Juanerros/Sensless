@@ -16,6 +16,7 @@ import { updateBullets } from './enemies/bandit.js';
 import assetLoader from './assets/assetLoader.js';
 import { getAllAssets } from './assets/assetList.js';
 import { elements } from './sprites.js';
+import { initMagicShotsSystem, updateMagicShotsSystem, drawMagicShots } from './magicShotsSystem.js';
 
 let player;
 let gameLoop;
@@ -33,6 +34,7 @@ const sketch = (p) => {
     p.noSmooth();
     setupPhysics();
     initializeWorldGeneration();
+    initMagicShotsSystem();
     
     player = createPlayer(400, 200, getWorld(), p);
     
@@ -219,6 +221,10 @@ const sketch = (p) => {
     renderer.drawBodies(p);
     // Enemigos se dibujan solo desde el renderer
     drawTimeEffects(p);
+    
+    // Actualizar y dibujar disparos mágicos
+    updateMagicShotsSystem(p);
+    drawMagicShots(p);
     
     if (player) {
       const playerHealth = getPlayerHealth();

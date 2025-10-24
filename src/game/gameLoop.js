@@ -2,6 +2,7 @@ import { updatePhysics, getBodies } from './physics.js';
 import { updateWorldGeneration } from './worldGeneration.js';
 import { moveCamera } from './camera.js';
 import { getPlayer } from './player.js';
+import { clearAllMagicShots } from './magicShotsSystem.js';
 import { gameState } from './state.js';
 
 class GameLoop {
@@ -114,8 +115,20 @@ class GameLoop {
   }
 
   resetGame() {
-    this.gameState.gameOver = false;
-    window.location.reload();
+    const player = getPlayer();
+    if (player) {
+      // Reiniciar posición del jugador
+      Matter.Body.setPosition(player, { x: 400, y: 300 });
+      Matter.Body.setVelocity(player, { x: 0, y: 0 });
+      player.isAlive = true;
+    }
+    
+    // Limpiar disparos mágicos
+    clearAllMagicShots();
+    
+    // Reiniciar estado del juego
+    this.gameState.isGameOver = false;
+    gameState.isGameOver = false;
   }
 
   getGameState() {

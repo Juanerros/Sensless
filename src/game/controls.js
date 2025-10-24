@@ -3,6 +3,7 @@ import { Vector2 } from '../utils/Vector2.js';
 import { gameState } from './state.js';
 import { screenToWorldCoordinates } from './camera.js';
 import { selectInventorySlot, useSelectedItem } from './inventory.js';
+import { firePlayerShot, selectShotType } from './magicShotsSystem.js';
 
 // ===== Variables Globales =====
 let keys = {};
@@ -38,6 +39,18 @@ export function handleKeyPressed(key) {
   } else if (k === 'd' || k === 'arrowright' || k === 'right') {
     lastHorizontalKey = 'right';
     keys['a'] = keys['arrowleft'] = keys['left'] = false;
+  }
+
+  if (k === 'q') {
+    selectShotType('fire')
+  } else if (k === 'w') {
+    selectShotType('water')
+  } else if (k === 'e') {
+    selectShotType('lightning')
+  } else if (k === 'r') {
+    selectShotType('multi')
+  } else if (k === 't') {
+    selectShotType('earth')
   }
 }
 
@@ -200,19 +213,15 @@ export function handleMousePressed(p, player) {
   
   const { x: worldX, y: worldY } = screenToWorldCoordinates(p.mouseX, p.mouseY);
 
-  if (p.mouseButton.left) useSelectedItem(worldX, worldY);
-  if (p.mouseButton.right) dash(player, worldX, worldY);
-}
+  if (p.mouseButton.left) {
+    // Disparar proyectil mágico cuando se presiona Shift + Click Izquierdo
+    firePlayerShot(p);
+  }
 
-function dash(player, worldX, worldY) {
-  const dashForce = 0.5;
-  const direction = Vector2.subtract({ x: worldX, y: worldY }, player.position);
-  const normalized = Vector2.normalize(direction);
-
-  Matter.Body.applyForce(player, player.position, {
-    x: normalized.x * dashForce,
-    y: normalized.y * dashForce
-  });
+  if (p.mouseButton.right)  {
+    // Usar objeto del inventario (comportamiento original)
+    useSelectedItem(worldX, worldY);
+  }
 }
 
 // ===== Utilidades =====
