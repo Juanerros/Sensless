@@ -12,9 +12,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
 CREATE TABLE IF NOT EXISTS partidas (
     id_partida INT AUTO_INCREMENT PRIMARY KEY,
     puntos INT DEFAULT 0,
-    fecha DATE NOT NULL,
     tiempo TIME NOT NULL,
-    es_victoria BOOLEAN NOT NULL DEFAULT FALSE,
+    gano BOOLEAN NOT NULL DEFAULT FALSE,
     semilla VARCHAR(255),
     causa_muerte VARCHAR(255),
     id_usuario INT NOT NULL,
