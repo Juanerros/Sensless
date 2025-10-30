@@ -42,6 +42,27 @@
   text-align: center;
 }
 
+<<<<<<< HEAD
+.tabla-partidas th img{
+  width: 20px;
+  height: auto;
+}
+.destino-icon {
+  width: 28px;
+  height: 28px;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
+  transition: transform 0.3s ease;
+}
+
+.destino-icon:hover {
+  transform: scale(1.2);
+}
+
+
+=======
+>>>>>>> 4ade45be34f0f954ecda1e678f91a5fd69ccfcd0
 .tabla-partidas thead {
   text-transform: uppercase;
   letter-spacing: 1px;
