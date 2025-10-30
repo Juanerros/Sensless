@@ -30,6 +30,7 @@ let loadingProgress = 0;
 
 const sketch = (p) => {
   p.setup = () => {
+    gameState.startAt = Date.now();
     p.createCanvas(1800, 900);
     p.noSmooth();
     setupPhysics();

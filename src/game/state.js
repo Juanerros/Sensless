@@ -10,7 +10,7 @@ export const gameState = {
   //Cosa para los enemigos
   world: null ,
   persistentActions: [],
-  startAt: Date.now()
+  startAt: null
 };
 
 export function togglePauseGame() {
