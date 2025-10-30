@@ -1,5 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
+<<<<<<< HEAD
+=======
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./view/assets/img/ic_logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Senseless</title>
+    <link rel="stylesheet" href="./view/assets/css/index.css" />
+    <link rel="stylesheet" href="./view/assets/css/HeroSection.css" />
+    <link rel="stylesheet" href="./view/assets/css/EquipoSection.css" />
+    <link rel="stylesheet" href="./view/assets/css/HistoriaSection.css" />
+    <link rel="stylesheet" href="./view/assets/css/PersonajesSection.css">
+    <link rel="stylesheet" href="./view/assets/css/MecanicaSection.css">
+    <link rel="stylesheet" href="./view/assets/css/JuegoSection.css" />
+    <link rel="stylesheet" href="./view/assets/css/RankingPartidas.css" />
+  </head>
+>>>>>>> 4ade45be34f0f954ecda1e678f91a5fd69ccfcd0
 
 <head>
   <meta charset="UTF-8" />
@@ -427,6 +444,7 @@ if (session_status() === PHP_SESSION_NONE) {
           </div>
         </div>
       </div>
+<<<<<<< HEAD
       <div class="historia-lampara">
         <img src="./view/assets/img/luz.png" alt="Lámpara mágica" class="lampara-animate" />
       </div>
@@ -681,6 +699,214 @@ if (session_status() === PHP_SESSION_NONE) {
   </script>
 
 
+=======
+    </section>
+    <section class="personaje-fade-section" data-idx="0">
+        <div class="personaje-img">
+        <img src="./view/assets/img/zenith.png" alt="Zenith" class="character" />
+        </div>
+        <div class="personaje-content">
+        <div class="theme">
+            <span>Protagonista</span>
+        </div>
+        <div class="title">
+            <h2>Zenith</h2>
+        </div>
+        <div class="description">
+            <h4>Género: <span>Trans</span></h4>
+            <h4>Edad: <span>18 años</span></h4>
+            <br>
+            <p>
+            Zenith usa una varita mágica que canaliza hechizos y combina elementos
+            químicos y mágicos para crear efectos ofensivos y defensivos,
+            permitiéndole interactuar estratégicamente con el entorno y los
+            enemigos.
+            </p>
+        </div>
+        </div>
+    </section>
+    <section class="personaje-fade-section" data-idx="1">
+        <div class="personaje-img">
+            <img src="./view/assets/img/sombra-tributante.png" alt="Sombra Tributante" class="character"/>
+        </div>
+        <div class="personaje-content">
+            <div class="theme"><span>Enemigo de la Arboleda</span></div>
+            <div class="title"><h2>Sombra Tributante</h2></div>
+            <div class="description">
+                <p>Cuando detecta a un jugador, "wendigo" corre en línea recta tratando de
+                embestir al jugador. si el wendigo choca contra un obstáculo, el
+                wendigo queda paralizado por un par de segundos.
+                </p>
+            </div>
+        </div>
+    </section>
+    <section class="personaje-fade-section" data-idx="2">
+        <div class="personaje-img">
+        <img src="./view/assets/img/olvido.png" alt="Olvido" class="character" />
+        </div>
+        <div class="personaje-content">
+            <div class="theme"><span>Jefe del primer nivel (primera forma)</span></div>
+            <div class="title"><h2>OLVIDO</h2></div>
+            <div class="description">
+                <h4>Edad: <span> 200 años</span></h4>
+                <h4>Condición: <span>Alzheimer</span></h4>
+                <br>
+                <p>Olvido es un anciano fabricante de armas mutado tras sobrevivir al incidente de 
+                la llama blanca. En su primera forma, dispara ráfagas de balas en zigzag y salta 
+                para aplastar al jugador.
+                </p>
+            </div>
+        </div>
+    </section>
+    <section class="mecanicas-section" id="mecanicas">
+        <div class="mecanicas-bg"></div>
+        <h2 class="mecanicas-title mecanicas-title-animate">MECANICAS DE JUEGO</h2>
+        <div class="mecanicas-cards">
+            <div class="mecanica-card mecanica-card-animate" data-index="0">
+                <img src="./view/assets/img/rayo.png" alt="Sinergias" class="mecanica-card-icon"/>
+                <h3 class="mecanica-card-title mecanica-card-title-animate">SINERGIAS MÁGICAS</h3>
+                <p class="mecanica-card-desc mecanica-card-desc-animate">
+                    Combina hechizos para crear efectos únicos e impredecibles en cada run.
+                </p>
+            </div>
+            <div class="mecanica-card mecanica-card-animate" data-index="1">
+                <img src="./view/assets/img/ovni.png" alt="Físicas" class="mecanica-card-icon"/>
+                <h3 class="mecanica-card-title mecanica-card-title-animate">FÍSICAS REALISTAS</h3>
+                <p class="mecanica-card-desc mecanica-card-desc-animate">
+                    Mundo 2D con físicas avanzadas estilo Noita. Cada elemento interactúa de
+                    forma realista.
+                </p>
+            </div>
+            <div class="mecanica-card mecanica-card-animate" data-index="2">
+                <img src="./view/assets/img/calavera.png" alt="Roguelike" class="mecanica-card-icon"/>
+                <h3 class="mecanica-card-title mecanica-card-title-animate">ROGUELIKE PURO</h3>
+                <p class="mecanica-card-desc mecanica-card-desc-animate">
+                    Cada muerte es permanente, pero cada run ofrece nuevas combinaciones y
+                    secretos.
+                </p>
+            </div>
+            <div class="mecanica-card mecanica-card-animate" data-index="3">
+                <img src="./view/assets/img/libro.png" alt="Enemigos" class="mecanica-card-icon"/>
+                <h3 class="mecanica-card-title mecanica-card-title-animate">ENEMIGOS ADAPTATIVOS</h3>
+                <p class="mecanica-card-desc mecanica-card-desc-animate">
+                    Bandidos bullet-hell, Sombras Titubeantes y criaturas que evolucionan
+                    por nivel.
+                </p>
+            </div>
+        </div>
+    </section>
+    <section class="juego-section" id="juego">
+        <div class="overlay"></div>
+        <div class="juego-content">
+            <div class="content">
+                <h2 class="juego-title juego-title-animate">¿LISTO PARA RECORDAR?</h2>
+                <p class="juego-description juego-description-animate">
+                    Sumérgete en un mundo donde cada muerte te acerca más a la verdad.
+                    Descubre los secretos de Luna y enfrenta el poder del Olvido.
+                </p>
+            </div>
+            <button class="btn-play juego-btn-animate">
+                <svg height="24" width="24" viewBox="0 0 24 24" class="sparkle" fill="#AAAAAA">
+                    <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
+                </svg>
+                <span class="text">Jugar Ahora</span>
+            </button>
+        </div>
+    </section>
+    <section id="tablas" class="tablas-section">
+  <h2 class="tablas-title">Mejores Partidas</h2>
+  <p class="tablas-subtitle">Top 10 jugadores con sus mejores registros</p>
+
+  <div class="tabla-container">
+    <table class="tabla-partidas">
+      <thead>
+        <tr>
+          <th>Puesto</th>
+          <th>Jugador</th>
+          <th>Destino</th>
+          <th>Puntaje Máximo</th>
+          <th>Tiempo (s)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Biped</td>
+           <td><img src="" alt="img"></td>  
+          <td>9800</td>
+          <td>92</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Shadouuh</td>
+           <td><img src="" alt="img"></td>
+          <td>9450</td>
+          <td>101</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Thiago0181</td>
+          <td><img src="" alt="img"></td>
+          <td>9200</td>
+          <td>87</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>PlayerOne</td>
+           <td><img src="" alt="img"></td>
+          <td>8700</td>
+          <td>110</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Echo</td>
+           <td><img src="" alt="img"></td>
+          <td>8450</td>
+          <td>95</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Nova</td>
+           <td><img src="" alt="img"></td>
+          <td>8200</td>
+          <td>89</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Zero</td>
+           <td><img src="" alt="img"></td>
+          <td>7950</td>
+          <td>97</td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td>Pixel</td>
+           <td><img src="" alt="img"></td>
+          <td>7700</td>
+          <td>99</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>Axel</td>
+           <td><img src="" alt="img"></td>
+          <td>7400</td>
+          <td>103</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td>Lyra</td>
+           <td><img src="" alt="img"></td>
+          <td>7100</td>
+          <td>112</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    
+    
+>>>>>>> 4ade45be34f0f954ecda1e678f91a5fd69ccfcd0
   <script>
     function handleLogout() {
       const modal = document.getElementById('logoutModal');

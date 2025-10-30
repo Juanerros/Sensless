@@ -42,6 +42,7 @@
   text-align: center;
 }
 
+<<<<<<< HEAD
 .tabla-partidas th img{
   width: 20px;
   height: auto;
@@ -60,6 +61,8 @@
 }
 
 
+=======
+>>>>>>> 4ade45be34f0f954ecda1e678f91a5fd69ccfcd0
 .tabla-partidas thead {
   text-transform: uppercase;
   letter-spacing: 1px;
