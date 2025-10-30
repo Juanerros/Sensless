@@ -698,80 +698,27 @@ if (session_status() === PHP_SESSION_NONE) {
           <th>Jugador</th>
           <th>Destino</th>
           <th>Puntaje Máximo</th>
-          <th>Tiempo (s)</th>
+          <th>Tiempo</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>1</td>
-          <td>Biped</td>
-           <td><img src="" alt="img"></td>  
-          <td>9800</td>
-          <td>92</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Shadouuh</td>
-           <td><img src="" alt="img"></td>
-          <td>9450</td>
-          <td>101</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Thiago0181</td>
-          <td><img src="" alt="img"></td>
-          <td>9200</td>
-          <td>87</td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>PlayerOne</td>
-           <td><img src="" alt="img"></td>
-          <td>8700</td>
-          <td>110</td>
-        </tr>
-        <tr>
-          <td>5</td>
-          <td>Echo</td>
-           <td><img src="" alt="img"></td>
-          <td>8450</td>
-          <td>95</td>
-        </tr>
-        <tr>
-          <td>6</td>
-          <td>Nova</td>
-           <td><img src="" alt="img"></td>
-          <td>8200</td>
-          <td>89</td>
-        </tr>
-        <tr>
-          <td>7</td>
-          <td>Zero</td>
-           <td><img src="" alt="img"></td>
-          <td>7950</td>
-          <td>97</td>
-        </tr>
-        <tr>
-          <td>8</td>
-          <td>Pixel</td>
-           <td><img src="" alt="img"></td>
-          <td>7700</td>
-          <td>99</td>
-        </tr>
-        <tr>
-          <td>9</td>
-          <td>Axel</td>
-           <td><img src="" alt="img"></td>
-          <td>7400</td>
-          <td>103</td>
-        </tr>
-        <tr>
-          <td>10</td>
-          <td>Lyra</td>
-           <td><img src="" alt="img"></td>
-          <td>7100</td>
-          <td>112</td>
-        </tr>
+
+        <?php
+
+          require_once './controller/ranking.php';
+
+          foreach ($ranking as $key => $value) {
+            echo '<tr>';
+              echo '<td>'.($key+1).'</td>';
+              echo '<td>'.$value['nombre'].'</td>';
+              echo '<td>'.$value['gano'].'</td>';
+              echo '<td>'.$value['puntos'].'</td>';
+              echo '<td>'.$value['tiempo'].'</td>';
+            echo '</tr>';
+          }
+
+        ?>
+    
       </tbody>
     </table>
   </div>
