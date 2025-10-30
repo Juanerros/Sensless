@@ -1,0 +1,80 @@
+.tablas-section {
+  padding: 5rem 2rem;
+  text-align: center;
+  color: #fff;
+  background-image: url("../img/background-equipo.png");
+  background-position: center;
+  background-size: cover;
+}
+
+.tablas-title {
+  margin-bottom: 0.5rem;
+  font-family: "Playfair Display SC";
+  font-size: 2.4rem;
+  color: #fff;
+}
+
+.tablas-subtitle {
+  font-size: 1.1rem;
+  color: #ccc;
+  margin-bottom: 2rem;
+}
+
+.tabla-container {
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.tabla-partidas {
+  border-collapse: collapse;
+  width: 90%;
+  max-width: 900px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tabla-partidas th,
+.tabla-partidas td {
+  padding: 1rem;
+  text-align: center;
+}
+
+.tabla-partidas th img{
+  width: 20px;
+  height: auto;
+}
+.destino-icon {
+  width: 28px;
+  height: 28px;
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
+  transition: transform 0.3s ease;
+}
+
+.destino-icon:hover {
+  transform: scale(1.2);
+}
+
+
+.tabla-partidas thead {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+  background-color:rgba(0, 0, 105, 0.8);
+}
+
+.tabla-partidas tbody tr {
+  transition: background 0.3s ease;
+}
+
+.tabla-partidas tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.tabla-partidas tbody tr:hover {
+  background-color: rgba(130, 9, 229, 0.3);
+}
