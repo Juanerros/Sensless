@@ -1,4 +1,5 @@
 import { drawInventoryUI } from './inventory.js';
+import assetLoader from './assets/assetLoader.js';
 
 class HUD {
   constructor() {
@@ -64,6 +65,21 @@ class HUD {
     this.drawInventory(p);
     this.drawHealthBar(p, playerHealth, maxHealth);
     this.drawBorderBox(p);
+    this.drawCursor(p);
+  }
+
+  drawCursor(p) {
+    p.push();
+    p.resetMatrix();
+
+    const cursor = assetLoader.getScaledAsset('cursor', 25, 25);
+    if (!cursor) return;
+    
+    p.noCursor()
+
+    p.image(cursor, p.mouseX, p.mouseY);
+    
+    p.pop();
   }
 
   setBorderBoxVisibility(visible) {
