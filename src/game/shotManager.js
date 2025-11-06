@@ -285,14 +285,14 @@ function checkShotCollisions(shot, p) {
 
         // Verificar colisión
         if (Matter.Collision.collides(shot, body)) {
-            // Aplicar daño si es un enemigo
-            if (body.isEnemy && body.takeDamage) {
-                body.takeDamage(shot.damage);
-            }
-
-            // Ejecutar efecto de impacto
+            // Ejecutar efecto de impacto (incluye aplicar daño desde el tipo de disparo)
             if (shot.onHit) {
                 shot.onHit(shot, body, p);
+            } else {
+                // Si no hay onHit personalizado, aplicar daño por defecto
+                if (body.isEnemy && body.takeDamage) {
+                    body.takeDamage(shot.damage);
+                }
             }
 
             // Eliminar el disparo

@@ -54,6 +54,8 @@ class Renderer {
       this.drawBodyWithColor(p, body);
     }
 
+    // (Destello de impacto removido a pedido del usuario)
+
     // Contorno de hitbox para enemigos (fallback desde el renderer)
     if (body.isEnemy && body.width && body.height) {
       p.rectMode(p.CENTER);

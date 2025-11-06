@@ -53,6 +53,17 @@ export class Enemy {
     
     this.body.label = "enemy";
     this.body.isEnemy = true;
+
+    // Vincular el body con la instancia para utilidades futuras
+    this.body.owner = this;
+
+    // Exponer método de daño en el cuerpo para que el sistema de disparos pueda llamarlo
+    this.body.takeDamage = (amount) => {
+      // Validar entrada
+      const dmg = typeof amount === 'number' && amount > 0 ? amount : 0;
+      if (dmg <= 0) return;
+      this.takeDamage(dmg);
+    };
     
     Matter.World.add(world, this.body);
     getBodies().push(this.body);
@@ -101,6 +112,8 @@ export class Enemy {
     }
   }
 
+  // (Efecto visual de impacto removido a pedido del usuario)
+
   hasValidDimensions() {
     return this.width !== undefined && 
            this.height !== undefined && 
@@ -109,6 +122,7 @@ export class Enemy {
   }
 
   takeDamage(amount) {
+    // Aplicar daño
     this.health -= amount;
     if (this.health <= 0) {
       this.destroy();
@@ -206,6 +220,8 @@ export class ChaserEnemy extends Enemy {
 
   update() {
     const { dist, dx, dy } = this.getDistanceToPlayer();
+    // Base update (p.ej. destello)
+    super.update();
     
     if (dist < this.detectionRadius) {
       this.chasePlayer(dx, dy);

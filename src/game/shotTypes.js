@@ -39,6 +39,10 @@ export const SHOT_TYPES = {
         hasColission: true,
         getSprite: () => getSpriteByName('fire') || createColoredCircle([255, 100, 0]),
         onHit: (shot, target, p) => {
+            // Aplicar daño al enemigo impactado
+            if (target && target.isEnemy && typeof target.takeDamage === 'function') {
+                target.takeDamage(shot.damage);
+            }
             // Efecto visual al impactar
             createFireImpactEffect(shot.position.x, shot.position.y, p);
         },
@@ -61,7 +65,9 @@ export const SHOT_TYPES = {
         // getSpriteByName('water') ||
         getSprite: () => createColoredCircle([0, 100, 255]),
         onHit: (shot, target, p) => {
-            // Efecto visual al impactar
+            if (target && target.isEnemy && typeof target.takeDamage === 'function') {
+                target.takeDamage(shot.damage);
+            }
             createWaterImpactEffect(shot.position.x, shot.position.y, p);
         },
         onUpdate: (shot) => {
@@ -82,7 +88,9 @@ export const SHOT_TYPES = {
         hasColission: true,
         getSprite: () => getSpriteByName('lightning') || createColoredCircle([255, 255, 0]),
         onHit: (shot, target, p) => {
-            // Efecto visual al impactar
+            if (target && target.isEnemy && typeof target.takeDamage === 'function') {
+                target.takeDamage(shot.damage);
+            }
             createLightningImpactEffect(shot.position.x, shot.position.y, p);
         },
         onUpdate: (shot) => {
@@ -103,7 +111,10 @@ export const SHOT_TYPES = {
         hasColission: false,
         getSprite: () => getSpriteByName('multi') || createColoredCircle([255, 0, 255]),
         onHit: (shot, target, p) => {
-            // Efecto visual al impactar
+            if (target && target.isEnemy && typeof target.takeDamage === 'function') {
+                target.takeDamage(shot.damage);
+            }
+            // Efecto visual al impactar (pendiente)
             //createMultiImpactEffect(shot.position.x, shot.position.y, p);
         },
         onUpdate: (shot) => {
@@ -124,7 +135,9 @@ export const SHOT_TYPES = {
         hasColission: true,
         getSprite: () => getSpriteByName('earth') || createColoredCircle([139, 69, 19]),
         onHit: (shot, target, p) => {
-            // Efecto visual al impactar
+            if (target && target.isEnemy && typeof target.takeDamage === 'function') {
+                target.takeDamage(shot.damage);
+            }
             createEarthImpactEffect(shot.position.x, shot.position.y, p);
         },
         onUpdate: (shot) => {

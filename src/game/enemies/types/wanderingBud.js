@@ -63,6 +63,8 @@ export class WanderingBud extends Enemy {
   }
 
   update() {
+    // Asegurar comportamiento base (p.ej. decremento de destello)
+    super.update();
     const player = gameState.player;
     if (!player) return;
 
