@@ -321,3 +321,25 @@ export function getTerrainHeightAt(x) {
     const noiseValue = noiseGenerator.octaveNoise(x);
     return BASE_TERRAIN_HEIGHT + (noiseValue * TERRAIN_HEIGHT_VARIATION);
 }
+
+// ============================
+// PROGRESO DE CHUNKS VISITADOS
+// ============================
+
+/**
+ * Devuelve la cantidad de chunks visitados por el jugador.
+ */
+export function getVisitedChunksCount() {
+    return visitedChunks.size;
+}
+
+/**
+ * Devuelve el progreso basado en una meta de chunks.
+ * @param {number} goalChunks - Cantidad objetivo de chunks para considerar 100%.
+ * @returns {{count:number, percent:number}} count y percent (entre 0 y 1)
+ */
+export function getVisitedProgress(goalChunks = 20) {
+    const count = visitedChunks.size;
+    const percent = Math.max(0, Math.min(1, goalChunks > 0 ? (count / goalChunks) : 0));
+    return { count, percent };
+}

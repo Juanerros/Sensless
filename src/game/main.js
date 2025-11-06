@@ -226,7 +226,7 @@ const sketch = (p) => {
     // Actualizar y dibujar disparos mágicos
     updateMagicShotsSystem(p);
     drawMagicShots(p);
-    
+
     if (player) {
       const playerHealth = getPlayerHealth();
       hud.drawAll(p, playerHealth.current, playerHealth.max);
@@ -237,6 +237,9 @@ const sketch = (p) => {
     }
     
     gameOverScreen.draw(p);
+
+    // Dibujar barra de progreso de oleadas del spawner por encima de todo
+    if (spawner) spawner.draw(p);
   };
   
   // Función para dibujar la pantalla de carga
