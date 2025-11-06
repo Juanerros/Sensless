@@ -36,7 +36,7 @@ if (isset($_SESSION['error']) || isset($_SESSION['msg'])) {
   <div class="login-bg-main">
     <div class="login-container">
       <div class="login-form-section">
-        <h1 class="login-title anim-title">SENSELESS</h1>
+        <h1 class="login-title anim-title">SENSLESS</h1>
         <h2 class="login-subtitle anim-title" style="animation-delay: 0.1s">
           INICIO DE SESIÓN
         </h2>

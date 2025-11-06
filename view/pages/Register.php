@@ -35,7 +35,7 @@ if (isset($_SESSION['error']) || isset($_SESSION['msg'])) {
     <div class="register-bg-main">
       <div class="register-container">
         <div class="register-form-section">
-          <h1 class="register-title anim-title">SENSELESS</h1>
+          <h1 class="register-title anim-title">SENSLESS</h1>
           <h2 class="register-subtitle anim-title" style="animation-delay: 0.1s">CREAR UNA CUENTA</h2>
           <form class="register-form" id="register-form" action="./../../controller/register.php" method="POST">
             <div class="input-group">

@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="./view/assets/img/ic_logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Senseless</title>
+  <title>The Sensless</title>
   <link rel="stylesheet" href="./view/assets/css/index.css" />
   <link rel="stylesheet" href="./view/assets/css/HeroSection.css" />
   <link rel="stylesheet" href="./view/assets/css/EquipoSection.css" />
@@ -20,7 +20,7 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="./view/assets/img/ic_logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Senseless</title>
+  <title>The Sensless</title>
   <link rel="stylesheet" href="./view/assets/css/index.css" />
   <link rel="stylesheet" href="./view/assets/css/HeroSection.css" />
   <link rel="stylesheet" href="./view/assets/css/EquipoSection.css" />
