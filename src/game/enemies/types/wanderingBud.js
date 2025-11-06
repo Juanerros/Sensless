@@ -1,8 +1,8 @@
 import Matter from "matter-js";
-import { Enemy } from "./enemy";
-import { gameState } from "../state";
-import { takeDamage } from "../player";
-import { createChlorineCloudEffect } from "./timeEffects";
+import { Enemy } from "../core/enemy";
+import { gameState } from "../../state";
+import { takeDamage } from "../../player";
+import { createChlorineCloudEffect } from "../effects/timeEffects";
 
 // ============================
 // ENEMIGO WANDERING BUD

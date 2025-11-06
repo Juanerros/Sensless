@@ -3,7 +3,7 @@
 // ============================
 
 import { getEffectSpriteByName } from './effectSprites.js';
-import { gameState } from '../state.js';
+import { gameState } from '../../state.js';
 
 // Registro de efectos activos
 let activeTimeEffects = [];
@@ -86,7 +86,6 @@ export function drawTimeEffects(p) {
 function drawChlorineCloud(p, effect) {
   effect.sprites.forEach(sprite => {
     const spriteImg = getEffectSpriteByName(`chlorineCloud${sprite.spriteNumber}`);
-    if (!spriteImg) return;
     
     p.push();
     p.translate(sprite.x, sprite.y);
@@ -99,15 +98,18 @@ function drawChlorineCloud(p, effect) {
     
     const size = sprite.scale * 20;
     try {
-      // Verificar si es una instancia de GifAnimation
-      if (spriteImg.gifImage) {
+      // Dibujar según el tipo o disponibilidad del sprite
+      if (spriteImg && spriteImg.gifImage) {
+        // Instancia de GifAnimation
         p.image(spriteImg.gifImage, 0, 0, size, size);
-      } 
-      // Si es una imagen p5 normal
-      else if (spriteImg.width > 0 && spriteImg.height > 0) {
+      } else if (spriteImg && spriteImg.width > 0 && spriteImg.height > 0) {
+        // Imagen p5 normal (PNG)
         p.image(spriteImg, 0, 0, size, size);
       } else {
-        throw new Error("Sprite sin dimensiones válidas");
+        // Fallback si el sprite no está disponible o no tiene dimensiones válidas
+        p.fill(0, 255, 255, alpha);
+        p.noStroke();
+        p.ellipse(0, 0, size, size);
       }
     } catch (error) {
       console.warn("Error al dibujar nube de cloro:", error);

@@ -2,8 +2,8 @@
 // CARGADOR CENTRAL DE SPRITES
 // ============================
 
-import { loadEnemySprites } from './enemySprites.js';
-import { loadEffectSprites } from './effectSprites.js';
+import { loadEnemySprites } from '../sprites/enemySprites.js';
+import { loadEffectSprites } from '../effects/effectSprites.js';
 
 // Registro del estado de carga
 let spritesLoaded = {

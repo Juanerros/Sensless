@@ -2,7 +2,7 @@
 // CONFIGURACIÓN DE SPRITES DE ENEMIGOS
 // ============================
 
-import assetLoader from '../assets/assetLoader.js';
+import assetLoader from '../../assets/assetLoader.js';
 
 let enemyElements = [
   { name: 'olvido', sprite: null },

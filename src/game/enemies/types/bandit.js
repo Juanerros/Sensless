@@ -1,9 +1,9 @@
 import Matter from "matter-js";
-import { Enemy } from "./enemy";
-import { gameState } from "../state";
-import { getBodies, getWorld } from "../physics";
-import { takeDamage } from "../player";
-import { getScaledEnemySpriteByName } from "./enemySprites";
+import { Enemy } from "../core/enemy";
+import { gameState } from "../../state";
+import { getBodies, getWorld } from "../../physics";
+import { takeDamage } from "../../player";
+import { getScaledEnemySpriteByName } from "../sprites/enemySprites";
 
 // ============================
 // GESTIÓN DE PROYECTILES

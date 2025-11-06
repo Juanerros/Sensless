@@ -24,6 +24,11 @@ export const gameAssets = [
   { name: 'wanderingBud', url: 'sprites/enemies/Tronco/tronco_idle.gif', type: 'animated' },
   { name: 'bandit', url: 'sprites/enemies/Bandido/bandido_idle.gif', type: 'animated' },
   { name: 'banditBullet', url: 'sprites/enemies/Bandido/bandido_proyectil.png', width: 30, height: 5 }
+  ,
+  // Efectos (nubes de cloro)
+  { name: 'chlorineCloud1', url: 'sprites/enemies/effects/nubes_de_cloro/1.png' },
+  { name: 'chlorineCloud2', url: 'sprites/enemies/effects/nubes_de_cloro/2.png' },
+  { name: 'chlorineCloud3', url: 'sprites/enemies/effects/nubes_de_cloro/3.png' }
 ];
 
 // Función para obtener la lista completa de assets

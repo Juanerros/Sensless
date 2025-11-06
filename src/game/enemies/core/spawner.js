@@ -1,8 +1,8 @@
 import { ChaserEnemy } from './enemy.js';
-import { WanderingBud } from './wanderingBud.js';
-import { Bandit } from './bandit.js';
-import { getWorld } from '../physics.js';
-import { getScaledEnemySpriteByName } from './enemySprites.js';
+import { WanderingBud } from '../types/wanderingBud.js';
+import { Bandit } from '../types/bandit.js';
+import { getWorld } from '../../physics.js';
+import { getScaledEnemySpriteByName } from '../sprites/enemySprites.js';
 import { enemies } from './enemy.js';
 
 class EnemySpawner {

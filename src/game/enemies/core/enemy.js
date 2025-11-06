@@ -1,6 +1,6 @@
 import Matter from "matter-js";
-import { getBodies } from "../physics";
-import { gameState } from "../state";
+import { getBodies } from "../../physics";
+import { gameState } from "../../state";
 
 // ============================
 // REGISTRO DE ENEMIGOS

@@ -1,6 +1,6 @@
 import { loadSpritesAsync } from './sprites.js';
-import { loadAllGameSprites } from './enemies/spriteLoader.js';
-import { getEnemySpriteByName, getScaledEnemySpriteByName } from './enemies/enemySprites.js';
+import { loadAllGameSprites } from './enemies/loaders/spriteLoader.js';
+import { getEnemySpriteByName, getScaledEnemySpriteByName } from './enemies/sprites/enemySprites.js';
 
 class SpriteLoader {
   constructor() {
