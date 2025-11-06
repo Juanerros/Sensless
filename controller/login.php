@@ -19,7 +19,11 @@ if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
     $_SESSION['id_usuario'] = $user['id_usuario'];
     $_SESSION['nombre'] = $user['nombre'];
-    header('Location: ./../index.php');
+    if(isset($_SESSION['score'])){
+        header('Location: ./saveScore.php');
+    } else {
+        header('Location: ./../index.php');
+    }
     exit();
 } else {
     echo 'Nombre de usuario o contraseña incorrectos.';
