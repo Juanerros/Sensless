@@ -97,7 +97,6 @@ export function getScaledEnemySpriteByName(name, width, height) {
     if (defaultSize) {
       width = defaultSize.width;
       height = defaultSize.height;
-      console.log(`Usando tamaño por defecto para ${name}: ${width}x${height}`);
     } else {
       console.warn(`Parámetros inválidos para getScaledEnemySpriteByName: ${name}, ${width}, ${height}`);
       return null;

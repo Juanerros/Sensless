@@ -1,9 +1,16 @@
 import { getBodies } from './physics.js';
 import { getPlayer } from './player.js';
+import { getTerrainSpriteManager, initializeTerrainSprites } from './terrainSprites.js';
 
 class Renderer {
   constructor() {
     this.player = null;
+    this.terrainSpriteManager = null;
+    this.terrainSpritesInitStarted = false;
+    this.backgroundLayers = [];
+    this.backgroundLoaded = false;
+    this.backgroundInitStarted = false;
+    this.parallaxFactors = [0.05, 0.12, 0.25];
   }
 
   setPlayer(player) {
@@ -13,13 +20,13 @@ class Renderer {
   drawBodies(p) {
     const bodies = getBodies();
     const player = getPlayer();
-    
+
     const cameraX = player ? player.position.x : 0;
     const cameraY = player ? player.position.y : 0;
     const screenWidth = p.width;
     const screenHeight = p.height;
     const margin = -50;
-    
+
     const leftBound = cameraX - screenWidth / 2 - margin;
     const rightBound = cameraX + screenWidth / 2 + margin;
     const topBound = cameraY - screenHeight / 2 - margin;
@@ -27,14 +34,14 @@ class Renderer {
 
     bodies.forEach(body => {
       if (body.isPlayer) return;
-      
+
       const pos = body.position;
-      
-      if (pos.x < leftBound || pos.x > rightBound || 
-          pos.y < topBound || pos.y > bottomBound) {
+
+      if (pos.x < leftBound || pos.x > rightBound ||
+        pos.y < topBound || pos.y > bottomBound) {
         return;
       }
-      
+
       this.drawSingleBody(p, body);
     });
   }
@@ -71,12 +78,12 @@ class Renderer {
   // Método para verificar si un sprite es válido para dibujar
   isValidSprite(sprite) {
     if (!sprite) return false;
-    
+
     // Verificar si es una instancia de GifAnimation
     if (sprite.gifImage) {
       return sprite.gifImage && typeof sprite.gifImage === 'object' && sprite.gifImage.width > 0;
     }
-    
+
     // Verificar si es una imagen p5 normal
     return typeof sprite === 'object' && sprite.width > 0;
   }
@@ -87,7 +94,7 @@ class Renderer {
       if (body.sprite.gifImage) {
         p.imageMode(p.CENTER);
         p.image(body.sprite.gifImage, 0, 0, body.width, body.height);
-      } 
+      }
       // Si es una imagen p5 normal
       else {
         p.imageMode(p.CENTER);
@@ -111,20 +118,21 @@ class Renderer {
   }
 
   drawTerrainBody(p, body) {
-    const baseColor = [101, 67, 33];
-    if (body.layer > 0) {
-      const darkenAmount = Math.min(body.layer * 15, 60);
-      const r = Math.max(baseColor[0] - darkenAmount, 0);
-      const g = Math.max(baseColor[1] - darkenAmount, 0);
-      const b = Math.max(baseColor[2] - darkenAmount, 0);
-      p.fill(r, g, b);
-      p.stroke(r, g, b);
-    } else {
-      p.fill(101, 67, 33);
-      p.stroke(101, 67, 33);
+    if (!this.terrainSpriteManager) {
+      this.terrainSpriteManager = getTerrainSpriteManager();
     }
-    p.strokeWeight(1);
-    this.drawBodyRect(p, body);
+    if (!this.terrainSpriteManager.isLoaded() && !this.terrainSpritesInitStarted) {
+      this.terrainSpritesInitStarted = true;
+      initializeTerrainSprites(p).finally(() => {
+        this.terrainSpritesInitStarted = false;
+      });
+    }
+    const sprite = this.terrainSpriteManager.getSpriteForLayer(body.layer || 0);
+    if (sprite) {
+      this.terrainSpriteManager.drawTerrainSprite(p, body, sprite);
+    } else {
+      this.terrainSpriteManager.drawFallbackTerrain(p, body);
+    }
   }
 
   drawGroundBody(p, body) {
@@ -141,14 +149,61 @@ class Renderer {
 
   drawBodyRect(p, body) {
     p.rectMode(p.CENTER);
-    if (body.width !== undefined && body.height !== undefined && 
-        body.width > 0 && body.height > 0) {
+    if (body.width !== undefined && body.height !== undefined &&
+      body.width > 0 && body.height > 0) {
       p.rect(0, 0, body.width, body.height);
     }
   }
 
   drawBackground(p) {
-    p.background(135, 206, 235);
+    const player = getPlayer();
+    const cameraX = player ? player.position.x : 0;
+    const cameraY = player ? player.position.y : 0;
+
+    if (!this.backgroundLoaded && !this.backgroundInitStarted) {
+      this.backgroundInitStarted = true;
+      this.initializeBackgroundSprites(p).finally(() => {
+        this.backgroundInitStarted = false;
+      });
+    }
+
+    if (!this.backgroundLoaded || this.backgroundLayers.length === 0) {
+      p.background(135, 206, 235);
+      return;
+    }
+
+    p.imageMode(p.CORNER);
+    for (let i = 0; i < this.backgroundLayers.length; i++) {
+      const layer = this.backgroundLayers[i];
+      const factor = this.parallaxFactors[i] ?? this.parallaxFactors[this.parallaxFactors.length - 1];
+      const offsetX = ((cameraX * factor) % p.width + p.width) % p.width;
+      const x1 = -offsetX;
+      const x2 = x1 + p.width;
+      const y = 0; // anclado verticalmente
+      p.image(layer, x2, y - 250, p.width, p.height);
+      p.image(layer, x1, y - 250, p.width, p.height);
+    }
+  }
+
+  setParallaxFactors(factors) {
+    if (Array.isArray(factors) && factors.length > 0) {
+      this.parallaxFactors = factors;
+    }
+  }
+
+  async initializeBackgroundSprites(p) {
+    const paths = [
+      'sprites/Fondo/arboleda_1/fondo_1.png',
+      'sprites/Fondo/arboleda_1/fondo_2.png',
+      'sprites/Fondo/arboleda_1/fondo_3.png',
+    ];
+    const loaders = paths.map(path => new Promise(resolve => {
+      p.loadImage(path, img => resolve(img), () => resolve(null));
+    }));
+    return Promise.all(loaders).then(images => {
+      this.backgroundLayers = images.filter(Boolean);
+      this.backgroundLoaded = this.backgroundLayers.length > 0;
+    });
   }
 }
 

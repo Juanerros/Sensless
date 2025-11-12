@@ -168,12 +168,18 @@ function createNewShot(x, y, shotType, direction, shooter) {
         shot.sprite = sprite;
     }
 
-    // Establecer velocidad
     const velocity = {
         x: direction.x * shotType.speed,
         y: direction.y * shotType.speed
     };
     Matter.Body.setVelocity(shot, velocity);
+
+    shot.intendedVelocity = { x: velocity.x, y: velocity.y };
+    shot.lastPosition = { x, y };
+    shot.ignoreGravity = !!shotType.ignoreGravity;
+
+    const initialAngle = Math.atan2(velocity.y, velocity.x);
+    Matter.Body.setAngle(shot, initialAngle);
 
     // Añadir al mundo
     Matter.World.add(world, shot);
@@ -216,12 +222,18 @@ function resetShot(shot, x, y, shotType, direction, shooter) {
         shot.sprite = sprite;
     }
 
-    // Establecer velocidad
     const velocity = {
         x: direction.x * shotType.speed,
         y: direction.y * shotType.speed
     };
     Matter.Body.setVelocity(shot, velocity);
+
+    shot.intendedVelocity = { x: velocity.x, y: velocity.y };
+    shot.lastPosition = { x, y };
+    shot.ignoreGravity = !!shotType.ignoreGravity;
+
+    const initialAngle = Math.atan2(velocity.y, velocity.x);
+    Matter.Body.setAngle(shot, initialAngle);
 
     // Añadir al mundo si no está ya
     if (!getBodies().includes(shot)) {
@@ -247,12 +259,28 @@ export function updateShots(p) {
             continue;
         }
 
+        if (shot.ignoreGravity && shot.intendedVelocity && shot.lastPosition) {
+            const expectedX = shot.lastPosition.x + shot.intendedVelocity.x;
+            const expectedY = shot.lastPosition.y + shot.intendedVelocity.y;
+            Matter.Body.setPosition(shot, { x: expectedX, y: expectedY });
+            Matter.Body.setVelocity(shot, { x: shot.intendedVelocity.x, y: shot.intendedVelocity.y });
+            shot.lastPosition = { x: expectedX, y: expectedY };
+            const ang = Math.atan2(shot.intendedVelocity.y, shot.intendedVelocity.x);
+            Matter.Body.setAngle(shot, ang);
+        }
+
         // Decrementar vida
         shot.currentLife--;
 
         // Ejecutar comportamiento personalizado
         if (shot.onUpdate) {
             shot.onUpdate(shot);
+        }
+
+        const vx = shot.velocity.x;
+        const vy = shot.velocity.y;
+        if (Math.abs(vx) + Math.abs(vy) > 0.0001) {
+            Matter.Body.setAngle(shot, Math.atan2(vy, vx));
         }
 
         // Verificar colisiones
@@ -350,9 +378,13 @@ function drawShot(p, shot) {
     p.rotate(shot.angle);
 
     // Dibujar con sprite si está disponible y es válido
-    if (shot.sprite && typeof shot.sprite === 'object' && shot.sprite.width && shot.sprite.width > 0 && !shot.sprite.isColorFallback) {
+    if (shot.sprite && typeof shot.sprite === 'object' && !shot.sprite.isColorFallback) {
         p.imageMode(p.CENTER);
-        p.image(shot.sprite, 0, 0, size, size);
+        if (shot.sprite.gifImage) {
+            p.image(shot.sprite.gifImage, 0, 0, size, size);
+        } else if (shot.sprite.width && shot.sprite.width > 0) {
+            p.image(shot.sprite, 0, 0, size, size);
+        }
     }
     // Fallback a círculo coloreado si tiene color definido
     else if (shot.sprite && shot.sprite.color && Array.isArray(shot.sprite.color)) {

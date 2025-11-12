@@ -28,3 +28,9 @@ export function  restartGame() {
     // Recargar la página para reiniciar completamente el juego
     window.location.reload();
 }
+
+export function addScore(points) {
+  const value = typeof points === 'number' ? points : 0;
+  if (value <= 0) return;
+  gameState.score += value;
+}

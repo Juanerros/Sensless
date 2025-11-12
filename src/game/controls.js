@@ -17,8 +17,8 @@ const jumpBufferMs = 140;
 const coyoteTimeMs = 140;
 const smoothingAlpha = 0.45; // Aumentado para respuesta más inmediata
 const airControlMultiplier = 0.8; // Control en el aire
-const groundAcceleration = 0.8; // Aceleración en suelo
-const airAcceleration = 0.6; // Aceleración en aire
+const groundAcceleration = 0.85 // Aceleración en suelo
+const airAcceleration = 0.7; // Aceleración en aire
 
 // ===== Gestión de Input =====
 function normalizeKey(key) {
@@ -42,14 +42,12 @@ export function handleKeyPressed(key) {
   }
 
   if (k === 'q') {
-    selectShotType('fire')
+    selectShotType('basic')
   } else if (k === 'w') {
-    selectShotType('water')
+    selectShotType('fire')
   } else if (k === 'e') {
-    selectShotType('lightning')
+    selectShotType('water')
   } else if (k === 'r') {
-    selectShotType('multi')
-  } else if (k === 't') {
     selectShotType('earth')
   }
 }
@@ -132,8 +130,14 @@ function getMovementAxis() {
 function attemptStepUp(player, allBodies, axis) {
   if (axis === 0 || !Array.isArray(allBodies)) return false;
 
-  const stepMax = Math.max(12, Math.min(player.height * 0.3, 24));
-  const horizontalGap = 8;
+  const onGround = isOnGround(player, allBodies);
+  if (!onGround) return false;
+
+  const moving = Math.abs(player.velocity.x) > 0.25;
+  if (!moving) return false;
+
+  const stepMax = Math.max(22, Math.min(player.height * 0.3, 24));
+  const horizontalGap = Math.max(6, Math.min(player.width * 0.35, 14));
 
   const playerBounds = {
     minX: player.bounds?.min?.x ?? player.position.x - player.width / 2,
@@ -147,14 +151,30 @@ function attemptStepUp(player, allBodies, axis) {
   for (const body of allBodies) {
     if (!body || body === player || !body.bounds || body.isSensor || body.label === 'spell') continue;
 
-    const nearFront = axis > 0 ? 
-      body.bounds.min.x - playerBounds.maxX : 
+    const nearFront = axis > 0 ?
+      body.bounds.min.x - playerBounds.maxX :
       playerBounds.minX - body.bounds.max.x;
 
     if (nearFront < 0 || nearFront > horizontalGap) continue;
 
     const neededRise = playerBounds.bottomY - body.bounds.min.y;
     if (neededRise <= 0 || neededRise > stepMax) continue;
+
+    const predicted = {
+      minX: playerBounds.minX,
+      maxX: playerBounds.maxX,
+      topY: playerBounds.topY - neededRise,
+      bottomY: playerBounds.bottomY - neededRise
+    };
+
+    let blocked = false;
+    for (const other of allBodies) {
+      if (!other || other === player || !other.bounds || other.isSensor || other.label === 'spell') continue;
+      const overlapsX = predicted.maxX > other.bounds.min.x && predicted.minX < other.bounds.max.x;
+      const overlapsY = predicted.bottomY > other.bounds.min.y && predicted.topY < other.bounds.max.y;
+      if (overlapsX && overlapsY) { blocked = true; break; }
+    }
+    if (blocked) continue;
 
     const newTopY = playerBounds.topY - neededRise;
     if (newTopY <= body.bounds.min.y - 2) {
@@ -163,9 +183,9 @@ function attemptStepUp(player, allBodies, axis) {
   }
 
   if (stepDelta > 0) {
-    Matter.Body.setPosition(player, { 
-      x: player.position.x, 
-      y: player.position.y - stepDelta 
+    Matter.Body.setPosition(player, {
+      x: player.position.x,
+      y: player.position.y - stepDelta
     });
     return true;
   }

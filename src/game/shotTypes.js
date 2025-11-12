@@ -4,7 +4,10 @@
  * Cada tipo de disparo tiene propiedades específicas como daño, velocidad, etc.
  */
 
+import Matter from 'matter-js';
 import { getSpriteByName } from './sprites.js';
+import assetLoader from './assets/assetLoader.js';
+import { getBodies } from './physics.js';
 
 /**
  * Tipos de disparos elementales disponibles
@@ -25,123 +28,140 @@ import { getSpriteByName } from './sprites.js';
 /**
  * Definición de los tipos de disparos disponibles
  */
+// Utilidad para sprite del tipo básico (GIF)
+function getBasicSprite() {
+    const asset = assetLoader.getAsset('basicProjectile');
+    if (asset && (asset.gifImage || asset.width)) return asset;
+    return createColoredCircle([255, 255, 255]);
+}
+
+const WATER_GRAVITY = 0.35;
+const KNOCKBACK_SMALL = 0.05;
+const KNOCKBACK_MEDIUM = 0.1;
+const KNOCKBACK_STRONG = 0.2;
+
 export const SHOT_TYPES = {
-    // Disparo básico de fuego
-    FIRE: {
-        name: 'fire',
-        damage: 15,
-        speed: 22,
-        size: 20,
+    // Tipo Básico: recto, velocidad media, daño básico, sprite GIF
+    BASIC: {
+        name: 'basic',
+        damage: 12,
+        speed: 14,
+        size: 28,
         count: 1,
-        cooldown: 400,
-        element: 'fire',
-        lifespan: 360,
+        cooldown: 300,
+        element: 'basic',
+        icon: 'basicProjectile',
+        lifespan: 240,
+        ignoreGravity: true,
         hasColission: true,
-        getSprite: () => getSpriteByName('fire') || createColoredCircle([255, 100, 0]),
+        getSprite: () => getBasicSprite(),
         onHit: (shot, target, p) => {
-            // Aplicar daño al enemigo impactado
             if (target && target.isEnemy && typeof target.takeDamage === 'function') {
                 target.takeDamage(shot.damage);
             }
-            // Efecto visual al impactar
-            createFireImpactEffect(shot.position.x, shot.position.y, p);
         },
         onUpdate: (shot) => {
-            
+            // sin gravedad, trayectoria recta
         }
     },
-    
-    // Disparo de agua
+
+    // Tipo Fuego: recto, explosión con AoE y quemadura leve
+    FIRE: {
+        name: 'fire',
+        damage: 22,
+        speed: 15,
+        size: 26,
+        count: 1,
+        cooldown: 350,
+        element: 'fire',
+        icon: 'fire',
+        lifespan: 300,
+        ignoreGravity: true,
+        hasColission: true,
+        getSprite: () => getSpriteByName('fire') || createColoredCircle([255, 100, 0]),
+        onHit: (shot, target, p) => {
+            // Explosión con área de efecto
+            const origin = shot.position;
+            const radius = 60;
+            const bodies = getBodies();
+            for (const b of bodies) {
+                if (!b || !b.isEnemy || !b.position) continue;
+                const dx = b.position.x - origin.x;
+                const dy = b.position.y - origin.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist <= radius) {
+                    if (typeof b.takeDamage === 'function') {
+                        b.takeDamage(shot.damage * 0.7, { type: 'fire', source: shot });
+                    }
+                    const nx = dx / (dist || 1);
+                    const ny = dy / (dist || 1);
+                    Matter.Body.applyForce(b, b.position, { x: nx * KNOCKBACK_MEDIUM, y: ny * KNOCKBACK_MEDIUM });
+                }
+            }
+            // quemadura leve al objetivo directo
+            if (target && typeof target.takeDamage === 'function') {
+                target.takeDamage(4, { type: 'burn', source: shot });
+            }
+            createFireImpactEffect(origin.x, origin.y, p);
+        },
+        onUpdate: (shot) => {
+            // movimiento recto
+        }
+    },
+
+    // Tipo Agua: ráfaga con trayectoria parabólica y knockback leve
     WATER: {
         name: 'water',
-        damage: 10,
-        speed: 10,
-        size: 25,
+        damage: 6,
+        speed: 18,
+        size: 14,
         count: 5,
-        cooldown: 600,
+        cooldown: 180,
         element: 'water',
-        lifespan: 45,
+        icon: 'water',
+        lifespan: 80,
         hasColission: true,
-        // getSpriteByName('water') ||
-        getSprite: () => createColoredCircle([0, 100, 255]),
+        getSprite: () => getSpriteByName('water') || createColoredCircle([0, 100, 255]),
         onHit: (shot, target, p) => {
             if (target && target.isEnemy && typeof target.takeDamage === 'function') {
                 target.takeDamage(shot.damage);
+            }
+            if (target && target.isEnemy) {
+                const dir = Math.sign(shot.velocity.x) || 0;
+                Matter.Body.applyForce(target, target.position, { x: dir * KNOCKBACK_SMALL, y: -KNOCKBACK_SMALL * 0.5 });
             }
             createWaterImpactEffect(shot.position.x, shot.position.y, p);
         },
         onUpdate: (shot) => {
-            // Comportamiento estándar, movimiento lineal
+            const v = shot.velocity;
+            Matter.Body.setVelocity(shot, { x: v.x, y: v.y + WATER_GRAVITY });
         }
     },
-    
-    // Disparo de rayo
-    LIGHTNING: {
-        name: 'lightning',
-        damage: 25,
-        speed: 25,
-        size: 35,
-        count: 1,
-        cooldown: 800,
-        element: 'lightning',
-        lifespan: 30,
-        hasColission: true,
-        getSprite: () => getSpriteByName('lightning') || createColoredCircle([255, 255, 0]),
-        onHit: (shot, target, p) => {
-            if (target && target.isEnemy && typeof target.takeDamage === 'function') {
-                target.takeDamage(shot.damage);
-            }
-            createLightningImpactEffect(shot.position.x, shot.position.y, p);
-        },
-        onUpdate: (shot) => {
-            // Comportamiento estándar, movimiento lineal
-        }
-    },
-    
-    // Disparo múltiple
-    MULTI: {
-        name: 'multi',
-        damage: 8,
-        speed: 15,
-        size: 12,
-        count: 3,
-        cooldown: 1000,
-        element: 'multi',
-        lifespan: 40,
-        hasColission: false,
-        getSprite: () => getSpriteByName('multi') || createColoredCircle([255, 0, 255]),
-        onHit: (shot, target, p) => {
-            if (target && target.isEnemy && typeof target.takeDamage === 'function') {
-                target.takeDamage(shot.damage);
-            }
-            // Efecto visual al impactar (pendiente)
-            //createMultiImpactEffect(shot.position.x, shot.position.y, p);
-        },
-        onUpdate: (shot) => {
-            // Comportamiento estándar, movimiento lineal
-        }
-    },
-    
-    // Disparo de tierra
+
+    // Tipo Tierra: grande y pesado, parabólico con caída pronunciada, knockback fuerte
     EARTH: {
         name: 'earth',
-        damage: 20,
+        damage: 35,
         speed: 10,
-        size: 40,
+        size: 50,
         count: 1,
-        cooldown: 700,
+        cooldown: 500,
         element: 'earth',
-        lifespan: 50,
+        icon: 'earth',
+        lifespan: 120,
         hasColission: true,
         getSprite: () => getSpriteByName('earth') || createColoredCircle([139, 69, 19]),
         onHit: (shot, target, p) => {
             if (target && target.isEnemy && typeof target.takeDamage === 'function') {
                 target.takeDamage(shot.damage);
             }
+            if (target) {
+                const dir = Math.sign(shot.velocity.x) || 0;
+                Matter.Body.applyForce(target, target.position, { x: dir * KNOCKBACK_STRONG, y: -KNOCKBACK_MEDIUM });
+            }
             createEarthImpactEffect(shot.position.x, shot.position.y, p);
         },
         onUpdate: (shot) => {
-            // Comportamiento estándar, movimiento lineal
         }
     }
 };

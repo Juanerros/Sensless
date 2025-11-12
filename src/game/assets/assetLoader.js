@@ -119,9 +119,7 @@ class AssetLoader {
           this.updateProgress(asset.name, 'cached');
           return;
         }
-        
-        console.log(`Cargando asset: ${asset.name} (${asset.url})`);
-        
+                
         // Cargar la imagen usando p5.loadImage
         p5Instance.loadImage(
           asset.url,
@@ -133,9 +131,7 @@ class AssetLoader {
               reject(new Error(`Imagen inválida para ${asset.name}`));
               return;
             }
-            
-            console.log(`Asset cargado: ${asset.name} (${img.width}x${img.height})`);
-            
+                        
             // Si es un GIF animado, crear una animación
             if (asset.url.toLowerCase().endsWith('.gif') && asset.type !== 'static') {
               const animation = new GifAnimation(img);

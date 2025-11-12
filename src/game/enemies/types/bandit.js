@@ -34,6 +34,7 @@ class Bullet {
     this.height = 10;
     this.damage = 20;
     this.speed = 2;
+    this.scoreValue = 200 + Math.round(Math.random() * 100);
     this.lifeTime = 360;
     this.shooter = shooter;
     this.invulnerabilityFrames = 5;

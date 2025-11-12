@@ -19,6 +19,7 @@ export class WanderingBud extends Enemy {
     this.detectionRadius = 300;
     this.circleRadius = 150;
     this.speed = 0.005;
+    this.scoreValue = 100 + Math.round(Math.random() * 100);
     this.health = 50;
     this.name = 'wanderingBud';
     this.type = "wanderingBud";

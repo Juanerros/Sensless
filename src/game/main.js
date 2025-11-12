@@ -58,13 +58,11 @@ const sketch = (p) => {
     // Registrar callback de progreso
     assetLoader.onProgress(progress => {
       loadingProgress = progress.progress;
-      console.log(`Cargando asset: ${progress.name} (${Math.floor(progress.progress * 100)}%)`);
     });
     
     // Cargar todos los assets definidos en assetList.js
     assetLoader.loadAssets(getAllAssets(), p)
       .then(() => {
-        console.log('Todos los assets cargados correctamente');
         
         // Verificar que los sprites del jugador se cargaron correctamente
         const playerSprites = ['player', 'playerIdleGif', 'playerMoveGif', 'playerJump1', 'playerJump2', 'playerHurt1', 'playerHurt2', 'playerDead'];
@@ -75,17 +73,12 @@ const sketch = (p) => {
           if (!sprite || !sprite.width) {
             console.warn(`Sprite del jugador no cargado correctamente: ${spriteName}`);
             allPlayerSpritesLoaded = false;
-          } else {
-            console.log(`Sprite del jugador cargado correctamente: ${spriteName} (${sprite.width}x${sprite.height})`);
           }
         });
         
         if (!allPlayerSpritesLoaded) {
           console.warn('Algunos sprites del jugador no se cargaron correctamente. Usando fallback.');
-          
-          // Intentar cargar los sprites críticos directamente con p5
-          console.log('Intentando cargar sprites críticos directamente...');
-          
+                    
           // Crear sprites fallback para casos de emergencia
           const createFallbackSprite = (width, height, color) => {
             const fallbackSprite = p.createGraphics(width, height);
@@ -114,28 +107,22 @@ const sketch = (p) => {
           playerSprites.forEach(spriteName => {
             const sprite = assetLoader.getAsset(spriteName);
             if (!sprite || !sprite.width) {
-              console.log(`Usando sprite fallback para: ${spriteName}`);
               const element = elements.find(e => e.name === spriteName);
               if (element) {
                 element.sprite = fallbackSprites[spriteName];
-                // Asegurarse de que el sprite tenga las propiedades necesarias
-                if (element.sprite) {
-                  console.log(`Sprite fallback asignado para ${spriteName}: ${element.sprite.width}x${element.sprite.height}`);
-                }
+                
               }
             }
           });
           
           // Intentar cargar los sprites críticos directamente con p5 desde la ruta correcta
           p.loadImage('./public/sprites/zenith/idle.gif', (img) => {
-            console.log('playerIdleGif cargado directamente:', img.width, 'x', img.height);
             const element = elements.find(e => e.name === 'playerIdleGif');
             if (element) element.sprite = img;
           }, (err) => {
             console.error('No se pudo cargar playerIdleGif directamente (ruta 1):', err);
             // Intentar con otra ruta
             p.loadImage('/sprites/zenith/idle.gif', (img) => {
-              console.log('playerIdleGif cargado con ruta alternativa:', img.width, 'x', img.height);
               const element = elements.find(e => e.name === 'playerIdleGif');
               if (element) element.sprite = img;
             }, (err) => {
@@ -144,14 +131,12 @@ const sketch = (p) => {
           });
           
           p.loadImage('./public/sprites/zenith/correr.gif', (img) => {
-            console.log('playerMoveGif cargado directamente:', img.width, 'x', img.height);
             const element = elements.find(e => e.name === 'playerMoveGif');
             if (element) element.sprite = img;
           }, (err) => {
             console.error('No se pudo cargar playerMoveGif directamente (ruta 1):', err);
             // Intentar con otra ruta
             p.loadImage('/sprites/zenith/correr.gif', (img) => {
-              console.log('playerMoveGif cargado con ruta alternativa:', img.width, 'x', img.height);
               const element = elements.find(e => e.name === 'playerMoveGif');
               if (element) element.sprite = img;
             }, (err) => {
@@ -181,7 +166,6 @@ const sketch = (p) => {
   
   // Función de fallback al sistema de carga original
   const fallbackToOriginalLoader = (p) => {
-    console.log('Usando sistema de carga original como fallback');
     spriteLoader = new SpriteLoader();
     spriteLoader.loadAllSprites(p, () => {
       spritesLoaded = true;

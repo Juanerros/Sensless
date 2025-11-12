@@ -5,7 +5,7 @@ export function moveCamera(p) {
     if (!player) return;
 
     const viewportCenterX = window.innerWidth / 2;
-    const viewportCenterY = window.innerHeight / 2;
+    const viewportCenterY = window.innerHeight / 2 + 80;
 
     p.translate(viewportCenterX - player.position.x, viewportCenterY - player.position.y);
 }

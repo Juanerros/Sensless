@@ -14,7 +14,7 @@ import { getPlayer } from './player.js';
 const shotCooldowns = {};
 
 // Tipo de disparo actualmente seleccionado
-let selectedShotType = SHOT_TYPES.FIRE.name;
+let selectedShotType = SHOT_TYPES.BASIC.name;
 
 /**
  * Inicializa el sistema de disparos mágicos
