@@ -3,6 +3,7 @@ import { Enemy } from "../core/enemy";
 import assetLoader from '../../assets/assetLoader.js';
 import { gameState } from "../../state";
 import { takeDamage } from "../../player";
+import { getBodies } from "../../physics.js";
 import { createChlorineCloudEffect } from "../effects/timeEffects";
 
 // ============================
@@ -41,6 +42,11 @@ initializeProperties() {
     this.hasExploded = false;
     this.hurtTimer = 0;
     this.pendingDestroyTimer = 0;
+    // Configuración de explosión
+    this.explosionPlayerDamage = 10; // daño para el jugador
+    this.explosionEnemyDamage = 6;   // daño menor para otros enemigos
+    this.explosionKnockbackPlayer = 0.7;
+    this.explosionKnockbackEnemy = 0.4;
   }
 
   draw(p) {
@@ -178,6 +184,7 @@ initializeProperties() {
     const { dist, dx, dy } = this.getDistanceToPlayer();
     
     if (dist < this.circleRadius && !this.hasExploded) {
+      // Solo aplicar empuje inmediato; el daño se aplicará con la explosión AoE
       this.applyDamageAndKnockback(player, dx, dy);
       
       if (!this.playerInCircle) {
@@ -187,14 +194,51 @@ initializeProperties() {
   }
 
   applyDamageAndKnockback(player, dx, dy) {
-    takeDamage(0);
-    
     const angle = Math.atan2(dy, dx);
-    const repulsionForce = 0.7;
+    const repulsionForce = this.explosionKnockbackPlayer;
     const forceX = Math.cos(angle) * repulsionForce;
     const forceY = Math.sin(angle) * repulsionForce;
     
     Matter.Body.applyForce(player, player.position, { x: forceX, y: forceY });
+  }
+
+  // Aplica daño y empuje en área a jugador y enemigos
+  applyExplosionAoE() {
+    const origin = this.body && this.body.position ? this.body.position : null;
+    if (!origin) return;
+
+    const bodies = getBodies();
+    for (const b of bodies) {
+      if (!b || !b.position) continue;
+      if (b === this.body) continue; // no auto-efecto
+
+      const dx = b.position.x - origin.x;
+      const dy = b.position.y - origin.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist > this.circleRadius) continue;
+
+      const nx = dx / (dist || 1);
+      const ny = dy / (dist || 1);
+
+      // Jugador
+      if (b.isPlayer) {
+        takeDamage(this.explosionPlayerDamage);
+        Matter.Body.applyForce(b, b.position, {
+          x: nx * this.explosionKnockbackPlayer,
+          y: ny * this.explosionKnockbackPlayer
+        });
+        continue;
+      }
+
+      // Otros enemigos
+      if (b.isEnemy && typeof b.takeDamage === 'function') {
+        b.takeDamage(this.explosionEnemyDamage);
+        Matter.Body.applyForce(b, b.position, {
+          x: nx * this.explosionKnockbackEnemy,
+          y: ny * this.explosionKnockbackEnemy
+        });
+      }
+    }
   }
 
   triggerExplosion() {
@@ -218,6 +262,8 @@ initializeProperties() {
       this.circleRadius,
       300
     );
+    // Aplicar daño y empuje en área
+    this.applyExplosionAoE();
     
     // Programar destrucción para permitir ver el sprite hurt
     this.pendingDestroyTimer = 8;
@@ -234,6 +280,8 @@ initializeProperties() {
         this.circleRadius,
         300
       );
+      // Aplicar daño y empuje en área también al morir
+      this.applyExplosionAoE();
     }
     super.destroy();
   }
