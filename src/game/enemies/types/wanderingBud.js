@@ -1,5 +1,6 @@
-import Matter from "matter-js";
+﻿import Matter from "matter-js";
 import { Enemy } from "../core/enemy";
+import assetLoader from '../../assets/assetLoader.js';
 import { gameState } from "../../state";
 import { takeDamage } from "../../player";
 import { createChlorineCloudEffect } from "../effects/timeEffects";
@@ -13,9 +14,20 @@ export class WanderingBud extends Enemy {
     // Aumentamos el tamaño de la hitbox y del sprite
     super(x, y, 60, 70, world);
     this.initializeProperties();
+    // Dirección inicial
+    this.direction = 'right';
+    if (this.body) this.body.direction = this.direction;
+    // Cache de sprites (idle y correr) desde assetLoader
+    this.idleSprite = assetLoader.getScaledAsset('wanderingBud', this.width, this.height);
+    this.moveSprite = assetLoader.getScaledAsset('wanderingBudMove', this.width, this.height);
+    // Asegurar que el sprite usado sea una imagen p5 compatible
+    const idleImg = (this.idleSprite && typeof this.idleSprite.getImage === 'function')
+      ? this.idleSprite.getImage()
+      : this.idleSprite;
+    this.sprite = idleImg || this.sprite;
+    if (this.body) this.body.sprite = this.sprite;
   }
-
-  initializeProperties() {
+initializeProperties() {
     this.detectionRadius = 300;
     this.circleRadius = 150;
     this.speed = 0.005;
@@ -68,6 +80,31 @@ export class WanderingBud extends Enemy {
     super.update();
     const player = gameState.player;
     if (!player) return;
+    // Reintentar carga si aún no estaban disponibles en el constructor
+    if (!this.idleSprite) {
+      this.idleSprite = assetLoader.getScaledAsset('wanderingBud', this.width, this.height);
+    }
+    if (!this.moveSprite) {
+      this.moveSprite = assetLoader.getScaledAsset('wanderingBudMove', this.width, this.height);
+    }
+
+    // Selección de sprite según estado (persiguiendo vs quieto)
+    const { dist, dx, dy } = this.getDistanceToPlayer();
+    // Actualizar dirección según posición del jugador
+    if (Math.abs(dx) > 1) {
+      this.direction = dx > 0 ? 'right' : 'left';
+      if (this.body) this.body.direction = this.direction;
+    }
+    this.idleImg = (this.idleSprite && typeof this.idleSprite.getImage === 'function')
+      ? this.idleSprite.getImage()
+      : this.idleSprite;
+    this.moveImg = (this.moveSprite && typeof this.moveSprite.getImage === 'function')
+      ? this.moveSprite.getImage()
+      : this.moveSprite;
+    this.sprite = dist < this.detectionRadius
+      ? (this.moveImg || this.idleImg || this.sprite)
+      : (this.idleImg || this.moveImg || this.sprite);
+    if (this.body) this.body.sprite = this.sprite;
 
     this.handleMovement();
     this.handlePlayerCollision(player);
@@ -77,6 +114,15 @@ export class WanderingBud extends Enemy {
     const { dist, dx, dy } = this.getDistanceToPlayer();
     
     if (dist < this.detectionRadius) {
+      // Forzar sprite de correr cuando está persiguiendo
+      if (this.moveImg || this.moveSprite) {
+        this.sprite = this.moveImg || (this.moveSprite.getImage ? this.moveSprite.getImage() : this.moveSprite);
+      }
+      // Actualizar dirección en persecución
+      if (Math.abs(dx) > 1) {
+        this.direction = dx > 0 ? 'right' : 'left';
+        if (this.body) this.body.direction = this.direction;
+      }
     
       this.updateJumpState();
       
@@ -89,6 +135,13 @@ export class WanderingBud extends Enemy {
       const forceX = Math.cos(angle) * this.speed;
       const forceY = Math.sin(angle) * this.speed;
       Matter.Body.applyForce(this.body, this.body.position, { x: forceX, y: forceY });
+      if (this.body) this.body.sprite = this.sprite;
+    } else {
+      // Forzar sprite idle cuando no persigue
+      if (this.idleImg || this.idleSprite) {
+        this.sprite = this.idleImg || (this.idleSprite.getImage ? this.idleSprite.getImage() : this.idleSprite);
+      }
+      if (this.body) this.body.sprite = this.sprite;
     }
   }
 
@@ -129,4 +182,20 @@ export class WanderingBud extends Enemy {
     
     this.destroy();
   }
+
+  // Explosión también al morir (no solo al acercarse el jugador)
+  destroy() {
+    if (!this.hasExploded && this.body && this.body.position) {
+      this.hasExploded = true;
+      createChlorineCloudEffect(
+        this.body.position.x,
+        this.body.position.y,
+        this.circleRadius,
+        300
+      );
+    }
+    super.destroy();
+  }
 }
+
+

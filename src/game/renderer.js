@@ -53,6 +53,10 @@ class Renderer {
     p.push();
     p.translate(pos.x, pos.y);
     p.rotate(angle);
+    // Voltear horizontalmente enemigos según su dirección
+    if (body.isEnemy && body.direction === 'left') {
+      p.scale(-1, 1);
+    }
 
     // Verificar que el sprite existe y es válido antes de intentar dibujarlo
     if (this.isValidSprite(body.sprite)) {

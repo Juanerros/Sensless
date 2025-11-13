@@ -21,7 +21,6 @@ class Bullet {
     if (!this.validateParameters(x, y, targetX, targetY)) return;
     this.calculateVelocity(x, y, targetX, targetY);
     this.createPhysicsBody(x, y, targetX, targetY, world);
-    // Asignar sprite (escalado) para que el renderer dibuje la bala como imagen
     const spr = getScaledEnemySpriteByName('banditBullet', this.width, this.height);
     if (spr) {
       this.sprite = spr;
@@ -39,6 +38,7 @@ class Bullet {
     this.shooter = shooter;
     this.invulnerabilityFrames = 5;
     this.isValid = true;
+
   }
 
   validateParameters(x, y, targetX, targetY) {
@@ -207,6 +207,7 @@ export class Bandit extends Enemy {
     this.shootingRange = 300;
     this.speed = 0.003;
     this.health = 80;
+    this.scoreValue = 200 + Math.round(Math.random() * 100);
     this.name = 'bandit';
     this.type = "bandit";
     this.shootCooldown = 0;
