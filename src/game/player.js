@@ -37,8 +37,8 @@ export function createPlayer(x, y, worldRef, p5Instance = null) {
   player.height = playerHeight;
   player.isPlayer = true;
   
-  // Depuración: mostrar contorno de hitbox
-  player.showHitbox = true;
+  // Depuración: contorno de hitbox desactivado
+  player.showHitbox = false;
 
   player.label = "player";
   player.sprite = getSpriteByName('player');

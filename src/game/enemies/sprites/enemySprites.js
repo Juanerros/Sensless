@@ -7,7 +7,13 @@ import assetLoader from '../../assets/assetLoader.js';
 let enemyElements = [
   { name: 'olvido', sprite: null },
   { name: 'wanderingBud', sprite: null },
+  { name: 'wanderingBudMove', sprite: null },
+  { name: 'wanderingBudHurt', sprite: null },
   { name: 'bandit', sprite: null },
+  { name: 'banditAttack', sprite: null },
+  { name: 'banditHurt', sprite: null },
+  { name: 'banditDead', sprite: null },
+  { name: 'banditCrossbow', sprite: null },
   { name: 'banditBullet', sprite: null }
 ];
 
@@ -87,7 +93,13 @@ export function getScaledEnemySpriteByName(name, width, height) {
   const defaultSizes = {
     'olvido': { width: 160, height: 160 },
     'wanderingBud': { width: 160, height: 160 },
+    'wanderingBudMove': { width: 160, height: 160 },
+    'wanderingBudHurt': { width: 160, height: 160 },
     'bandit': { width: 70, height: 105 },
+    'banditAttack': { width: 70, height: 105 },
+    'banditHurt': { width: 70, height: 105 },
+    'banditDead': { width: 70, height: 105 },
+    'banditCrossbow': { width: 50, height: 35 },
     'banditBullet': { width: 30, height: 5 }
   };
   

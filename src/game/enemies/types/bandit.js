@@ -1,6 +1,6 @@
 import Matter from "matter-js";
 import { Enemy } from "../core/enemy";
-import { gameState } from "../../state";
+import { gameState, addScore } from "../../state";
 import { getBodies, getWorld } from "../../physics";
 import { takeDamage } from "../../player";
 import { getScaledEnemySpriteByName } from "../sprites/enemySprites";
@@ -16,29 +16,34 @@ export let bullets = [];
 // ============================
 
 class Bullet {
-  constructor(x, y, targetX, targetY, world, shooter = null) {
-    this.initializeProperties(shooter);
+  constructor(x, y, targetX, targetY, world, shooter = null, options = {}) {
+    this.initializeProperties(shooter, options);
     if (!this.validateParameters(x, y, targetX, targetY)) return;
     this.calculateVelocity(x, y, targetX, targetY);
-    this.createPhysicsBody(x, y, targetX, targetY, world);
-    // Asignar sprite (escalado) para que el renderer dibuje la bala como imagen
+    this.offsetDistance = typeof options.offsetDistance === 'number' ? options.offsetDistance : 30;
+    if (this.isValid) {
+      this.createPhysicsBody(x, y, targetX, targetY, world);
+    } else {
+      return;
+    }
     const spr = getScaledEnemySpriteByName('banditBullet', this.width, this.height);
     if (spr) {
       this.sprite = spr;
-      this.body.sprite = spr;
+      if (this.body) this.body.sprite = spr;
     }
   }
 
-  initializeProperties(shooter) {
+  initializeProperties(shooter, options = {}) {
     this.width = 30;
     this.height = 10;
     this.damage = 20;
-    this.speed = 2;
+    this.speed = Number.isFinite(options.speed) ? options.speed : 2;
     this.scoreValue = 200 + Math.round(Math.random() * 100);
     this.lifeTime = 360;
     this.shooter = shooter;
     this.invulnerabilityFrames = 5;
     this.isValid = true;
+
   }
 
   validateParameters(x, y, targetX, targetY) {
@@ -70,9 +75,12 @@ class Bullet {
     const dx = targetX - x;
     const dy = targetY - y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    const offsetDistance = 30;
-    const offsetX = (dx / distance) * offsetDistance;
-    const offsetY = (dy / distance) * offsetDistance;
+    if (distance === 0) {
+      this.isValid = false;
+      return;
+    }
+    const offsetX = (dx / distance) * this.offsetDistance;
+    const offsetY = (dy / distance) * this.offsetDistance;
     
     this.body = Matter.Bodies.rectangle(
       x + offsetX, 
@@ -96,7 +104,7 @@ class Bullet {
     this.body.height = this.height;
 
     // Aplicar rotación basada en la dirección del disparo
-    if (this.angle !== undefined) {
+    if (this.angle !== undefined && this.body) {
       Matter.Body.setAngle(this.body, this.angle);
     }
 
@@ -200,45 +208,130 @@ export class Bandit extends Enemy {
     // Aumentamos tamaño para que coincida con el sprite grande
     super(x, y, 60, 90, world);
     this.initializeProperties();
+    // Dirección y sprites de estado
+    this.direction = 'right';
+    if (this.body) this.body.direction = this.direction;
+    this.idleSprite = getScaledEnemySpriteByName('bandit', this.width, this.height);
+    this.hurtSprite = getScaledEnemySpriteByName('banditHurt', this.width, this.height);
+    this.deadSprite = getScaledEnemySpriteByName('banditDead', this.width, this.height);
+    // Ballesta pegada al bandido (achicada y centrada)
+    this.crossbowSprite = getScaledEnemySpriteByName('banditCrossbow', 28, 18);
+    // Bajamos la ballesta hacia el centro/parte baja del cuerpo
+    // Usar un valor fijo en píxeles para bajar la ballesta de forma confiable
+    this.crossbowOffset = { x: 17, y: 20  };
+    this.crossbowSize = { width: 28, height: 18 };
+    // Timers
+    this.hurtTimer = 0;
+    this.isDying = false;
+    this.deathTimer = 0;
+    // Sprite inicial
+    if (this.idleSprite) {
+      this.sprite = this.idleSprite;
+      if (this.body) this.body.sprite = this.sprite;
+    }
+    // Exponer ballesta al renderer
+    if (this.body) {
+      this.body.crossbowSprite = this.crossbowSprite;
+      this.body.crossbowWidth = this.crossbowSize.width;
+      this.body.crossbowHeight = this.crossbowSize.height;
+      this.body.crossbowOffset = this.crossbowOffset;
+      // Anclar sprites del bandido al borde inferior de la hitbox
+      this.body.drawAnchor = 'bottom';
+    }
   }
 
   initializeProperties() {
     this.detectionRadius = 400; 
     this.shootingRange = 300;
-    this.speed = 0.003;
+    this.speed = 0.0; // No moverse
     this.health = 80;
+    this.scoreValue = 200 + Math.round(Math.random() * 100);
     this.name = 'bandit';
     this.type = "bandit";
     this.shootCooldown = 0;
     this.shootInterval = 90;
     this.lastShotTime = 0;
+    // Aiming/telegraph
+    this.isAiming = false;
+    this.aimTimer = 0;
+    this.aimWindupFrames = 45; // tiempo con láser verde
+    this.prefireFrames = 10;   // último tramo en rojo
+    this.aimTarget = { x: 0, y: 0 };
   }
 
   update() {
-    // Asegurar comportamiento base (p.ej. decremento de destello)
     super.update();
     const player = gameState.player;
     if (!player) return;
     
     const { dist, dx, dy } = this.getDistanceToPlayer();
+    // Dirección hacia el jugador
+    if (Math.abs(dx) > 1) {
+      this.direction = dx > 0 ? 'right' : 'left';
+      if (this.body) this.body.direction = this.direction;
+    }
+    // Timers
+    if (this.hurtTimer > 0) this.hurtTimer--;
+    if (this.isDying && this.deathTimer > 0) this.deathTimer--;
+    // Selección de sprite por estado
+    if (this.isDying) {
+      if (this.deadSprite) {
+        this.sprite = this.deadSprite;
+        if (this.body) this.body.sprite = this.sprite;
+      }
+      if (this.deathTimer <= 0) {
+        this.destroyFinally();
+        return;
+      }
+      return; // No actuar cuando está muriendo
+    } else if (this.hurtTimer > 0) {
+      if (this.hurtSprite) {
+        this.sprite = this.hurtSprite;
+        if (this.body) this.body.sprite = this.sprite;
+      }
+    } else {
+      if (this.idleSprite) {
+        this.sprite = this.idleSprite;
+        if (this.body) this.body.sprite = this.sprite;
+      }
+    }
     
     if (dist < this.detectionRadius) {
       this.handleCombatBehavior(player, dist, dx, dy);
     }
     
     if (this.shootCooldown > 0) this.shootCooldown--;
+
+    // Mantener sincronizado overlay de ballesta con el body en cada frame
+    if (this.body) {
+      this.body.crossbowSprite = this.crossbowSprite;
+      this.body.crossbowWidth = this.crossbowSize.width;
+      this.body.crossbowHeight = this.crossbowSize.height;
+      this.body.crossbowOffset = this.crossbowOffset;
+    }
   }
 
   handleCombatBehavior(player, dist, dx, dy) {
-    if (dist < this.shootingRange && this.shootCooldown <= 0) {
-      this.shoot(player.position.x, player.position.y);
-      this.shootCooldown = this.shootInterval;
+    // No movimiento: sólo comportamiento de disparo con telemetría
+    if (!this.isAiming && dist < this.shootingRange && this.shootCooldown <= 0) {
+      // Iniciar fase de apuntado
+      this.isAiming = true;
+      this.aimTimer = this.aimWindupFrames + this.prefireFrames;
+      this.aimTarget = { x: player.position.x, y: player.position.y };
     }
-    
-    if (dist < 100) {
-      this.moveAway(dx, dy);
-    } else if (dist > this.shootingRange) {
-      this.moveTowards(dx, dy);
+
+    // Actualizar fase de apuntado y disparar cuando corresponda
+    if (this.isAiming) {
+      // Actualizar el objetivo para que el láser apunte al jugador actual
+      this.aimTarget.x = player.position.x;
+      this.aimTarget.y = player.position.y;
+      this.aimTimer--;
+      if (this.aimTimer <= 0) {
+        this.isAiming = false;
+        // Disparar con gran velocidad
+        this.shoot(this.aimTarget.x, this.aimTarget.y, { speed: 8 });
+        this.shootCooldown = this.shootInterval;
+      }
     }
   }
 
@@ -256,14 +349,28 @@ export class Bandit extends Enemy {
     Matter.Body.applyForce(this.body, this.body.position, { x: forceX, y: forceY });
   }
 
-  shoot(targetX, targetY) {
+  shoot(targetX, targetY, options = {}) {
+    // Origen desde ballesta pegada al cuerpo
+    if (!this.body || !this.body.position) return;
+    const basePos = this.body.position;
+    const dir = this.direction === 'right' ? 1 : -1;
+    const bw = Number.isFinite(this.width) ? this.width : 0;
+    const bh = Number.isFinite(this.height) ? this.height : 0;
+    const offX = Number.isFinite(this.crossbowOffset?.x) ? this.crossbowOffset.x : 0;
+    const offY = Number.isFinite(this.crossbowOffset?.y) ? this.crossbowOffset.y : 0;
+    const originX = basePos.x + dir * (offX);
+    const originY = basePos.y + (offY);
+    if (!Number.isFinite(originX) || !Number.isFinite(originY) || !Number.isFinite(targetX) || !Number.isFinite(targetY)) {
+      return;
+    }
     const bullet = new Bullet(
-      this.body.position.x,
-      this.body.position.y,
+      originX,
+      originY,
       targetX,
       targetY,
       getWorld(),
-      this
+      this,
+      { offsetDistance: 6, speed: Number.isFinite(options.speed) ? options.speed : 2 }
     );
     
     if (bullet && bullet.isValid) {
@@ -274,6 +381,7 @@ export class Bandit extends Enemy {
   draw(p) {
     super.draw(p);
     this.drawShootingRange(p);
+    this.drawAimLaser(p);
   }
 
   drawShootingRange(p) {
@@ -286,6 +394,72 @@ export class Bandit extends Enemy {
       p.circle(this.body.position.x, this.body.position.y, this.shootingRange * 2);
       p.pop();
     }
+  }
+
+  drawAimLaser(p) {
+    if (!this.isAiming || !gameState.player) return;
+    if (!this.body || !this.body.position) return;
+    const basePos = this.body.position;
+    const dir = this.direction === 'right' ? 1 : -1;
+    const offX = Number.isFinite(this.crossbowOffset?.x) ? this.crossbowOffset.x : 0;
+    const offY = Number.isFinite(this.crossbowOffset?.y) ? this.crossbowOffset.y : 0;
+    const originX = basePos.x + dir * (offX);
+    const originY = basePos.y + (offY);
+    const targetX = this.aimTarget.x;
+    const targetY = this.aimTarget.y;
+    const isPrefire = this.aimTimer <= this.prefireFrames;
+    p.push();
+    p.stroke(isPrefire ? p.color(255, 0, 0) : p.color(0, 255, 0));
+    p.strokeWeight(2);
+    p.line(originX, originY, targetX, targetY);
+    p.pop();
+  }
+
+  takeDamage(amount) {
+    const dmg = typeof amount === 'number' ? amount : 0;
+    if (dmg <= 0 || this.isDying) return;
+
+    this.health -= dmg;
+
+    if (this.health <= 0) {
+      this.isDying = true;
+      this.deathTimer = 60; // mostrar sprite de muerte ~1s
+      if (this.deadSprite) {
+        this.sprite = this.deadSprite;
+        if (this.body) {
+          this.body.sprite = this.sprite;
+          // Achicar más la imagen de muerte, manteniendo proporción del sprite
+          const ds = this.deadSprite.gifImage ? this.deadSprite.gifImage : this.deadSprite;
+          const dsW = ds && typeof ds === 'object' ? ds.width : this.width;
+          const dsH = ds && typeof ds === 'object' ? ds.height : this.height;
+          const aspectRatio = (Number.isFinite(dsH) && Number.isFinite(dsW) && dsW > 0)
+            ? (dsH / dsW) + 1
+            : (this.height / this.width) + 1;
+          // Usar valores fijos pequeños para asegurar que se achique bien
+          this.body.drawWidth = 50;
+          this.body.drawHeight = 40;
+          // Alinear usando anclaje en renderer (sin offset manual)
+          this.body.drawAnchor = 'bottom';
+          // Ocultar ballesta durante la muerte
+          this.body.crossbowSprite = null;
+        }
+      }
+      return;
+    }
+
+    // Mostrar sprite de daño por un corto periodo
+    this.hurtTimer = 20;
+    if (this.hurtSprite) {
+      this.sprite = this.hurtSprite;
+      if (this.body) this.body.sprite = this.sprite;
+    }
+  }
+
+  destroyFinally() {
+    // Eliminar tras mostrar sprite de muerte y sumar puntaje
+    addScore(this.scoreValue);
+    this.removeFromEnemies();
+    this.removeFromPhysics();
   }
 }
 
@@ -367,14 +541,14 @@ function isCollidingWithPlayer(bullet) {
 
 function isCollidingWithEnemies(bullet) {
   const enemies = getBodies().filter(body => body.isEnemy);
-  
+
   return enemies.some(enemy => {
     if (bullet.shooter && enemy === bullet.shooter.body) return false;
-    
+
     const dx = bullet.body.position.x - enemy.position.x;
     const dy = bullet.body.position.y - enemy.position.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    
+
     return distance < 30;
   });
 }
