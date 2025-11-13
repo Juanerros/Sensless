@@ -41,13 +41,13 @@ export function handleKeyPressed(key) {
     keys['a'] = keys['arrowleft'] = keys['left'] = false;
   }
 
-  if (k === 'q') {
+  if (k === 'e') {
     selectShotType('basic')
-  } else if (k === 'w') {
-    selectShotType('fire')
-  } else if (k === 'e') {
-    selectShotType('water')
   } else if (k === 'r') {
+    selectShotType('fire')
+  } else if (k === 't') {
+    selectShotType('water')
+  } else if (k === 'y') {
     selectShotType('earth')
   }
 }
@@ -192,12 +192,14 @@ function updateJump(player, bodies, jumpForce) {
   if (onGround) lastGroundedTime = now;
 
   // Cambiado de space a 'w' para salto
-  const jumpActive = keys['w'];
-  if (jumpActive && !keysPressed['w']) {
+  const jumpActive = keys['w'] || keys['space'];
+  if (jumpActive && !keysPressed['w'] && !keysPressed['space']) {
     lastJumpPressedTime = now;
     keysPressed['w'] = true;
+    keysPressed['space'] = true;
   } else if (!jumpActive) {
     keysPressed['w'] = false;
+    keysPressed['space'] = false;
   }
 
   const canJumpFromBuffer = (now - lastJumpPressedTime) <= jumpBufferMs;
