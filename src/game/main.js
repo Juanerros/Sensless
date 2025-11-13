@@ -17,6 +17,7 @@ import assetLoader from './assets/assetLoader.js';
 import { getAllAssets } from './assets/assetList.js';
 import { elements } from './sprites.js';
 import { initMagicShotsSystem, updateMagicShotsSystem, drawMagicShots } from './magicShotsSystem.js';
+import { initXPSystem, updateXPSystem } from './xpSystem.js';
 
 let player;
 let gameLoop;
@@ -36,8 +37,9 @@ const sketch = (p) => {
     setupPhysics();
     initializeWorldGeneration();
     initMagicShotsSystem();
+    initXPSystem(p);
     
-    player = createPlayer(400, 200, getWorld(), p);
+    player = createPlayer(0, 450, getWorld(), p);
     
     gameLoop = new GameLoop();
     gameLoop.setPlayer(player);
@@ -211,6 +213,9 @@ const sketch = (p) => {
     updateMagicShotsSystem(p);
     drawMagicShots(p);
 
+    // Actualizar sistema de experiencia (XP pasiva y efectos)
+    updateXPSystem(p);
+
     if (player) {
       const playerHealth = getPlayerHealth();
       hud.drawAll(p, playerHealth.current, playerHealth.max);
@@ -218,6 +223,13 @@ const sketch = (p) => {
     
     if (gameLoop.isGameOver()) {
       gameOverScreen.show();
+    }
+
+    // Reset solicitado desde controles cuando hay Game Over
+    if (gameLoop.isGameOver() && gameState.resetRequested) {
+      gameOverScreen.hide();
+      gameLoop.resetGame();
+      gameState.resetRequested = false;
     }
     
     gameOverScreen.draw(p);
@@ -256,10 +268,6 @@ const sketch = (p) => {
 
   p.keyPressed = () => {
     handleKeyPressed(p.key);
-    
-    if (p.key === 'r' || p.key === 'R') {
-      gameLoop.resetGame();
-    }
   };
 
   p.keyReleased = () => {
@@ -274,6 +282,12 @@ const sketch = (p) => {
       return;
     } else if (action === 'save') {
       gameLoop.saveGame(false, 'Murio');
+    }
+
+    // Interfaz de HUD: selección de habilidades al subir de nivel
+    if (hud && typeof hud.handleMousePressed === 'function') {
+      const handled = hud.handleMousePressed(p);
+      if (handled) return;
     }
 
     // Si no hubo acción en Game Over, delegar al control normal

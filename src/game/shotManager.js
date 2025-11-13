@@ -6,9 +6,11 @@
 
 import Matter from 'matter-js';
 import { getBodies, getWorld, removeFromWorld } from './physics.js';
-import { gameState } from './state.js';
+import { gameState, addScore } from './state.js';
 import { Vector2 } from '../utils/Vector2.js';
 import { getShotTypeByName } from './shotTypes.js';
+import { isSkillActive, getSizeMultiplier, getScoreMultiplier, getCannibalismChance, getExplosionParams, getHealOnCannibalism, getBounceLimit } from './magicShotsSystem.js';
+import { getPlayer } from './player.js';
 
 // Registro de disparos activos
 let activeShots = [];
@@ -140,7 +142,9 @@ function createNewShot(x, y, shotType, direction, shooter) {
     if (!world) return null;
 
     // Crear cuerpo físico
-    const shot = Matter.Bodies.circle(x, y, shotType.size / 2, {
+    const sizeMul = getSizeMultiplier();
+    const effectiveSize = (shotType.size || 20) * sizeMul;
+    const shot = Matter.Bodies.circle(x, y, effectiveSize / 2, {
         frictionAir: 0,
         friction: 0,
         restitution: 0,
@@ -157,10 +161,14 @@ function createNewShot(x, y, shotType, direction, shooter) {
     shot.lifespan = shotType.lifespan;
     shot.currentLife = shotType.lifespan;
     shot.shooter = shooter;
-    shot.width = shotType.size;
-    shot.height = shotType.size;
+    shot.width = effectiveSize;
+    shot.height = effectiveSize;
     shot.onHit = shotType.onHit;
     shot.onUpdate = shotType.onUpdate;
+
+    // Habilidades por-proyectil
+    shot.explodes = isSkillActive('explosion');
+    shot.bouncesLeft = getBounceLimit();
 
     // Asignar sprite
     const sprite = shotType.getSprite();
@@ -211,8 +219,10 @@ function resetShot(shot, x, y, shotType, direction, shooter) {
     shot.lifespan = shotType.lifespan;
     shot.currentLife = shotType.lifespan;
     shot.shooter = shooter;
-    shot.width = shotType.size;
-    shot.height = shotType.size;
+    const sizeMul = getSizeMultiplier();
+    const effectiveSize = (shotType.size || 20) * sizeMul;
+    shot.width = effectiveSize;
+    shot.height = effectiveSize;
     shot.onHit = shotType.onHit;
     shot.onUpdate = shotType.onUpdate;
 
@@ -323,7 +333,112 @@ function checkShotCollisions(shot, p) {
                 }
             }
 
-            // Eliminar el disparo
+            // Explosión: daño en área y empuje al impactar (sin dañar al jugador)
+            if (shot.explodes) {
+                const params = getExplosionParams();
+                if (params) {
+                    const radius = params.radius;
+                    const damage = Math.max(1, Math.floor((shot.damage || 10) * params.scale));
+                    const center = shot.position;
+                    try {
+                      p.push();
+                      p.noFill();
+                      p.stroke(255, 180, 0, 180);
+                      p.strokeWeight(3);
+                      p.circle(center.x, center.y, radius * 2);
+                      p.pop();
+                    } catch (_) {}
+                    for (const other of bodies) {
+                        if (!other || other === shot) continue;
+                        const dx = (other.position?.x ?? 0) - center.x;
+                        const dy = (other.position?.y ?? 0) - center.y;
+                        const dist = Math.sqrt(dx*dx+dy*dy);
+                        if (dist > 0 && dist <= radius) {
+                            const ux = dx / dist;
+                            const uy = dy / dist;
+                            const force = 0.02; // Empuje suave
+                            // Daño solo a enemigos
+                            if (other.isEnemy && other.takeDamage) {
+                                other.takeDamage(damage);
+                            }
+                            // Empuje al jugador sin daño
+                            if (other.isPlayer) {
+                                Matter.Body.applyForce(other, other.position, { x: ux * force, y: uy * force });
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Canibalismo y Stonks: al matar enemigo
+            if (body.isEnemy && typeof body.health === 'number' && body.health <= 0) {
+                // Canibalismo: probabilidad y curación
+                if (isSkillActive('cannibalism')) {
+                    const chance = getCannibalismChance();
+                    if (Math.random() < chance) {
+                        const player = getPlayer();
+                        if (player && typeof player.health === 'number') {
+                            const heal = getHealOnCannibalism();
+                            const maxHp = player.maxHealth || 100;
+                            player.health = Math.min(player.health + heal, maxHp);
+                            // Feedback visual
+                            try {
+                              p.push();
+                              p.fill(80, 255, 80);
+                              p.noStroke();
+                              p.textSize(16);
+                              p.textAlign(p.CENTER, p.CENTER);
+                              p.text(`+${heal} HP`, body.position.x, body.position.y - 20);
+                              p.pop();
+                            } catch (_) {}
+                        }
+                    }
+                }
+
+                // Stonks: multiplicador de puntos
+                if (isSkillActive('stonks')) {
+                    const mult = getScoreMultiplier();
+                    const base = body.scoreValue || 0;
+                    const bonus = Math.floor(base * (mult - 1));
+                    if (bonus > 0) {
+                        addScore(bonus);
+                        // Feedback visual
+                        try {
+                          p.push();
+                          p.fill(255, 215, 0);
+                          p.noStroke();
+                          p.textSize(16);
+                          p.textAlign(p.CENTER, p.CENTER);
+                          p.text(`x${mult.toFixed(2)} bonus +${bonus}`, body.position.x, body.position.y - 40);
+                          p.pop();
+                        } catch (_) {}
+                    }
+                }
+            }
+
+            // Rebote: reflejar velocidad y continuar si quedan rebotes
+            if (isSkillActive('bounce') && shot.bouncesLeft > 0) {
+                const vx = shot.intendedVelocity?.x ?? shot.velocity.x;
+                const vy = shot.intendedVelocity?.y ?? shot.velocity.y;
+                const dx = (shot.position.x) - (body.position?.x ?? shot.position.x);
+                const dy = (shot.position.y) - (body.position?.y ?? shot.position.y);
+                let rvx = vx, rvy = vy;
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    rvx = -vx; // Rebote horizontal
+                } else {
+                    rvy = -vy; // Rebote vertical
+                }
+                Matter.Body.setVelocity(shot, { x: rvx, y: rvy });
+                shot.intendedVelocity = { x: rvx, y: rvy };
+                shot.lastPosition = { x: shot.position.x + rvx, y: shot.position.y + rvy };
+                shot.bouncesLeft -= 1;
+                // Efecto visual: cambio de color (solo si se dibuja como círculo)
+                shot.bounceTint = [255, 100 + Math.max(0, 120 - shot.bouncesLeft * 20), 100];
+                // Evitar eliminación y continuar
+                continue;
+            }
+
+            // Eliminar el disparo si no rebota
             removeShot(shot);
             break;
         }
@@ -380,6 +495,9 @@ function drawShot(p, shot) {
     // Dibujar con sprite si está disponible y es válido
     if (shot.sprite && typeof shot.sprite === 'object' && !shot.sprite.isColorFallback) {
         p.imageMode(p.CENTER);
+        if (shot.bounceTint && !shot.sprite.gifImage) {
+            try { p.tint(shot.bounceTint[0], shot.bounceTint[1], shot.bounceTint[2]); } catch(_){}
+        }
         if (shot.sprite.gifImage) {
             p.image(shot.sprite.gifImage, 0, 0, size, size);
         } else if (shot.sprite.width && shot.sprite.width > 0) {
@@ -388,7 +506,11 @@ function drawShot(p, shot) {
     }
     // Fallback a círculo coloreado si tiene color definido
     else if (shot.sprite && shot.sprite.color && Array.isArray(shot.sprite.color)) {
-        p.fill(shot.sprite.color[0], shot.sprite.color[1], shot.sprite.color[2]);
+        if (shot.bounceTint) {
+            p.fill(shot.bounceTint[0], shot.bounceTint[1], shot.bounceTint[2]);
+        } else {
+            p.fill(shot.sprite.color[0], shot.sprite.color[1], shot.sprite.color[2]);
+        }
         p.noStroke();
         p.ellipseMode(p.CENTER);
         p.ellipse(0, 0, size, size);

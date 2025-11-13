@@ -108,6 +108,7 @@ class GameLoop {
     const player = getPlayer();
     if (player && player.health <= 0) {
       this.gameState.gameOver = true;
+      gameState.isGameOver = true;
     }
   }
 
@@ -115,6 +116,7 @@ class GameLoop {
     const player = getPlayer();
     if (player && player.position && player.position.y > 1000) {
       this.gameState.gameOver = true;
+      gameState.isGameOver = true;
     }
   }
 
@@ -123,20 +125,7 @@ class GameLoop {
   }
 
   resetGame() {
-    const player = getPlayer();
-    if (player) {
-      // Reiniciar posición del jugador
-      Matter.Body.setPosition(player, { x: 400, y: 300 });
-      Matter.Body.setVelocity(player, { x: 0, y: 0 });
-      player.isAlive = true;
-    }
-    
-    // Limpiar disparos mágicos
-    clearAllMagicShots();
-    
-    // Reiniciar estado del juego
-    this.gameState.isGameOver = false;
-    gameState.isGameOver = false;
+    window.location.reload();
   }
 
   getGameState() {

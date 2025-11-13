@@ -126,7 +126,7 @@ export const SHOT_TYPES = {
             if (target && target.isEnemy && typeof target.takeDamage === 'function') {
                 target.takeDamage(shot.damage);
             }
-            if (target && target.isEnemy) {
+            if (target && !target.isPlayer) {
                 const dir = Math.sign(shot.velocity.x) || 0;
                 Matter.Body.applyForce(target, target.position, { x: dir * KNOCKBACK_SMALL, y: -KNOCKBACK_SMALL * 0.5 });
             }

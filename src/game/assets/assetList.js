@@ -1,7 +1,7 @@
 // Lista de assets que se cargarán en el juego
 export const gameAssets = [
   // SPrites de hud
-  { name: 'cursor', url: 'sprites/Cursores_mouse/Cursor.png' },
+  { name: 'cursor', url: 'sprites/Cursores_mouse/Apuntado.png' },
 
   // Sprites del jugador
   { name: 'player', url: 'sprites/Zenith.png' },

@@ -1,6 +1,7 @@
 import Matter from "matter-js";
 import { getBodies } from "../../physics";
 import { gameState, addScore } from "../../state";
+import { addXPForEnemy } from "../../xpSystem.js";
 
 // ============================
 // REGISTRO DE ENEMIGOS
@@ -131,6 +132,8 @@ export class Enemy {
   }
 
   destroy() {
+    // Otorgar XP según tipo de enemigo
+    addXPForEnemy(this);
     addScore(this.scoreValue);
     this.removeFromEnemies();
     this.removeFromPhysics();

@@ -1,9 +1,9 @@
 import { drawInventoryUI } from './inventory.js';
 import assetLoader from './assets/assetLoader.js';
-import { getBodies } from './physics.js';
 import { gameState } from './state.js';
 import { getSelectedShotType } from './magicShotsSystem.js';
 import { getShotTypeByName } from './shotTypes.js';
+import { getXPVisualState, getXPEffects, getLevelUpOptions, isLevelUpPending } from './xpSystem.js';
 
 class HUD {
   constructor() {
@@ -68,10 +68,12 @@ class HUD {
   drawAll(p, playerHealth, maxHealth) {
     this.drawInventory(p);
     this.drawHealthBar(p, playerHealth, maxHealth);
+    this.drawXPBar(p);
     this.drawScore(p);
     this.drawShotIcon(p);
-    if (this.isPosiblyToShowBorderBox(p, getBodies())) this.drawBorderBox(p);
+    // if (this.isPosiblyToShowBorderBox(p, getBodies())) this.drawBorderBox(p);
     this.drawCursor(p);
+    if (isLevelUpPending()) this.drawLevelUpSelection(p);
   }
 
   drawScore(p) {
@@ -123,12 +125,138 @@ class HUD {
     p.push();
     p.resetMatrix();
 
-    const cursor = assetLoader.getScaledAsset('cursor', 25, 25);
+    const cursor = assetLoader.getAsset('cursor');
     if (!cursor) return;
 
     p.noCursor()
 
-    p.image(cursor, p.mouseX, p.mouseY);
+  
+    p.imageMode(p.CENTER);
+    p.image(cursor, Math.round(p.mouseX), Math.round(p.mouseY), 25, 25);
+
+    p.pop();
+  }
+
+  // ============================
+  // HUD de Experiencia
+  // ============================
+  drawXPBar(p) {
+    p.push();
+    p.resetMatrix();
+
+    const { level, current, required, fraction } = getXPVisualState();
+
+    const barWidth = 240;
+    const barHeight = 16;
+    const barX = 20;
+    const barY = 580; 
+
+    // Fondo
+    p.noStroke();
+    p.fill(30, 30, 50);
+    p.rectMode(p.CORNER);
+    p.rect(barX, barY, barWidth, barHeight, 4);
+
+    // Progreso (animado simple con lerp visual)
+    const fillWidth = barWidth * fraction;
+    p.fill(80, 160, 255);
+    p.rect(barX, barY, fillWidth, barHeight, 4);
+
+    // Contorno
+    p.noFill();
+    p.stroke(255);
+    p.strokeWeight(1);
+    p.rect(barX, barY, barWidth, barHeight, 4);
+
+    // Texto nivel y XP
+    p.noStroke();
+    p.fill(255);
+    p.textAlign(p.LEFT, p.BOTTOM);
+    p.textSize(14);
+    p.text(`Nivel ${level}`, barX, barY - 6);
+
+    p.textAlign(p.LEFT, p.TOP);
+    p.text(`${current}/${required} XP`, barX, barY + barHeight + 4);
+
+    // Efectos: flashes y popups de XP
+    const { xpGainEffects, levelUpFlashAt } = getXPEffects();
+    if (levelUpFlashAt) {
+      // Flash sutil alrededor de la barra
+      const alpha = Math.max(0, 200 - (Date.now() - levelUpFlashAt));
+      p.noFill();
+      p.stroke(0, 255, 100, alpha);
+      p.strokeWeight(3);
+      p.rect(barX - 2, barY - 2, barWidth + 4, barHeight + 4, 6);
+    }
+
+    // Popups XP ganada
+    xpGainEffects.forEach(e => {
+      const dt = Math.min(1200, Date.now() - e.at);
+      const t = dt / 1200; // 0..1
+      const yOff = -20 * (1 - t);
+      const alpha = 255 * (1 - t);
+      p.fill(0, 255, 100, alpha);
+      p.noStroke();
+      p.textAlign(p.LEFT, p.BOTTOM);
+      p.textSize(12);
+      p.text(`+${e.amount} XP`, barX + barWidth + 10, barY + yOff);
+    });
+
+    p.pop();
+  }
+
+  // ============================
+  // Selección de habilidades al subir de nivel
+  // ============================
+  drawLevelUpSelection(p) {
+    p.push();
+    p.resetMatrix();
+
+    // Fondo semitransparente
+    p.fill(0, 0, 0, 150);
+    p.rectMode(p.CORNER);
+    p.rect(0, 0, window.innerWidth, window.innerHeight);
+
+    const options = getLevelUpOptions();
+    const cardW = 260;
+    const cardH = 140;
+    const gap = 60;
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const leftX = centerX - cardW - gap / 2;
+    const rightX = centerX + gap / 2;
+    const topY = centerY - cardH / 2;
+
+    // Tarjeta izquierda
+    p.fill(240);
+    p.stroke(50);
+    p.strokeWeight(2);
+    p.rect(leftX, topY, cardW, cardH, 8);
+    p.fill(30);
+    p.noStroke();
+    p.textAlign(p.CENTER, p.CENTER);
+    p.textSize(16);
+    p.text(options[0] || 'Opción A', leftX + cardW / 2, topY + cardH / 2);
+
+    // Tarjeta derecha
+    p.fill(240);
+    p.stroke(50);
+    p.strokeWeight(2);
+    p.rect(rightX, topY, cardW, cardH, 8);
+    p.fill(30);
+    p.noStroke();
+    p.textAlign(p.CENTER, p.CENTER);
+    p.textSize(16);
+    p.text(options[1] || 'Opción B', rightX + cardW / 2, topY + cardH / 2);
+
+    // Indicaciones
+    p.fill(255);
+    p.noStroke();
+    p.textAlign(p.CENTER, p.TOP);
+    p.textSize(18);
+    p.text('Has subido de nivel. Elige una habilidad:', centerX, topY - 40);
+    p.textSize(12);
+    p.text('Pulsa Q (izquierda) o E (derecha) para seleccionar', centerX, topY + cardH + 20);
 
     p.pop();
   }
