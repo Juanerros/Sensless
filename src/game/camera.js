@@ -19,6 +19,6 @@ export function screenToWorldCoordinates(screenX, screenY) {
     
     return {
         x: screenX + player.position.x - viewportCenterX,
-        y: screenY + player.position.y - viewportCenterY
+        y: screenY + player.position.y - viewportCenterY - 80,
     };
 }
