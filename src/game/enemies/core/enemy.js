@@ -220,44 +220,7 @@ export class Enemy {
 // ENEMIGO PERSEGUIDOR
 // ============================
 
-export class ChaserEnemy extends Enemy {
-  constructor(x, y, world) {
-    super(x, y, 40, 60, world);
-    this.detectionRadius = 300;
-    this.speed = 0.005;
-    this.scoreValue = 100 + Math.round(Math.random() * 100);
-    this.name = 'olvido';
-    this.type = "chaser";
-  }
-
-  update() {
-    const { dist, dx, dy } = this.getDistanceToPlayer();
-    // Base update (p.ej. destello)
-    super.update();
-    
-    if (dist < this.detectionRadius) {
-      this.chasePlayer(dx, dy);
-    }
-  }
-
-  chasePlayer(dx, dy) {
-  
-    const angle = Math.atan2(dy, dx);
-    const forceX = Math.cos(angle) * this.speed;
-    const forceY = 0; 
-
-    this.updateJumpState();
-    const onGround = this.isOnGround === true;
-    const appliedX = onGround ? forceX : forceX * 0.2;
-
-    Matter.Body.applyForce(this.body, this.body.position, { x: appliedX, y: forceY });
-
-    // Si el jugador está arriba y cerca en X, intentamos un salto en vez de empujar hacia arriba
-    if (this.detectObstacle()) {
-      this.jump();
-    }
-  }
-}
+// (El tipo perseguidor básico fue movido a enemies/types/wendigo.js)
 
 // ============================
 // GESTIÓN GLOBAL DE ENEMIGOS
