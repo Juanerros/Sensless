@@ -8,7 +8,7 @@ const CHUNK_SIZE = 1000; // Tamaño de cada chunk en píxeles
 const RENDER_DISTANCE = 1; // Chunks a cargar alrededor del jugador
 const TERRAIN_HEIGHT_VARIATION = 50;
 const BASE_TERRAIN_HEIGHT = 700;
-const UNDERGROUND_LAYERS = 15; // Número de capas de tierra debajo del terreno
+const UNDERGROUND_LAYERS = 12; // Número de capas de tierra debajo del terreno
 const LAYER_HEIGHT = 50; // Altura de cada capa subterránea
 
 // Almacenamiento de chunks generados
@@ -166,8 +166,7 @@ class Chunk {
         let lastHasTerrain = true;
 
         for (let i = 0; i < segments; i++) {
-            if (Math.random() > 0.95) {
-                
+            if (Math.random() > 0.95 && i != 0) {
                 continue;
             }
             const x = this.worldX + (i * segmentWidth) + (segmentWidth / 2);

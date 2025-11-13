@@ -1,9 +1,10 @@
 import Matter from 'matter-js';
 import { Vector2 } from '../utils/Vector2.js';
-import { gameState } from './state.js';
+import { gameState, togglePauseGame } from './state.js';
 import { screenToWorldCoordinates } from './camera.js';
 import { selectInventorySlot, useSelectedItem } from './inventory.js';
-import { firePlayerShot, selectShotType } from './magicShotsSystem.js';
+import { firePlayerShot, selectShotType, getPlayerSpeedMultiplier } from './magicShotsSystem.js';
+import { isLevelUpPending, selectSkillOption } from './xpSystem.js';
 
 // ===== Variables Globales =====
 let keys = {};
@@ -32,6 +33,31 @@ function normalizeKey(key) {
 export function handleKeyPressed(key) {
   const k = normalizeKey(key);
   keys[k] = true;
+
+  // Selección de habilidades al subir de nivel (Q/E)
+  if (isLevelUpPending()) {
+    if ((k === 'q' || k === 'e') && !keysPressed[k]) {
+      const idx = k === 'q' ? 0 : 1;
+      selectSkillOption(idx);
+      keysPressed[k] = true;
+      return; // Evitar que otras acciones se disparen mientras está la selección
+    }
+    return; // Mientras la selección está activa, ignorar otras entradas
+  }
+
+  // Pausar/Reanudar con ESC
+  // if (k === 'escape') {
+  //   togglePauseGame();
+  //   return;
+  // }
+
+  // Reset solo si está activo el Game Over
+  if (k === 'r' || k === 'R') {
+    if (gameState.isGameOver) {
+      gameState.resetRequested = true;
+      return;
+    }
+  }
 
   if (k === 'a' || k === 'arrowleft' || k === 'left') {
     lastHorizontalKey = 'left';
@@ -67,8 +93,12 @@ export function handleKeyReleased(key) {
 export function updateControls(player, getBodies) {
   if (!player || gameState.isPaused || !player.isAlive) return;
 
+  // Si hay selección de habilidades activa, no mover al jugador
+  if (isLevelUpPending()) return;
+
   const jumpForce = 0.2;
-  const playerVelocity = 10;
+  const baseVelocity = 10;
+  const playerVelocity = baseVelocity * getPlayerSpeedMultiplier();
   const bodies = getBodies();
   const onGround = isOnGround(player, bodies);
 

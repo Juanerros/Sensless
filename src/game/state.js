@@ -10,7 +10,19 @@ export const gameState = {
   //Cosa para los enemigos
   world: null ,
   persistentActions: [],
-  startAt: null
+  startAt: null,
+  // solicitud de reset desde controles
+  resetRequested: false,
+  // Progreso del jugador: experiencia y habilidades
+  xp: {
+    level: 1,
+    current: 0,
+    required: 60, // se recalcula al iniciar el sistema
+    lastPassiveAt: 0,
+    levelUpPending: false,
+    pendingOptions: []
+  },
+  skillsSelected: []
 };
 
 export function togglePauseGame() {

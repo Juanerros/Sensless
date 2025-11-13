@@ -21,7 +21,7 @@ class GameOverScreen {
     // Cargar logo si no está cargado (solo una vez)
     if (!this.logoImage && !this.logoLoaded) {
       this.logoLoaded = true;
-      p.loadImage('sprites/interfas/logo.png', (img) => {
+      p.loadImage('sprites/interfas/game_over.gif', (img) => {
         this.logoImage = img;
       }, () => {
         console.error('Error al cargar el logo');
@@ -31,7 +31,7 @@ class GameOverScreen {
 
     // Fondo semitransparente
     p.push();
-    p.fill(255, 255, 255, 200);
+    p.fill(0, 0, 0, 200);
     p.noStroke();
     p.rect(0, 0, p.width, p.height);
     p.pop();
@@ -48,7 +48,7 @@ class GameOverScreen {
       ? (this.logoImage.height / this.logoImage.width) * logoWidth
       : logoWidth;
     if (this.logoImage) {
-      p.image(this.logoImage, centerX, centerY - 80, logoWidth, logoHeight);
+      p.image(this.logoImage, centerX - 10, centerY - 80, logoWidth, logoHeight);
     } else {
       // Fallback mientras carga
       p.fill(0);
