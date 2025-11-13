@@ -1,4 +1,4 @@
-﻿// Lista de assets que se cargarÃ¡n en el juego
+// Lista de assets que se cargarÃ¡n en el juego
 export const gameAssets = [
   // SPrites de hud
   { name: 'cursor', url: 'sprites/Cursores_mouse/Cursor.png' },
@@ -20,7 +20,14 @@ export const gameAssets = [
   { name: 'water', url: 'sprites/spells/chispa-agua.png' },
   
   // Sprites de enemigos
-  { name: 'olvido', url: 'sprites/enemies/Wendigo/Wendingo_idle.gif', type: 'animated' },
+  { name: 'olvido', url: 'sprites/enemies/olvido.png', type: 'animated' },
+  { name: 'wendigo', url: 'sprites/enemies/Wendigo/Wendingo_idle.gif', type: 'animated' },
+  { name: 'wendigoMove', url: 'sprites/enemies/Wendigo/Wendingo_correr .gif', type: 'animated' },
+  { name: 'wendigoAlert', url: 'sprites/enemies/Wendigo/Wendingo_alerta.gif', type: 'animated' },
+  { name: 'wendigoCharge', url: 'sprites/enemies/Wendigo/Wendigo_embestida.gif', type: 'animated' },
+  { name: 'wendigoHurt', url: 'sprites/enemies/Wendigo/Wendigo_Counter.gif', type: 'animated' },
+  { name: 'wendigoCounterRun', url: 'sprites/enemies/Wendigo/wendigo_embestida_counter.gif', type: 'animated' },
+  { name: 'wendigoDeath', url: 'sprites/enemies/Wendigo/wendigo_death.gif', type: 'animated' },
   { name: 'wanderingBud', url: 'sprites/enemies/Tronco/tronco_idle.gif', type: 'animated' },
   { name: 'wanderingBudMove', url: 'sprites/enemies/Tronco/tronco_correr.gif', type: 'animated' },
   { name: 'wanderingBudHurt', url: 'sprites/enemies/Tronco/tronco_hurt.png' },
@@ -52,7 +59,7 @@ export function getAssetsByCategory(category) {
         asset.name.startsWith('player'));
     case 'enemies':
       return gameAssets.filter(asset => 
-        ['olvido', 'wanderingBud', 'wanderingBudMove', 'wanderingBudHurt', 'bandit', 'banditBullet'].includes(asset.name));
+        ['olvido', 'wendigo', 'wendigoMove', 'wendigoAlert', 'wendigoCharge', 'wendigoHurt', 'wendigoCounterRun', 'wendigoDeath', 'wanderingBud', 'wanderingBudMove', 'wanderingBudHurt', 'bandit', 'banditBullet'].includes(asset.name));
     case 'items':
       return gameAssets.filter(asset => 
         ['box', 'hidrogeno', 'oxigeno', 'water'].includes(asset.name));

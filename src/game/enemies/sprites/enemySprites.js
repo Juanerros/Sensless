@@ -6,6 +6,13 @@ import assetLoader from '../../assets/assetLoader.js';
 
 let enemyElements = [
   { name: 'olvido', sprite: null },
+  { name: 'wendigo', sprite: null },
+  { name: 'wendigoMove', sprite: null },
+  { name: 'wendigoAlert', sprite: null },
+  { name: 'wendigoCharge', sprite: null },
+  { name: 'wendigoHurt', sprite: null },
+  { name: 'wendigoCounterRun', sprite: null },
+  { name: 'wendigoDeath', sprite: null },
   { name: 'wanderingBud', sprite: null },
   { name: 'wanderingBudMove', sprite: null },
   { name: 'wanderingBudHurt', sprite: null },
@@ -92,6 +99,13 @@ export function getScaledEnemySpriteByName(name, width, height) {
   // Valores por defecto para width y height si no se proporcionan
   const defaultSizes = {
     'olvido': { width: 160, height: 160 },
+    'wendigo': { width: 160, height: 160 },
+    'wendigoMove': { width: 160, height: 160 },
+    'wendigoAlert': { width: 160, height: 160 },
+    'wendigoCharge': { width: 160, height: 160 },
+    'wendigoHurt': { width: 160, height: 160 },
+    'wendigoCounterRun': { width: 160, height: 160 },
+    'wendigoDeath': { width: 160, height: 160 },
     'wanderingBud': { width: 160, height: 160 },
     'wanderingBudMove': { width: 160, height: 160 },
     'wanderingBudHurt': { width: 160, height: 160 },
