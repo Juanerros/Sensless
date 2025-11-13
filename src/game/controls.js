@@ -89,28 +89,21 @@ function updateHorizontalMovement(player, playerVelocity, onGround) {
   const currentVx = player.velocity.x;
   const targetVx = axis * playerVelocity;
   
-  // Aplicar aceleración diferente en aire/suelo
   const acceleration = onGround ? groundAcceleration : airAcceleration;
   const velocityMultiplier = onGround ? 1 : airControlMultiplier;
   
-  // Calcular nueva velocidad con aceleración apropiada
   let newVx;
   if (axis !== 0) {
-    // Si hay input, acelerar hacia la dirección deseada
     const maxSpeed = playerVelocity * velocityMultiplier;
     const accelerationForce = acceleration * (axis > 0 ? 1 : -1);
     newVx = currentVx + accelerationForce;
-    // Limitar a la velocidad máxima
     newVx = axis > 0 ? Math.min(newVx, maxSpeed) : Math.max(newVx, -maxSpeed);
   } else {
-    // Si no hay input, frenar suavemente
     const friction = onGround ? 0.85 : 0.95;
     newVx = currentVx * friction;
-    // Detener completamente si la velocidad es muy baja
     if (Math.abs(newVx) < 0.1) newVx = 0;
   }
 
-  // Actualizar dirección para sprites
   if (axis < 0) player.direction = 'left';
   else if (axis > 0) player.direction = 'right';
 
@@ -198,12 +191,13 @@ function updateJump(player, bodies, jumpForce) {
   
   if (onGround) lastGroundedTime = now;
 
-  const spaceActive = keys['space'] || keys[' '];
-  if (spaceActive && !keysPressed['space']) {
+  // Cambiado de space a 'w' para salto
+  const jumpActive = keys['w'];
+  if (jumpActive && !keysPressed['w']) {
     lastJumpPressedTime = now;
-    keysPressed['space'] = true;
-  } else if (!spaceActive) {
-    keysPressed['space'] = false;
+    keysPressed['w'] = true;
+  } else if (!jumpActive) {
+    keysPressed['w'] = false;
   }
 
   const canJumpFromBuffer = (now - lastJumpPressedTime) <= jumpBufferMs;
@@ -234,12 +228,10 @@ export function handleMousePressed(p, player) {
   const { x: worldX, y: worldY } = screenToWorldCoordinates(p.mouseX, p.mouseY);
 
   if (p.mouseButton.left) {
-    // Disparar proyectil mágico cuando se presiona Shift + Click Izquierdo
     firePlayerShot(p);
   }
 
   if (p.mouseButton.right)  {
-    // Usar objeto del inventario (comportamiento original)
     useSelectedItem(worldX, worldY);
   }
 }
