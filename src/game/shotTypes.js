@@ -8,6 +8,7 @@ import Matter from 'matter-js';
 import { getSpriteByName } from './sprites.js';
 import assetLoader from './assets/assetLoader.js';
 import { getBodies } from './physics.js';
+import { createSpriteImpactEffect } from './enemies/effects/timeEffects.js';
 
 /**
  * Tipos de disparos elementales disponibles
@@ -35,6 +36,25 @@ function getBasicSprite() {
     return createColoredCircle([255, 255, 255]);
 }
 
+// Utilidades para obtener sprites de proyectiles específicos si existen
+function getWaterSprite() {
+    const asset = assetLoader.getAsset('waterProjectile') || getSpriteByName('water');
+    if (asset && (asset.gifImage || asset.width)) return asset;
+    return createColoredCircle([0, 100, 255]);
+}
+
+function getFireSprite() {
+    const asset = assetLoader.getAsset('fireProjectile') || getSpriteByName('fire');
+    if (asset && (asset.gifImage || asset.width)) return asset;
+    return createColoredCircle([255, 100, 0]);
+}
+
+function getEarthSprite() {
+    const asset = assetLoader.getAsset('earthProjectile') || getSpriteByName('earth');
+    if (asset && (asset.gifImage || asset.width)) return asset;
+    return createColoredCircle([139, 69, 19]);
+}
+
 const WATER_GRAVITY = 0.35;
 const KNOCKBACK_SMALL = 0.05;
 const KNOCKBACK_MEDIUM = 0.1;
@@ -50,7 +70,7 @@ export const SHOT_TYPES = {
         count: 1,
         cooldown: 300,
         element: 'basic',
-        icon: 'basicProjectile',
+        icon: 'basicIcon',
         lifespan: 240,
         ignoreGravity: true,
         hasColission: true,
@@ -74,11 +94,11 @@ export const SHOT_TYPES = {
         count: 1,
         cooldown: 350,
         element: 'fire',
-        icon: 'fire',
+        icon: 'fireIcon',
         lifespan: 300,
         ignoreGravity: true,
         hasColission: true,
-        getSprite: () => getSpriteByName('fire') || createColoredCircle([255, 100, 0]),
+        getSprite: () => getFireSprite(),
         onHit: (shot, target, p) => {
             // Explosión con área de efecto
             const origin = shot.position;
@@ -113,15 +133,15 @@ export const SHOT_TYPES = {
     WATER: {
         name: 'water',
         damage: 6,
-        speed: 18,
-        size: 14,
-        count: 5,
-        cooldown: 180,
+        speed: 22,
+        size: 24,
+        count: 4,
+        cooldown: 280,
         element: 'water',
-        icon: 'water',
+        icon: 'waterIcon',
         lifespan: 80,
         hasColission: true,
-        getSprite: () => getSpriteByName('water') || createColoredCircle([0, 100, 255]),
+        getSprite: () => getWaterSprite(),
         onHit: (shot, target, p) => {
             if (target && target.isEnemy && typeof target.takeDamage === 'function') {
                 target.takeDamage(shot.damage);
@@ -147,10 +167,10 @@ export const SHOT_TYPES = {
         count: 1,
         cooldown: 500,
         element: 'earth',
-        icon: 'earth',
+        icon: 'earthIcon',
         lifespan: 120,
         hasColission: true,
-        getSprite: () => getSpriteByName('earth') || createColoredCircle([139, 69, 19]),
+        getSprite: () => getEarthSprite(),
         onHit: (shot, target, p) => {
             if (target && target.isEnemy && typeof target.takeDamage === 'function') {
                 target.takeDamage(shot.damage);
@@ -181,24 +201,18 @@ function createColoredCircle(color) {
     };
 }
 
-/**
- * Efectos visuales al impactar
- * Estas funciones se implementarán en el sistema de efectos visuales
- */
 function createFireImpactEffect(x, y, p) {
-    // Implementación de efecto visual de fuego
+    // Persistir el efecto durante la animación
+    createSpriteImpactEffect('explosionImpact', x, y, 100, 100, 48);
 }
 
 function createWaterImpactEffect(x, y, p) {
-    // Implementación de efecto visual de agua
-}
-
-function createLightningImpactEffect(x, y, p) {
-    // Implementación de efecto visual de rayo
+    // Persistir un splash breve de agua
 }
 
 function createEarthImpactEffect(x, y, p) {
-    // Implementación de efecto visual de tierra
+    // Persistir impacto de tierra rota
+    createSpriteImpactEffect('earthImpact', x, y, 72, 72, 54);
 }
 
 /**

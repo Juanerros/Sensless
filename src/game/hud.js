@@ -90,21 +90,24 @@ class HUD {
   drawShotIcon(p) {
     p.push();
     p.resetMatrix();
+    p.noSmooth();
+
     const selectedName = getSelectedShotType();
     const shotType = getShotTypeByName(selectedName);
-    const iconSize = 32;
-    const posX = 600 - iconSize;
-    const posY = 30;
+    const iconSize = 42;
+    const posX = 580;
+    const posY = 25;
 
-    // if (shotType && shotType.icon) {
-    //   const iconAsset = assetLoader.getScaledAsset(shotType.icon, iconSize, iconSize);
-    //   if (iconAsset) {
-    //     p.imageMode(p.CORNER);
-    //     p.image(iconAsset, posX, posY);
-    //     p.pop();
-    //     return;
-    //   }
-    // }
+    if (shotType && shotType.icon) {
+      const iconAsset = assetLoader.getScaledAsset(shotType.icon, iconSize, iconSize);
+      if (iconAsset) {
+        p.stroke(1)
+        p.imageMode(p.CORNER);
+        p.image(iconAsset, posX, posY);
+        p.pop();
+        return;
+      }
+    }
 
     // Fallback si no existe el asset
     p.noStroke();
@@ -130,7 +133,7 @@ class HUD {
 
     p.noCursor()
 
-  
+
     p.imageMode(p.CENTER);
     p.image(cursor, Math.round(p.mouseX), Math.round(p.mouseY), 25, 25);
 
@@ -149,7 +152,7 @@ class HUD {
     const barWidth = 240;
     const barHeight = 16;
     const barX = 20;
-    const barY = 580; 
+    const barY = 580;
 
     // Fondo
     p.noStroke();

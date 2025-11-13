@@ -4,6 +4,7 @@
 
 import { getEffectSpriteByName } from './effectSprites.js';
 import { gameState } from '../../state.js';
+import assetLoader from '../../assets/assetLoader.js';
 
 // Registro de efectos activos
 let activeTimeEffects = [];
@@ -26,6 +27,23 @@ export function createChlorineCloudEffect(x, y, radius, lifeTime = 300) {
     currentTime: 0
   };
   
+  activeTimeEffects.push(effect);
+  return effect;
+}
+
+// Crea un efecto genérico de impacto que dibuja un sprite/GIF durante su vida útil
+export function createSpriteImpactEffect(name, x, y, width = 64, height = 64, lifeTime = 45, options = {}) {
+  const effect = {
+    type: 'spriteImpact',
+    spriteName: name,
+    x,
+    y,
+    width,
+    height,
+    lifeTime,
+    currentTime: 0,
+    fadeOut: options.fadeOut ?? true
+  };
   activeTimeEffects.push(effect);
   return effect;
 }
@@ -78,6 +96,8 @@ export function drawTimeEffects(p) {
   activeTimeEffects.forEach(effect => {
     if (effect.type === 'chlorineCloud') {
       drawChlorineCloud(p, effect);
+    } else if (effect.type === 'spriteImpact') {
+      drawSpriteImpact(p, effect);
     }
   });
 }
@@ -134,4 +154,30 @@ export function getActiveTimeEffects() {
 // Limpia todos los efectos activos
 export function clearTimeEffects() {
   activeTimeEffects = [];
+}
+
+// Dibuja un impacto de sprite/GIF en una posición fija
+function drawSpriteImpact(p, effect) {
+  const sprite = assetLoader.getAsset(effect.spriteName);
+  const remaining = effect.lifeTime - effect.currentTime;
+  const alpha = effect.fadeOut ? p.map(remaining, 0, effect.lifeTime, 0, 255) : 255;
+
+  p.push();
+  p.imageMode(p.CENTER);
+  p.tint(255, alpha);
+  try {
+    if (sprite && typeof sprite.draw === 'function') {
+      sprite.draw(p, effect.x, effect.y, effect.width, effect.height);
+    } else if (sprite && sprite.width > 0) {
+      p.image(sprite, effect.x, effect.y, effect.width, effect.height);
+    } else {
+      // Fallback si no hay sprite válido
+      p.noStroke();
+      p.fill(255, 200, 0, alpha);
+      p.ellipse(effect.x, effect.y, effect.width, effect.height);
+    }
+  } catch (error) {
+    console.warn('Error al dibujar spriteImpact:', error);
+  }
+  p.pop();
 }

@@ -33,6 +33,17 @@ export const gameAssets = [
   ,
   // Proyectiles del jugador
   { name: 'basicProjectile', url: 'sprites/Proyectiles_jugador/disparo_1.gif', type: 'animated' },
+  { name: 'waterProjectile', url: 'sprites/Proyectiles_jugador/disparo_agua.gif', type: 'animated' },
+  { name: 'fireProjectile', url: 'sprites/Proyectiles_jugador/disparo_fuego.gif', type: 'animated' },
+  { name: 'earthProjectile', url: 'sprites/Proyectiles_jugador/Proyectil_tierra.gif', type: 'animated' },
+  // Iconos de elementos (HUD)
+  { name: 'basicIcon', url: 'sprites/Elementos/Base.png' },
+  { name: 'waterIcon', url: 'sprites/Elementos/Agua.png' },
+  { name: 'fireIcon', url: 'sprites/Elementos/Fuego.png' },
+  { name: 'earthIcon', url: 'sprites/Elementos/Tierra.png' },
+  // Efectos de impacto de proyectiles
+  { name: 'explosionImpact', url: 'sprites/Proyectiles_jugador/disparo_explosion.gif', type: 'animated' },
+  { name: 'earthImpact', url: 'sprites/Proyectiles_jugador/proyectil_tierra_roto.gif', type: 'animated' },
   // Efectos (nubes de cloro)
   { name: 'chlorineCloud1', url: 'sprites/enemies/effects/nubes_de_cloro/1.png' },
   { name: 'chlorineCloud2', url: 'sprites/enemies/effects/nubes_de_cloro/2.png' },
