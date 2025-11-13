@@ -23,7 +23,12 @@ export const gameAssets = [
   { name: 'olvido', url: 'sprites/enemies/Wendigo/Wendingo_idle.gif', type: 'animated' },
   { name: 'wanderingBud', url: 'sprites/enemies/Tronco/tronco_idle.gif', type: 'animated' },
   { name: 'wanderingBudMove', url: 'sprites/enemies/Tronco/tronco_correr.gif', type: 'animated' },
+  { name: 'wanderingBudHurt', url: 'sprites/enemies/Tronco/tronco_hurt.png' },
   { name: 'bandit', url: 'sprites/enemies/Bandido/bandido_idle.gif', type: 'animated' },
+  { name: 'banditAttack', url: 'sprites/enemies/Bandido/bandido_ataque.png' },
+  { name: 'banditHurt', url: 'sprites/enemies/Bandido/bandido_hurt.gif', type: 'animated' },
+  { name: 'banditDead', url: 'sprites/enemies/Bandido/bandido_dead.png' },
+  { name: 'banditCrossbow', url: 'sprites/enemies/Bandido/bandido_ballesta.png' },
   { name: 'banditBullet', url: 'sprites/enemies/Bandido/bandido_proyectil.png', width: 30, height: 5 }
   ,
   // Proyectiles del jugador
@@ -47,7 +52,7 @@ export function getAssetsByCategory(category) {
         asset.name.startsWith('player'));
     case 'enemies':
       return gameAssets.filter(asset => 
-        ['olvido', 'wanderingBud', 'wanderingBudMove', 'bandit', 'banditBullet'].includes(asset.name));
+        ['olvido', 'wanderingBud', 'wanderingBudMove', 'wanderingBudHurt', 'bandit', 'banditBullet'].includes(asset.name));
     case 'items':
       return gameAssets.filter(asset => 
         ['box', 'hidrogeno', 'oxigeno', 'water'].includes(asset.name));

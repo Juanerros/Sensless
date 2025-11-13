@@ -65,6 +65,29 @@ class Renderer {
       this.drawBodyWithColor(p, body);
     }
 
+    // Dibujar ballesta overlay si existe en enemigos
+    if (body.isEnemy && this.isValidSprite(body.crossbowSprite)) {
+      try {
+        const bw = typeof body.width === 'number' ? body.width : 40;
+        const bh = typeof body.height === 'number' ? body.height : 40;
+        const owner = body.owner;
+        const offSource = (body.crossbowOffset ?? owner?.crossbowOffset) ?? { x: 0, y: 0 };
+        const cwRaw = body.crossbowWidth ?? Math.max(20, bw * 0.6);
+        const chRaw = body.crossbowHeight ?? Math.max(12, bh * 0.4);
+        const oxRaw = offSource?.x;
+        const oyRaw = offSource?.y;
+        const cw = Number.isFinite(cwRaw) ? cwRaw : Math.max(20, bw * 0.6);
+        const ch = Number.isFinite(chRaw) ? chRaw : Math.max(12, bh * 0.4);
+        const ox = Number.isFinite(oxRaw) ? oxRaw : 0;
+        const oy = Number.isFinite(oyRaw) ? oyRaw : 0;
+        p.imageMode(p.CENTER);
+        const spr = body.crossbowSprite.gifImage ? body.crossbowSprite.gifImage : body.crossbowSprite;
+        p.image(spr, ox, oy, cw, ch);
+      } catch (e) {
+        // Si falla, ignoramos overlay
+      }
+    }
+
     // (Destello de impacto removido a pedido del usuario)
 
     // Contorno de hitbox para enemigos (fallback desde el renderer)
@@ -94,15 +117,23 @@ class Renderer {
 
   drawBodyWithSprite(p, body) {
     try {
+      const drawW = Number.isFinite(body.drawWidth) ? body.drawWidth : body.width;
+      const drawH = Number.isFinite(body.drawHeight) ? body.drawHeight : body.height;
+      const offX = Number.isFinite(body.drawOffsetX) ? body.drawOffsetX : 0;
+      let offY = Number.isFinite(body.drawOffsetY) ? body.drawOffsetY : 0;
+      // Anclaje opcional: dibujar pegado al borde inferior de la hitbox
+      if (body.drawAnchor === 'bottom' && Number.isFinite(body.height)) {
+        offY += (body.height - drawH) / 2;
+      }
       // Verificar si es una instancia de GifAnimation
       if (body.sprite.gifImage) {
         p.imageMode(p.CENTER);
-        p.image(body.sprite.gifImage, 0, 0, body.width, body.height);
+        p.image(body.sprite.gifImage, offX, offY, drawW, drawH);
       }
       // Si es una imagen p5 normal
       else {
         p.imageMode(p.CENTER);
-        p.image(body.sprite, 0, 0, body.width, body.height);
+        p.image(body.sprite, offX, offY, drawW, drawH);
       }
     } catch (error) {
       console.error("Error dibujando sprite:", error, "Body:", body.label);
