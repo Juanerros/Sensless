@@ -20,7 +20,9 @@ export const gameAssets = [
   { name: 'water', url: 'sprites/spells/chispa-agua.png' },
   
   // Sprites de enemigos
-  { name: 'olvido', url: 'sprites/enemies/olvido.png', type: 'animated' },
+  { name: 'olvido', url: 'sprites/enemies/olvido/olvido_idle.gif', type: 'animated' },
+  { name: 'olvidoTeleport', url: 'sprites/enemies/olvido/olvido_teleport.gif', type: 'animated' },
+  { name: 'olvidoTeleportBack', url: 'sprites/enemies/olvido/olvido_teleports_back.gif', type: 'animated' },
   { name: 'wendigo', url: 'sprites/enemies/Wendigo/Wendingo_idle.gif', type: 'animated' },
   { name: 'wendigoMove', url: 'sprites/enemies/Wendigo/Wendingo_correr .gif', type: 'animated' },
   { name: 'wendigoAlert', url: 'sprites/enemies/Wendigo/Wendingo_alerta.gif', type: 'animated' },
@@ -59,7 +61,7 @@ export function getAssetsByCategory(category) {
         asset.name.startsWith('player'));
     case 'enemies':
       return gameAssets.filter(asset => 
-        ['olvido', 'wendigo', 'wendigoMove', 'wendigoAlert', 'wendigoCharge', 'wendigoHurt', 'wendigoCounterRun', 'wendigoDeath', 'wanderingBud', 'wanderingBudMove', 'wanderingBudHurt', 'bandit', 'banditBullet'].includes(asset.name));
+        ['olvido', 'olvidoTeleport', 'olvidoTeleportBack', 'wendigo', 'wendigoMove', 'wendigoAlert', 'wendigoCharge', 'wendigoHurt', 'wendigoCounterRun', 'wendigoDeath', 'wanderingBud', 'wanderingBudMove', 'wanderingBudHurt', 'bandit', 'banditBullet'].includes(asset.name));
     case 'items':
       return gameAssets.filter(asset => 
         ['box', 'hidrogeno', 'oxigeno', 'water'].includes(asset.name));

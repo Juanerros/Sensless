@@ -1,4 +1,5 @@
 import { Wendigo } from '../types/wendigo.js';
+import { Olvido } from '../types/olvido.js';
 import { WanderingBud } from '../types/wanderingBud.js';
 import { Bandit } from '../types/bandit.js';
 import { getWorld } from '../../physics.js';
@@ -13,11 +14,11 @@ class EnemySpawner {
     this.player = null;
     this.intervalMs = 3000; 
     this.lastSpawnAt = 0;
-    this.maxEnemies = 15;
+    this.maxEnemies = 1;
     this.active = true;
     this.spawnRadiusX = { min: 300, max: 650 }; 
     this.spawnOffsetY = -40; 
-    this.enemyTypes = ['wendigo'];
+    this.enemyTypes = ['olvido'];
     this.hasScoreAdded = false;
     
     // Progreso basado en chunks visitados
@@ -29,11 +30,11 @@ class EnemySpawner {
     // Configuración de oleadas por hito
     // Puedes ajustar libremente los tipos y cantidades
     this.waveConfigs = {
-      0.2: { total: 5, entries: [ { type: 'wendigo', count: 5 } ] },
-      0.4: { total: 8, entries: [ { type: 'wendigo', count: 8 } ] },
-      0.6: { total: 10, entries: [ { type: 'wendigo', count: 10 } ] },
-      0.8: { total: 12, entries: [ { type: 'wendigo', count: 12 } ] },
-      1.0: { total: 15, entries: [ { type: 'wendigo', count: 15 } ] },
+      0.2: { total: 1, entries: [ { type: 'olvido', count: 1 } ] },
+      0.4: { total: 1, entries: [ { type: 'olvido', count: 1 } ] },
+      0.6: { total: 1, entries: [ { type: 'olvido', count: 1 } ] },
+      0.8: { total: 1, entries: [ { type: 'olvido', count: 1 } ] },
+      1.0: { total: 1, entries: [ { type: 'olvido', count: 1 } ] },
     };
 
     // Control de oleadas
@@ -172,7 +173,9 @@ class EnemySpawner {
   spawnSpecificType(type) {
     const { x, y } = this.getSpawnPosition();
     let enemy;
-    if (type === 'wendigo') {
+    if (type === 'olvido') {
+      enemy = new Olvido(x, y, this.world);
+    } else if (type === 'wendigo') {
       enemy = new Wendigo(x, y, this.world);
     } else if (type === 'wanderingBud') {
       enemy = new WanderingBud(x, y, this.world);
@@ -182,7 +185,7 @@ class EnemySpawner {
 
     if (enemy) {
       // Permitir alias 'olvido' para compatibilidad con assets existentes
-      const spriteName = type === 'wendigo' ? 'wendigo' : type;
+      const spriteName = type;
       const sprite = getScaledEnemySpriteByName(spriteName);
       if (sprite) {
         enemy.sprite = sprite;

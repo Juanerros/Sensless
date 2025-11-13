@@ -156,7 +156,7 @@ const sketch = (p) => {
         spawner = new EnemySpawner();
         spawner.setPlayer(player);
         spawner.setIntervalMs(2500);
-        spawner.setMaxEnemies(20);   
+        spawner.setMaxEnemies(1);   
         spawner.start();
       })
       .catch(error => {
@@ -178,7 +178,7 @@ const sketch = (p) => {
       spawner = new EnemySpawner();
       spawner.setPlayer(player);
       spawner.setIntervalMs(2500);
-      spawner.setMaxEnemies(20);   
+      spawner.setMaxEnemies(1);   
       spawner.start();
     });
   };
