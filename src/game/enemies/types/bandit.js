@@ -17,7 +17,7 @@ export let bullets = [];
 
 class Bullet {
   constructor(x, y, targetX, targetY, world, shooter = null, options = {}) {
-    this.initializeProperties(shooter);
+    this.initializeProperties(shooter, options);
     if (!this.validateParameters(x, y, targetX, targetY)) return;
     this.calculateVelocity(x, y, targetX, targetY);
     this.offsetDistance = typeof options.offsetDistance === 'number' ? options.offsetDistance : 30;
@@ -33,11 +33,11 @@ class Bullet {
     }
   }
 
-  initializeProperties(shooter) {
+  initializeProperties(shooter, options = {}) {
     this.width = 30;
     this.height = 10;
     this.damage = 20;
-    this.speed = 2;
+    this.speed = Number.isFinite(options.speed) ? options.speed : 2;
     this.scoreValue = 200 + Math.round(Math.random() * 100);
     this.lifeTime = 360;
     this.shooter = shooter;
@@ -243,7 +243,7 @@ export class Bandit extends Enemy {
   initializeProperties() {
     this.detectionRadius = 400; 
     this.shootingRange = 300;
-    this.speed = 0.003;
+    this.speed = 0.0; // No moverse
     this.health = 80;
     this.scoreValue = 200 + Math.round(Math.random() * 100);
     this.name = 'bandit';
@@ -251,6 +251,12 @@ export class Bandit extends Enemy {
     this.shootCooldown = 0;
     this.shootInterval = 90;
     this.lastShotTime = 0;
+    // Aiming/telegraph
+    this.isAiming = false;
+    this.aimTimer = 0;
+    this.aimWindupFrames = 45; // tiempo con láser verde
+    this.prefireFrames = 10;   // último tramo en rojo
+    this.aimTarget = { x: 0, y: 0 };
   }
 
   update() {
@@ -306,15 +312,26 @@ export class Bandit extends Enemy {
   }
 
   handleCombatBehavior(player, dist, dx, dy) {
-    if (dist < this.shootingRange && this.shootCooldown <= 0) {
-      this.shoot(player.position.x, player.position.y);
-      this.shootCooldown = this.shootInterval;
+    // No movimiento: sólo comportamiento de disparo con telemetría
+    if (!this.isAiming && dist < this.shootingRange && this.shootCooldown <= 0) {
+      // Iniciar fase de apuntado
+      this.isAiming = true;
+      this.aimTimer = this.aimWindupFrames + this.prefireFrames;
+      this.aimTarget = { x: player.position.x, y: player.position.y };
     }
-    
-    if (dist < 100) {
-      this.moveAway(dx, dy);
-    } else if (dist > this.shootingRange) {
-      this.moveTowards(dx, dy);
+
+    // Actualizar fase de apuntado y disparar cuando corresponda
+    if (this.isAiming) {
+      // Actualizar el objetivo para que el láser apunte al jugador actual
+      this.aimTarget.x = player.position.x;
+      this.aimTarget.y = player.position.y;
+      this.aimTimer--;
+      if (this.aimTimer <= 0) {
+        this.isAiming = false;
+        // Disparar con gran velocidad
+        this.shoot(this.aimTarget.x, this.aimTarget.y, { speed: 8 });
+        this.shootCooldown = this.shootInterval;
+      }
     }
   }
 
@@ -332,7 +349,7 @@ export class Bandit extends Enemy {
     Matter.Body.applyForce(this.body, this.body.position, { x: forceX, y: forceY });
   }
 
-  shoot(targetX, targetY) {
+  shoot(targetX, targetY, options = {}) {
     // Origen desde ballesta pegada al cuerpo
     if (!this.body || !this.body.position) return;
     const basePos = this.body.position;
@@ -353,7 +370,7 @@ export class Bandit extends Enemy {
       targetY,
       getWorld(),
       this,
-      { offsetDistance: 6 }
+      { offsetDistance: 6, speed: Number.isFinite(options.speed) ? options.speed : 2 }
     );
     
     if (bullet && bullet.isValid) {
@@ -364,6 +381,7 @@ export class Bandit extends Enemy {
   draw(p) {
     super.draw(p);
     this.drawShootingRange(p);
+    this.drawAimLaser(p);
   }
 
   drawShootingRange(p) {
@@ -376,6 +394,25 @@ export class Bandit extends Enemy {
       p.circle(this.body.position.x, this.body.position.y, this.shootingRange * 2);
       p.pop();
     }
+  }
+
+  drawAimLaser(p) {
+    if (!this.isAiming || !gameState.player) return;
+    if (!this.body || !this.body.position) return;
+    const basePos = this.body.position;
+    const dir = this.direction === 'right' ? 1 : -1;
+    const offX = Number.isFinite(this.crossbowOffset?.x) ? this.crossbowOffset.x : 0;
+    const offY = Number.isFinite(this.crossbowOffset?.y) ? this.crossbowOffset.y : 0;
+    const originX = basePos.x + dir * (offX);
+    const originY = basePos.y + (offY);
+    const targetX = this.aimTarget.x;
+    const targetY = this.aimTarget.y;
+    const isPrefire = this.aimTimer <= this.prefireFrames;
+    p.push();
+    p.stroke(isPrefire ? p.color(255, 0, 0) : p.color(0, 255, 0));
+    p.strokeWeight(2);
+    p.line(originX, originY, targetX, targetY);
+    p.pop();
   }
 
   takeDamage(amount) {

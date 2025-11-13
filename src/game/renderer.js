@@ -88,10 +88,40 @@ class Renderer {
       }
     }
 
+    // Dibujar láser de puntería para Bandit desde el renderer
+    if (body.isEnemy && body.owner && body.owner.type === 'bandit' && body.owner.isAiming) {
+      try {
+        const owner = body.owner;
+        const offSource = (body.crossbowOffset ?? owner?.crossbowOffset) ?? { x: 0, y: 0 };
+        const ox = Number.isFinite(offSource?.x) ? offSource.x : 0;
+        const oy = Number.isFinite(offSource?.y) ? offSource.y : 0;
+        const target = owner.aimTarget ?? { x: body.position.x, y: body.position.y };
+        const isPrefire = Number.isFinite(owner.prefireFrames) && Number.isFinite(owner.aimTimer)
+          ? owner.aimTimer <= owner.prefireFrames
+          : false;
+
+        p.push();
+        p.stroke(isPrefire ? 255 : 0, isPrefire ? 0 : 255, 0);
+        p.strokeWeight(2);
+        // El renderer ya trasladó a la posición del body; dibujar línea en coords locales hasta target en coords globales
+        // Necesitamos convertir el target a coords locales actuales
+        let localTargetX = target.x - body.position.x;
+        const localTargetY = target.y - body.position.y;
+        // Compensar el flip horizontal aplicado a enemigos mirando a la izquierda
+        if (body.isEnemy && body.direction === 'left') {
+          localTargetX = -localTargetX;
+        }
+        p.line(ox, oy, localTargetX, localTargetY);
+        p.pop();
+      } catch (e) {
+        // Si falla, omitimos el láser sin romper el render
+      }
+    }
+
     // (Destello de impacto removido a pedido del usuario)
 
-    // Contorno de hitbox para enemigos (fallback desde el renderer)
-    if (body.isEnemy && body.width && body.height) {
+    // Contorno de hitbox para enemigos (solo si está habilitado)
+    if (body.isEnemy && body.width && body.height && body.showHitbox) {
       p.rectMode(p.CENTER);
       p.noFill();
       p.stroke(0, 255, 0);
