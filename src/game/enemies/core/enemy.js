@@ -1,6 +1,6 @@
 import Matter from "matter-js";
 import { getBodies } from "../../physics";
-import { gameState } from "../../state";
+import { gameState, addScore } from "../../state";
 
 // ============================
 // REGISTRO DE ENEMIGOS
@@ -27,6 +27,7 @@ export class Enemy {
     this.sprite = null;
     this.name = null;
     this.type = "enemy";
+    this.scoreValue = 100;
     
     this.canJump = true;
     this.jumpCooldown = 0;
@@ -130,6 +131,7 @@ export class Enemy {
   }
 
   destroy() {
+    addScore(this.scoreValue);
     this.removeFromEnemies();
     this.removeFromPhysics();
   }
@@ -154,7 +156,13 @@ export class Enemy {
   }
 
   update() {
-    // Método base para ser sobrescrito
+    this.checkFallDeath();
+  }
+
+  checkFallDeath() {
+    if (this.body && this.body.position && this.body.position.y > 1000) {
+      this.destroy();
+    }
   }
 
   getDistanceToPlayer() {
@@ -214,6 +222,7 @@ export class ChaserEnemy extends Enemy {
     super(x, y, 40, 60, world);
     this.detectionRadius = 300;
     this.speed = 0.005;
+    this.scoreValue = 100 + Math.round(Math.random() * 100);
     this.name = 'olvido';
     this.type = "chaser";
   }

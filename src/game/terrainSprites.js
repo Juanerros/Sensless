@@ -11,8 +11,8 @@ class TerrainSpriteManager {
 
         const spritePaths = {
             surface: 'sprites/terrenos/arboleda/terreno 1.png',
-            layer1: 'sprites/terrenos/arboleda/terreno 2.png',
-            layer2: 'sprites/terrenos/arboleda/terreno 3.png',
+            layer1: 'sprites/terrenos/arboleda/terreno inf.png',
+            layer2: 'sprites/terrenos/arboleda/terreno inf.png',
             underground: 'sprites/terrenos/arboleda/terreno inf.png'
         };
 
@@ -36,7 +36,6 @@ class TerrainSpriteManager {
 
         await Promise.all(loadPromises);
         this.loaded = true;
-        console.log('Sprites de terreno cargados:', Object.keys(this.sprites));
     }
 
     getSpriteForLayer(layer) {
@@ -56,29 +55,24 @@ class TerrainSpriteManager {
 
     drawTerrainSprite(p, body, sprite) {
         if (!sprite) {
-            // Fallback a color sólido si no hay sprite
             this.drawFallbackTerrain(p, body);
             return;
         }
 
         p.push();
-                
-        // Usar el modo CORNER para un control más preciso
         p.imageMode(p.CORNER);
-        
-        // Dibujar el sprite escalado en la posición correcta
-        p.image(sprite, 
-            body.position.x - body.width/2, 
-            body.position.y - body.height/2, 
-            body.width, 
+        // Dibujar relativo al origen actual (ya traducido en renderer)
+        p.image(
+            sprite,
+            -body.width / 2,
+            -body.height / 2,
+            body.width,
             body.height
         );
-        
         p.pop();
     }
 
     drawFallbackTerrain(p, body) {
-        // Colores de fallback basados en la capa
         const baseColor = [101, 67, 33];
         if (body.layer > 0) {
             const darkenAmount = Math.min(body.layer * 15, 60);
@@ -93,7 +87,8 @@ class TerrainSpriteManager {
         }
         p.strokeWeight(1);
         p.rectMode(p.CENTER);
-        p.rect(body.position.x, body.position.y, body.width, body.height);
+        // Dibujar relativo al origen actual (ya traducido en renderer)
+        p.rect(0, 0, body.width, body.height);
     }
 
     isLoaded() {

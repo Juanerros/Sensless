@@ -25,6 +25,8 @@ export const gameAssets = [
   { name: 'bandit', url: 'sprites/enemies/Bandido/bandido_idle.gif', type: 'animated' },
   { name: 'banditBullet', url: 'sprites/enemies/Bandido/bandido_proyectil.png', width: 30, height: 5 }
   ,
+  // Proyectiles del jugador
+  { name: 'basicProjectile', url: 'sprites/Proyectiles_jugador/disparo_1.gif', type: 'animated' },
   // Efectos (nubes de cloro)
   { name: 'chlorineCloud1', url: 'sprites/enemies/effects/nubes_de_cloro/1.png' },
   { name: 'chlorineCloud2', url: 'sprites/enemies/effects/nubes_de_cloro/2.png' },

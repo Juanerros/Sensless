@@ -23,7 +23,6 @@ class GameOverScreen {
       this.logoLoaded = true;
       p.loadImage('sprites/interfas/logo.png', (img) => {
         this.logoImage = img;
-        console.log('Logo cargado exitosamente');
       }, () => {
         console.error('Error al cargar el logo');
         this.logoLoaded = false;

@@ -95,11 +95,9 @@ export function takeDamage(damage) {
     }, 200);
   }, 150);
 
-  console.log(playerHealth);
 
   if (playerHealth <= 0) {
     player.isAlive = false;
-    console.log("Jugador ripeo");
     const deadSprite = getSpriteByName('playerDead');
     if (deadSprite && deadSprite.width > 0) {
       player.sprite = deadSprite;
@@ -315,13 +313,13 @@ export function drawPlayer(p) {
         // Verificar que el sprite de idle existe y tiene dimensiones válidas
         if (idleSprite && typeof idleSprite === 'object') {
           const spriteWidth = player.width * 1.3;
-          const spriteHeight = player.height * 1.2;
+          const spriteHeight = player.height * 1;
           
           try {
             // Verificar si es una instancia de GifAnimation
             if (idleSprite.gifImage) {
               p.imageMode(p.CENTER);
-              p.image(idleSprite.gifImage, 0, -8, spriteWidth, spriteHeight);
+              p.image(idleSprite.gifImage, 0, 0, spriteWidth, spriteHeight);
             } 
             // Si es una imagen p5 normal
             else if (idleSprite.width > 0 && idleSprite.height > 0) {
@@ -389,10 +387,6 @@ export function drawPlayer(p) {
         player.width > 0 && player.height > 0) {
         p.rect(0, 0, player.width, player.height);
       } else {
-        console.log("Jugador con dimensiones inválidas:", {
-          width: player.width,
-          height: player.height
-        });
         // Usar dimensiones por defecto si las del jugador no son válidas
         p.rect(0, 0, 42, 80);
       }

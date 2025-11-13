@@ -17,8 +17,8 @@ const jumpBufferMs = 140;
 const coyoteTimeMs = 140;
 const smoothingAlpha = 0.45; // Aumentado para respuesta más inmediata
 const airControlMultiplier = 0.8; // Control en el aire
-const groundAcceleration = 0.8; // Aceleración en suelo
-const airAcceleration = 0.6; // Aceleración en aire
+const groundAcceleration = 0.85 // Aceleración en suelo
+const airAcceleration = 0.7; // Aceleración en aire
 
 // ===== Gestión de Input =====
 function normalizeKey(key) {
@@ -41,15 +41,13 @@ export function handleKeyPressed(key) {
     keys['a'] = keys['arrowleft'] = keys['left'] = false;
   }
 
-  if (k === 'q') {
-    selectShotType('fire')
-  } else if (k === 'w') {
-    selectShotType('water')
-  } else if (k === 'e') {
-    selectShotType('lightning')
+  if (k === 'e') {
+    selectShotType('basic')
   } else if (k === 'r') {
-    selectShotType('multi')
+    selectShotType('fire')
   } else if (k === 't') {
+    selectShotType('water')
+  } else if (k === 'y') {
     selectShotType('earth')
   }
 }
@@ -91,28 +89,21 @@ function updateHorizontalMovement(player, playerVelocity, onGround) {
   const currentVx = player.velocity.x;
   const targetVx = axis * playerVelocity;
   
-  // Aplicar aceleración diferente en aire/suelo
   const acceleration = onGround ? groundAcceleration : airAcceleration;
   const velocityMultiplier = onGround ? 1 : airControlMultiplier;
   
-  // Calcular nueva velocidad con aceleración apropiada
   let newVx;
   if (axis !== 0) {
-    // Si hay input, acelerar hacia la dirección deseada
     const maxSpeed = playerVelocity * velocityMultiplier;
     const accelerationForce = acceleration * (axis > 0 ? 1 : -1);
     newVx = currentVx + accelerationForce;
-    // Limitar a la velocidad máxima
     newVx = axis > 0 ? Math.min(newVx, maxSpeed) : Math.max(newVx, -maxSpeed);
   } else {
-    // Si no hay input, frenar suavemente
     const friction = onGround ? 0.85 : 0.95;
     newVx = currentVx * friction;
-    // Detener completamente si la velocidad es muy baja
     if (Math.abs(newVx) < 0.1) newVx = 0;
   }
 
-  // Actualizar dirección para sprites
   if (axis < 0) player.direction = 'left';
   else if (axis > 0) player.direction = 'right';
 
@@ -132,8 +123,14 @@ function getMovementAxis() {
 function attemptStepUp(player, allBodies, axis) {
   if (axis === 0 || !Array.isArray(allBodies)) return false;
 
-  const stepMax = Math.max(12, Math.min(player.height * 0.3, 24));
-  const horizontalGap = 8;
+  const onGround = isOnGround(player, allBodies);
+  if (!onGround) return false;
+
+  const moving = Math.abs(player.velocity.x) > 0.25;
+  if (!moving) return false;
+
+  const stepMax = Math.max(22, Math.min(player.height * 0.3, 24));
+  const horizontalGap = Math.max(6, Math.min(player.width * 0.35, 14));
 
   const playerBounds = {
     minX: player.bounds?.min?.x ?? player.position.x - player.width / 2,
@@ -147,14 +144,30 @@ function attemptStepUp(player, allBodies, axis) {
   for (const body of allBodies) {
     if (!body || body === player || !body.bounds || body.isSensor || body.label === 'spell') continue;
 
-    const nearFront = axis > 0 ? 
-      body.bounds.min.x - playerBounds.maxX : 
+    const nearFront = axis > 0 ?
+      body.bounds.min.x - playerBounds.maxX :
       playerBounds.minX - body.bounds.max.x;
 
     if (nearFront < 0 || nearFront > horizontalGap) continue;
 
     const neededRise = playerBounds.bottomY - body.bounds.min.y;
     if (neededRise <= 0 || neededRise > stepMax) continue;
+
+    const predicted = {
+      minX: playerBounds.minX,
+      maxX: playerBounds.maxX,
+      topY: playerBounds.topY - neededRise,
+      bottomY: playerBounds.bottomY - neededRise
+    };
+
+    let blocked = false;
+    for (const other of allBodies) {
+      if (!other || other === player || !other.bounds || other.isSensor || other.label === 'spell') continue;
+      const overlapsX = predicted.maxX > other.bounds.min.x && predicted.minX < other.bounds.max.x;
+      const overlapsY = predicted.bottomY > other.bounds.min.y && predicted.topY < other.bounds.max.y;
+      if (overlapsX && overlapsY) { blocked = true; break; }
+    }
+    if (blocked) continue;
 
     const newTopY = playerBounds.topY - neededRise;
     if (newTopY <= body.bounds.min.y - 2) {
@@ -163,9 +176,9 @@ function attemptStepUp(player, allBodies, axis) {
   }
 
   if (stepDelta > 0) {
-    Matter.Body.setPosition(player, { 
-      x: player.position.x, 
-      y: player.position.y - stepDelta 
+    Matter.Body.setPosition(player, {
+      x: player.position.x,
+      y: player.position.y - stepDelta
     });
     return true;
   }
@@ -178,11 +191,14 @@ function updateJump(player, bodies, jumpForce) {
   
   if (onGround) lastGroundedTime = now;
 
-  const spaceActive = keys['space'] || keys[' '];
-  if (spaceActive && !keysPressed['space']) {
+  // Cambiado de space a 'w' para salto
+  const jumpActive = keys['w'] || keys['space'];
+  if (jumpActive && !keysPressed['w'] && !keysPressed['space']) {
     lastJumpPressedTime = now;
+    keysPressed['w'] = true;
     keysPressed['space'] = true;
-  } else if (!spaceActive) {
+  } else if (!jumpActive) {
+    keysPressed['w'] = false;
     keysPressed['space'] = false;
   }
 
@@ -214,12 +230,10 @@ export function handleMousePressed(p, player) {
   const { x: worldX, y: worldY } = screenToWorldCoordinates(p.mouseX, p.mouseY);
 
   if (p.mouseButton.left) {
-    // Disparar proyectil mágico cuando se presiona Shift + Click Izquierdo
     firePlayerShot(p);
   }
 
   if (p.mouseButton.right)  {
-    // Usar objeto del inventario (comportamiento original)
     useSelectedItem(worldX, worldY);
   }
 }

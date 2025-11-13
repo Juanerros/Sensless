@@ -6,9 +6,9 @@ import { createQuimic } from "./quimic.js";
 // Configuración del sistema de chunks
 const CHUNK_SIZE = 1000; // Tamaño de cada chunk en píxeles
 const RENDER_DISTANCE = 1; // Chunks a cargar alrededor del jugador
-const TERRAIN_HEIGHT_VARIATION = 250;
+const TERRAIN_HEIGHT_VARIATION = 50;
 const BASE_TERRAIN_HEIGHT = 700;
-const UNDERGROUND_LAYERS = 9; // Número de capas de tierra debajo del terreno
+const UNDERGROUND_LAYERS = 15; // Número de capas de tierra debajo del terreno
 const LAYER_HEIGHT = 50; // Altura de cada capa subterránea
 
 // Almacenamiento de chunks generados
@@ -108,56 +108,8 @@ class Chunk {
     generateEvent() {
         if (visitedChunks.size === 0) return;
 
-        if(visitedChunks.size % 5 === 0) {
-            console.log('Generando quimico en chunk');
+        if (visitedChunks.size % 5 === 0) {
             createQuimic(this.worldX + (CHUNK_SIZE / 2), BASE_TERRAIN_HEIGHT + 1900);
-        }
-    }
-
-    generateTerrain() {
-        const segments = 8; // Número de segmentos de terreno por chunk
-        const segmentWidth = CHUNK_SIZE / segments;
-
-        for (let i = 0; i < segments; i++) {
-            const x = this.worldX + (i * segmentWidth) + (segmentWidth / 2);
-            const noiseValue = noiseGenerator.octaveNoise(x);
-            const surfaceHeight = BASE_TERRAIN_HEIGHT + (noiseValue * TERRAIN_HEIGHT_VARIATION);
-
-            // Crear segmento de terreno superficial
-            const surfaceY = surfaceHeight + 40;
-            const surfaceSegment = Matter.Bodies.rectangle(x, surfaceY, segmentWidth, 80, {
-                isStatic: true,
-                friction: 0.8,
-                restitution: 0.1
-            });
-
-            surfaceSegment.width = segmentWidth;
-            surfaceSegment.height = 80;
-            surfaceSegment.label = "terrain";
-            surfaceSegment.chunkX = this.chunkX;
-            surfaceSegment.layer = 0;
-
-            addToWorld(surfaceSegment);
-            this.bodies.push(surfaceSegment);
-
-            // Crear capas subterráneas
-            for (let layer = 1; layer <= UNDERGROUND_LAYERS; layer++) {
-                const undergroundY = surfaceY + (layer * LAYER_HEIGHT);
-                const undergroundSegment = Matter.Bodies.rectangle(x, undergroundY, segmentWidth, LAYER_HEIGHT, {
-                    isStatic: true,
-                    friction: 0.9,
-                    restitution: 0.05
-                });
-
-                undergroundSegment.width = segmentWidth;
-                undergroundSegment.height = LAYER_HEIGHT;
-                undergroundSegment.label = "terrain";
-                undergroundSegment.chunkX = this.chunkX;
-                undergroundSegment.layer = layer;
-
-                addToWorld(undergroundSegment);
-                this.bodies.push(undergroundSegment);
-            }
         }
     }
 
@@ -208,11 +160,16 @@ class Chunk {
     }
 
     generateTerrain() {
-        const segments = 20;
+        const segments = 12;
         const segmentWidth = CHUNK_SIZE / segments;
         const pool = getObjectPool();
+        let lastHasTerrain = true;
 
         for (let i = 0; i < segments; i++) {
+            if (Math.random() > 0.95) {
+                
+                continue;
+            }
             const x = this.worldX + (i * segmentWidth) + (segmentWidth / 2);
             const noiseValue = noiseGenerator.octaveNoise(x);
             const surfaceHeight = BASE_TERRAIN_HEIGHT + (noiseValue * TERRAIN_HEIGHT_VARIATION);

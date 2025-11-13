@@ -5,6 +5,7 @@ import { getWorld } from '../../physics.js';
 import { getScaledEnemySpriteByName } from '../sprites/enemySprites.js';
 import { enemies } from './enemy.js';
 import { getVisitedProgress } from '../../worldGeneration.js';
+import { addScore } from '../../state.js';
 
 class EnemySpawner {
   constructor() {
@@ -17,7 +18,8 @@ class EnemySpawner {
     this.spawnRadiusX = { min: 300, max: 650 }; 
     this.spawnOffsetY = -40; 
     this.enemyTypes = ['olvido', 'wanderingBud', 'bandit'];
-
+    this.hasScoreAdded = false;
+    
     // Progreso basado en chunks visitados
     this.progressGoalChunks = 20; // meta para 100%
     this.progressPercent = 0; // 0..1
@@ -61,6 +63,11 @@ class EnemySpawner {
     // Actualizar progreso de chunks visitados
     const prog = getVisitedProgress(this.progressGoalChunks);
     this.progressPercent = prog.percent;
+
+    if(!this.hasScoreAdded && (this.progressPercent === 0.5)) {
+      addScore(1000);
+      this.hasScoreAdded = true;
+    }
 
     // Verificar hitos y disparar oleadas
     this.checkAndTriggerWaves(p);
@@ -124,10 +131,10 @@ class EnemySpawner {
     }
 
     // Texto
-    p.noStroke();
-    p.fill(255);
-    p.textSize(12);
-    p.text(`Progreso: ${Math.floor(pct * 100)}%`, x, y + barHeight + 6);
+    // p.noStroke();
+    // p.fill(255);
+    // p.textSize(12);
+    // p.text(`Progreso: ${Math.floor(pct * 100)}%`, x, y + barHeight + 6);
 
     p.pop();
   }

@@ -32,6 +32,7 @@ class GameLoop {
     this.updateEnemies();
     this.updateWorldGeneration();
     this.checkPlayerHealth();
+    this.checkPlayerFallDeath();
   }
 
   updatePhysics() {
@@ -106,6 +107,13 @@ class GameLoop {
   checkPlayerHealth() {
     const player = getPlayer();
     if (player && player.health <= 0) {
+      this.gameState.gameOver = true;
+    }
+  }
+
+  checkPlayerFallDeath() {
+    const player = getPlayer();
+    if (player && player.position && player.position.y > 1000) {
       this.gameState.gameOver = true;
     }
   }
