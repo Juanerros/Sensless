@@ -242,30 +242,41 @@ const sketch = (p) => {
   
   // Función para dibujar la pantalla de carga
   const drawLoadingScreen = (p) => {
+    p.push();
+    p.resetMatrix();
+    // Asegurar también el contexto Canvas 2D sin transformaciones previas
+    if (p.drawingContext && typeof p.drawingContext.setTransform === 'function') {
+      p.drawingContext.setTransform(1, 0, 0, 1, 0, 0);
+    }
     p.background(20, 20, 30);
+
+    const centerX = p.width / 2;
+    const centerY = p.height / 2;
+    const barWidth = Math.min(p.width * 0.6, 520);
+    const barHeight = 20;
+    const spacing = 16;
+
+    // Texto centrado
     p.fill(255);
     p.textAlign(p.CENTER, p.CENTER);
     p.textSize(32);
-    p.text('Cargando...', p.width / 2, p.height / 2 - 50);
-    
-    // Barra de progreso
-    const barWidth = p.width * 0.6;
-    const barHeight = 20;
-    const barX = p.width / 2 - barWidth / 2;
-    const barY = p.height / 2 + 20;
-    
-    // Fondo de la barra
+    p.text('Cargando...', centerX, centerY - (barHeight / 2 + spacing + 18));
+
+    // Barra centrada con coordenadas absolutas
+    const barLeft = centerX - barWidth / 2;
+    const barTop = centerY - barHeight / 2;
+    p.rectMode(p.CORNER);
     p.fill(50);
-    p.rect(barX, barY, barWidth, barHeight);
-    
-    // Progreso
+    p.rect(barLeft, barTop, barWidth, barHeight);
     p.fill(0, 255, 100);
-    p.rect(barX, barY, barWidth * loadingProgress, barHeight);
-    
-    // Porcentaje
+    p.rect(barLeft, barTop, barWidth * loadingProgress, barHeight);
+
+    // Porcentaje centrado debajo
     p.fill(255);
     p.textSize(16);
-    p.text(Math.floor(loadingProgress * 100) + '%', p.width / 2, barY + barHeight + 20);
+    p.text(Math.floor(loadingProgress * 100) + '%', centerX, centerY + barHeight / 2 + spacing);
+
+    p.pop();
   };
 
   p.keyPressed = () => {
