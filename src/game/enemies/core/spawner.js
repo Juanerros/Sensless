@@ -72,9 +72,9 @@ class EnemySpawner {
     if (!this.active && !this.endgameTriggered) return;
 
     // Actualizar progreso de chunks visitados
-    // Escala: 3% cada this.chunksPerStep chunks
+    // Escala acelerada: 12% por cada chunk (ajustado por this.chunksPerStep)
     const visitedCount = getVisitedChunksCount();
-    this.progressPercent = Math.max(0, Math.min(1, visitedCount * (0.03 / this.chunksPerStep)));
+    this.progressPercent = Math.max(0, Math.min(1, visitedCount * (0.9 / this.chunksPerStep)));
 
     if(!this.hasScoreAdded && (this.progressPercent === 0.5)) {
       addScore(1000);
@@ -269,8 +269,14 @@ class EnemySpawner {
     const now = p.millis();
     for (const milestone of this.milestones) {
       if (this.progressPercent >= milestone && !this.triggeredMilestones.has(milestone)) {
+        // No programar oleada en el 100% ni si el final está activado
+        if (milestone >= 1.0 || this.endgameTriggered) {
+          this.triggeredMilestones.add(milestone);
+          continue;
+        }
         const cfg = this.getWaveConfigForMilestone(milestone);
         // Programar oleada con aviso previo
+        this.waveBannerText = 'Oleada aproximándose...';
         this.pendingWave = { startAt: now + this.approachLeadMs, cfg };
         this.waveBannerUntil = now + this.approachLeadMs;
         this.triggeredMilestones.add(milestone);
@@ -305,6 +311,8 @@ class EnemySpawner {
     let enemy;
     if (type === 'olvido') {
       enemy = new Olvido(x, y, this.world);
+      // Asegurar vida completa del jefe final
+      enemy.health = enemy.maxHealth || 200;
     } else if (type === 'wendigo') {
       enemy = new Wendigo(x, y, this.world);
     } else if (type === 'wanderingBud') {
@@ -393,53 +401,26 @@ class EnemySpawner {
       p.push();
       p.resetMatrix();
       const cx = (window.innerWidth || 1280) / 2;
-      const y = 80;
-      const padX = 16;
-      const padY = 8;
+      // Bajar el banner un poco y hacerlo más minimalista
+      const y = 110;
+      const padX = 10;
+      const padY = 6;
       const text = this.waveBannerText || 'Oleada aproximándose...';
-      p.textSize(22);
+      p.textSize(16);
       p.textAlign(p.CENTER, p.CENTER);
 
       // Medir texto de forma aproximada
       const w = p.textWidth(text) + padX * 2;
-      const h = 34;
+      const h = 26;
       const x = cx - w / 2;
-      const r = 12;
+      const r = 8;
 
-      // Glow suave
+      // Fondo minimalista: rectángulo semitransparente sin efectos
       p.noStroke();
-      p.fill(0, 0, 0, 90);
-      p.rect(x - 6, y - h / 2 - 6, w + 12, h + 12, r + 6);
+      p.fill(20, 25, 35, 180);
+      p.rect(x, y - h / 2, w, h, r);
 
-      // Gradiente del banner
-      const ctx = p.drawingContext;
-      const grad = ctx.createLinearGradient(x, y - h / 2, x, y + h / 2);
-      grad.addColorStop(0, 'rgba(20,25,50,0.95)');
-      grad.addColorStop(1, 'rgba(35,70,140,0.95)');
-      const prevFill = ctx.fillStyle;
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.moveTo(x + r, y - h / 2);
-      ctx.lineTo(x + w - r, y - h / 2);
-      ctx.quadraticCurveTo(x + w, y - h / 2, x + w, y - h / 2 + r);
-      ctx.lineTo(x + w, y + h / 2 - r);
-      ctx.quadraticCurveTo(x + w, y + h / 2, x + w - r, y + h / 2);
-      ctx.lineTo(x + r, y + h / 2);
-      ctx.quadraticCurveTo(x, y + h / 2, x, y + h / 2 - r);
-      ctx.lineTo(x, y - h / 2 + r);
-      ctx.quadraticCurveTo(x, y - h / 2, x + r, y - h / 2);
-      ctx.closePath();
-      ctx.fill();
-
-      // Brillo superior
-      const shine = ctx.createLinearGradient(x, y - h / 2, x, y);
-      shine.addColorStop(0, 'rgba(255,255,255,0.25)');
-      shine.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = shine;
-      ctx.fillRect(x + 4, y - h / 2 + 4, w - 8, h / 2 - 6);
-
-      // Texto
-      ctx.fillStyle = prevFill;
+      // Texto simple
       p.fill(255);
       p.text(text, cx, y);
       p.pop();

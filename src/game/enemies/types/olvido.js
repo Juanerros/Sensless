@@ -38,7 +38,7 @@ export class Olvido extends Enemy {
     this.stateEndAt = 0;
     this.hurtDurationMs = 240;
     this.hurtUntil = 0;
-    this.maxHealth = 200;
+    this.maxHealth = 500;
     this.health = this.maxHealth;
 
     // Fase y transición
