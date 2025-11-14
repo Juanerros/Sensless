@@ -279,7 +279,7 @@ class HUD {
       const icon = assetLoader.getAsset(leftIconKey);
       if (icon) {
         p.imageMode(p.CORNER);
-        p.image(icon, leftX , topY , 88, 88);
+        p.image(icon, leftX - 50 , topY + 50 , 88, 88);
       }
     }
 
@@ -289,7 +289,7 @@ class HUD {
       const icon = assetLoader.getAsset(rightIconKey);
       if (icon) {
         p.imageMode(p.CORNER);
-        p.image(icon, rightX, topY, 88, 88);
+        p.image(icon, rightX - 50, topY + 50, 88, 88);
       }
     }
 
