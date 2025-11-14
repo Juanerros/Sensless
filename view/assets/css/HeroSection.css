@@ -308,6 +308,11 @@
   transition: all 450ms ease-in-out;
 }
 
+.btn-play span{
+  color: #fff;
+  z-index: 1;
+}
+
 .btn-play::before {
   position: absolute;
   content: "";
@@ -354,6 +359,7 @@
   fill: white;
   transform: scale(1.2);
 }
+
 
 .play-icon {
   font-size: calc(0.9rem + 0.1vw);

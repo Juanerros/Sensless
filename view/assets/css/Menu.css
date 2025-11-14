@@ -1,3 +1,40 @@
+/* === Pantalla de carga === */
+#loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0d0b2b;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  flex-direction: column;
+  color: #fff;
+  opacity: 1;
+  transition: opacity 0.8s ease-out;
+}
+
+#loader .spinner {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+  border: 6px solid #1a192c;
+  border-top: 6px solid #4b7bec;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+#loader .loading-text {
+  font-family: pixelfont, sans-serif;
+  font-size: 20px;
+  letter-spacing: 2px;
+  opacity: 0.8;
+  color: #a3a0ff;
+}
+
+/* === Menú principal === */
 body {
   height: 100vh;
   display: flex;
@@ -6,13 +43,11 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Trebuchet MS", sans-serif;
+  color: #fff;
+  background-color: #0d0b2b;
   overflow: hidden;
 }
-@font-face {
-  font-family: pixelfont;
-  src: url(../font/pixelfont.ttf);
-}
-/* Fondo GIF animado */
+
 .background-gif {
   position: fixed;
   top: 0;
@@ -20,6 +55,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: brightness(0.4);
 }
 
 .menu-container {
@@ -29,14 +65,14 @@ body {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  color: white;
+  z-index: 1;
 }
 
 .menu-items {
   display: flex;
   flex-direction: column;
-  gap: 80px;
-  padding-top: 60px;
+  gap: 60px;
+  padding-top: 200px;
   font-size: 32px;
 }
 
@@ -45,14 +81,16 @@ body {
   font-family: pixelfont;
   color: #fff;
   text-decoration: none;
-  transition: 0.2s;
+  transition: 0.3s;
+  opacity: 0.5;
+  cursor: pointer;
 }
 
 .menu-items a:hover {
-  transform: scale(1.08);
+  opacity: 1;
+  text-shadow: 0 0 10px #7f7fff;
 }
 
-/* Título con GIF */
 .title {
   position: absolute;
   top: 40px;
@@ -63,5 +101,87 @@ body {
 }
 
 .title img {
-  height: 160px;
+  height: 240px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85); /* fondo semi-transparente oscuro */
+  backdrop-filter: blur(5px); /* efecto vidrio ahumado */
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 450px;
+  text-align: center;
+  font-family: pixelfont, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 40px 30px;
+  background: linear-gradient(145deg, #0f0e1f 0%, #1a1a3d 100%);
+  background-image: url('../assets/img/metal_texture_dark.png'); /* textura tipo Arkham */
+  background-size: cover;
+  background-blend-mode: overlay;
+  border: 2px solid #001546;
+  border-radius: 16px;
+}
+
+.modal-content h2 {
+  color: #fff;
+  text-shadow: 0 0 10px #7f7fff;
+  margin-bottom: 20px;
+}
+
+.controls-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.control-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 18px;
+  color: #fff;
+}
+
+.control-item .key {
+  min-width: 60px;
+  display: inline-block;
+  padding: 10px 16px;
+  background: linear-gradient(145deg, #2c2b55, #1a1a3d);
+  border: 2px solid #001546;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #a3a0ff;
+  text-align: center;
+  transition: 0.2s all;
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  color: #4b7bec;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  text-shadow: 0 0 8px #7f7fff;
+}
+
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
