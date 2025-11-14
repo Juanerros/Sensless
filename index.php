@@ -306,7 +306,7 @@ if (session_status() === PHP_SESSION_NONE) {
               d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z">
             </path>
           </svg>
-          <a class="text" href="./dist/index.html">Jugar Ahora</a>
+          <a class="text" href="./view/pages/Menu.php">Jugar Ahora</a>
         </button>
       </div>
     </div>
@@ -322,7 +322,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <div class="avatar-container">
               <div class="avatar juan-avatar equipo-avatar-animate"></div>
             </div>
-            <h3 class="miembro-nombre equipo-nombre-animate">Juan Cottier</h3>
+            <h3 class="miembro-nombre equipo-rol-animate">Juan Cottier</h3>
             <p class="miembro-rol equipo-rol-animate">Líder de Proyecto y Programador Principal</p>
             <a class="miembro-github" href="https://github.com/Juanerros" target="_blank" rel="noopener noreferrer">
               <div class="github-button-container">
@@ -342,7 +342,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <div class="avatar-container">
               <div class="avatar mateo-avatar equipo-avatar-animate"></div>
             </div>
-            <h3 class="miembro-nombre equipo-nombre-animate">Mateo Palacio</h3>
+            <h3 class="miembro-nombre equipo-rol-animate">Mateo Palacio</h3>
             <p class="miembro-rol equipo-rol-animate">Programador de Sistemas y Mecánicas</p>
             <a class="miembro-github" href="https://github.com/palateo8967" target="_blank" rel="noopener noreferrer">
               <div class="github-button-container">
@@ -362,7 +362,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <div class="avatar-container">
               <div class="avatar farias-avatar equipo-avatar-animate"></div>
             </div>
-            <h3 class="miembro-nombre equipo-nombre-animate">Farias Tomas</h3>
+            <h3 class="miembro-nombre equipo-rol-animate">Farias Tomas</h3>
             <p class="miembro-rol equipo-rol-animate">Diseñador de Juego y Arte Conceptual</p>
             <a class="miembro-github" href="#" target="_blank" rel="noopener noreferrer">
               <div class="github-button-container">
@@ -382,7 +382,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <div class="avatar-container">
               <div class="avatar jesus-avatar equipo-avatar-animate"></div>
             </div>
-            <h3 class="miembro-nombre equipo-nombre-animate">Jesus Leto</h3>
+            <h3 class="miembro-nombre equipo-rol-animate">Jesus Leto</h3>
             <p class="miembro-rol equipo-rol-animate">Diseñador Web y Experiencia de Usuario</p>
             <a class="miembro-github" href="https://github.com/thebiped" target="_blank" rel="noopener noreferrer">
               <div class="github-button-container">
