@@ -20,7 +20,7 @@
 
     <!-- Botones a la izquierda -->
     <div class="menu-items">
-        <a href="../dist/index.html">Jugar</a>
+        <a href="../../dist/index.html">Jugar</a>
         <a href="../../index.php">Salir</a>
     </div>
 
