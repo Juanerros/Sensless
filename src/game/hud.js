@@ -4,7 +4,7 @@ import { gameState } from './state.js';
 import { getEnemies } from './enemies/core/enemy.js';
 import { getSelectedShotType } from './magicShotsSystem.js';
 import { getShotTypeByName } from './shotTypes.js';
-import { getXPVisualState, getXPEffects, getLevelUpOptions, isLevelUpPending } from './xpSystem.js';
+import { getXPVisualState, getXPEffects, getLevelUpOptions, isLevelUpPending, getSkillIconKeyByName } from './xpSystem.js';
 
 class HUD {
   constructor() {
@@ -142,11 +142,13 @@ class HUD {
     const posY = 25;
 
     if (shotType && shotType.icon) {
-      const iconAsset = assetLoader.getScaledAsset(shotType.icon, iconSize, iconSize);
+      const iconAsset = assetLoader.getAsset(shotType.icon);
       if (iconAsset) {
-        p.stroke(1)
+        p.stroke(1);
         p.imageMode(p.CORNER);
-        p.image(iconAsset, posX, posY);
+        // Dibujar y escalar en tiempo de render para evitar el suavizado de resize
+        const sprite = iconAsset.gifImage ? iconAsset.gifImage : iconAsset;
+        p.image(sprite, posX, posY, iconSize, iconSize);
         p.pop();
         return;
       }
@@ -264,36 +266,32 @@ class HUD {
     p.rect(0, 0, window.innerWidth, window.innerHeight);
 
     const options = getLevelUpOptions();
-    const cardW = 260;
-    const cardH = 140;
-    const gap = 60;
+    const gap = 160;
     const centerX = window.innerWidth / 2;
     const centerY = window.innerHeight / 2;
-    const leftX = centerX - cardW - gap / 2;
+    const leftX = centerX - gap / 2;
     const rightX = centerX + gap / 2;
-    const topY = centerY - cardH / 2;
+    const topY = centerY / 2;
 
-    // Tarjeta izquierda
-    p.fill(240);
-    p.stroke(50);
-    p.strokeWeight(2);
-    p.rect(leftX, topY, cardW, cardH, 8);
-    p.fill(30);
-    p.noStroke();
-    p.textAlign(p.CENTER, p.CENTER);
-    p.textSize(16);
-    p.text(options[0] || 'Opción A', leftX + cardW / 2, topY + cardH / 2);
+    // Icono
+    const leftIconKey = getSkillIconKeyByName(options[0]);
+    if (leftIconKey) {
+      const icon = assetLoader.getAsset(leftIconKey);
+      if (icon) {
+        p.imageMode(p.CORNER);
+        p.image(icon, leftX , topY , 88, 88);
+      }
+    }
 
-    // Tarjeta derecha
-    p.fill(240);
-    p.stroke(50);
-    p.strokeWeight(2);
-    p.rect(rightX, topY, cardW, cardH, 8);
-    p.fill(30);
-    p.noStroke();
-    p.textAlign(p.CENTER, p.CENTER);
-    p.textSize(16);
-    p.text(options[1] || 'Opción B', rightX + cardW / 2, topY + cardH / 2);
+    // Icono
+    const rightIconKey = getSkillIconKeyByName(options[1]);
+    if (rightIconKey) {
+      const icon = assetLoader.getAsset(rightIconKey);
+      if (icon) {
+        p.imageMode(p.CORNER);
+        p.image(icon, rightX, topY, 88, 88);
+      }
+    }
 
     // Indicaciones
     p.fill(255);
@@ -302,7 +300,7 @@ class HUD {
     p.textSize(18);
     p.text('Has subido de nivel. Elige una habilidad:', centerX, topY - 40);
     p.textSize(12);
-    p.text('Pulsa Q (izquierda) o E (derecha) para seleccionar', centerX, topY + cardH + 20);
+    p.text('Pulsa Q (izquierda) o E (derecha) para seleccionar', centerX, topY + 20);
 
     p.pop();
   }

@@ -95,6 +95,18 @@ const skillPool = [
   'Stonks'
 ];
 
+// Mapeo de nombre mostrado -> asset de icono en mutaciones
+const skillNameToIconAsset = {
+  'visión doble': 'mutSkillVisionDoble',
+  'canibalismo': 'mutSkillCanibalismo',
+  'explosión': 'mutSkillExplosion',
+  'explosion': 'mutSkillExplosion',
+  'rebote': 'mutSkillRebote',
+  'agrandado': 'mutSkillAgrandado',
+  'piernas veloces': 'mutSkillPiernasVeloces',
+  'stonks': 'mutSkillStonks'
+};
+
 // Mapeo de nombre mostrado -> clave interna del gestor de habilidades
 function resolveSkillKeyFromName(name) {
   const n = String(name).toLowerCase();
@@ -106,6 +118,13 @@ function resolveSkillKeyFromName(name) {
   if (n.includes('piernas veloces')) return 'fastLegs';
   if (n.includes('stonks')) return 'stonks';
   return null;
+}
+
+// Resolver el icono (asset key) para una opción de habilidad por su nombre visible
+export function getSkillIconKeyByName(name) {
+  if (!name) return null;
+  const n = String(name).toLowerCase().trim();
+  return skillNameToIconAsset[n] || null;
 }
 
 function triggerLevelUpSelection() {

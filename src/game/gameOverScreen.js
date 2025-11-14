@@ -81,18 +81,18 @@ class GameOverScreen {
     p.pop();
 
     // Botón Guardar puntuación
-    p.push();
-    p.fill(100, 100, 100);
-    p.stroke(0);
-    p.strokeWeight(2);
-    p.rectMode(p.CENTER);
-    p.rect(centerX, buttonYSave, buttonWidth, buttonHeight);
-    p.fill(255);
-    p.noStroke();
-    p.textAlign(p.CENTER, p.CENTER);
-    p.textSize(24);
-    p.text('Guardar puntuación', centerX, buttonYSave);
-    p.pop();
+    // p.push();
+    // p.fill(100, 100, 100);
+    // p.stroke(0);
+    // p.strokeWeight(2);
+    // p.rectMode(p.CENTER);
+    // p.rect(centerX, buttonYSave, buttonWidth, buttonHeight);
+    // p.fill(255);
+    // p.noStroke();
+    // p.textAlign(p.CENTER, p.CENTER);
+    // p.textSize(24);
+    // p.text('Guardar puntuación', centerX, buttonYSave);
+    // p.pop();
   }
 
   handleKeyPressed(key) {

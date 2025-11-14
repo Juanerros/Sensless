@@ -60,6 +60,14 @@ export const gameAssets = [
   { name: 'waterIcon', url: 'sprites/Elementos/Agua.png' },
   { name: 'fireIcon', url: 'sprites/Elementos/Fuego.png' },
   { name: 'earthIcon', url: 'sprites/Elementos/Tierra.png' },
+  // Iconos de habilidades (mutaciones)
+  { name: 'mutSkillVisionDoble', url: 'sprites/mutaciones/vision_ddoble.png' },
+  { name: 'mutSkillCanibalismo', url: 'sprites/mutaciones/canibalismo.png' },
+  { name: 'mutSkillExplosion', url: 'sprites/mutaciones/explosion.png' },
+  { name: 'mutSkillRebote', url: 'sprites/mutaciones/rebote.png' },
+  { name: 'mutSkillAgrandado', url: 'sprites/mutaciones/agrandado.png' },
+  { name: 'mutSkillPiernasVeloces', url: 'sprites/mutaciones/piernas_veloces.png' },
+  { name: 'mutSkillStonks', url: 'sprites/mutaciones/stonks.png' },
   // Efectos de impacto de proyectiles
   { name: 'explosionImpact', url: 'sprites/Proyectiles_jugador/disparo_explosion.gif', type: 'animated' },
   { name: 'earthImpact', url: 'sprites/Proyectiles_jugador/proyectil_tierra_roto.gif', type: 'animated' },

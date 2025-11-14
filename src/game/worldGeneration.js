@@ -100,8 +100,8 @@ class Chunk {
         if (this.generated) return;
 
         this.generateTerrain();
-        this.generateElements();
-        this.generateEvent();
+         this.generateElements();
+        // this.generateEvent();
         this.generated = true;
     }
 
@@ -127,11 +127,11 @@ class Chunk {
             const elementTypes = ['box', 'hidrogeno', 'oxigeno'];
             const elementType = elementTypes[Math.floor(Math.random() * elementTypes.length)];
 
-            if (elementType === 'box') {
-                createBox(x, y);
-            } else {
-                createQuimic(x, y, elementType);
-            }
+            createBox(x, y);
+            // if (elementType === 'box') {
+            // } else {
+            //     createQuimic(x, y, elementType);
+            // }
         }
     }
 
