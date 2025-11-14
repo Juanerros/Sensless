@@ -45,7 +45,8 @@ initializeProperties() {
     // Configuración de explosión
     this.explosionPlayerDamage = 10; // daño para el jugador
     this.explosionEnemyDamage = 6;   // daño menor para otros enemigos
-    this.explosionKnockbackPlayer = 0.7;
+    // Reducir el empuje hacia el jugador para que no lo lance tan alto
+    this.explosionKnockbackPlayer = 0.3;
     this.explosionKnockbackEnemy = 0.4;
   }
 

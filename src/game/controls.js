@@ -1,6 +1,8 @@
 import Matter from 'matter-js';
 import { Vector2 } from '../utils/Vector2.js';
 import { gameState, togglePauseGame } from './state.js';
+import { Olvido } from './enemies/types/olvido.js';
+import { getWorld } from './physics.js';
 import { screenToWorldCoordinates } from './camera.js';
 import { selectInventorySlot, useSelectedItem } from './inventory.js';
 import { firePlayerShot, selectShotType, getPlayerSpeedMultiplier } from './magicShotsSystem.js';
@@ -75,6 +77,21 @@ export function handleKeyPressed(key) {
     selectShotType('water')
   } else if (k === 'y') {
     selectShotType('earth')
+  } else if (k === 'o') {
+    // Spawnear Olvido al presionar 'o' para pruebas
+    try {
+      const world = getWorld();
+      const playerBody = gameState?.player;
+      const px = playerBody?.position?.x ?? 0;
+      const py = playerBody?.position?.y ?? 450;
+      const ox = px + 250; // un poco a la derecha del jugador
+      const olvido = new Olvido(ox, py, world);
+      // Para pruebas: Olvido con 1 de vida
+      olvido.health = 1;
+      console.info(`[TEST] Olvido spawn por tecla 'o': vida actual ${olvido.health} / ${olvido.maxHealth || 200}`);
+    } catch (e) {
+      console.warn("No se pudo spawnear Olvido al presionar 'o':", e);
+    }
   }
 }
 
