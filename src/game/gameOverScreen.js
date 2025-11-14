@@ -128,14 +128,14 @@ class GameOverScreen {
     }
 
     // Área del botón Guardar puntuación
-    const saveHit = (
-      mx >= centerX - buttonWidth / 2 && mx <= centerX + buttonWidth / 2 &&
-      my >= buttonYSave - buttonHeight / 2 && my <= buttonYSave + buttonHeight / 2
-    );
+    // const saveHit = (
+    //   mx >= centerX - buttonWidth / 2 && mx <= centerX + buttonWidth / 2 &&
+    //   my >= buttonYSave - buttonHeight / 2 && my <= buttonYSave + buttonHeight / 2
+    // );
 
-    if (saveHit) {
-      return 'save';
-    }
+    // if (saveHit) {
+    //   return 'save';
+    // }
 
     return null;
   }
