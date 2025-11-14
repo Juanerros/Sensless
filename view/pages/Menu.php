@@ -71,7 +71,7 @@ function showLoaderAndRedirect(url) {
 
 // Botones Jugar / Salir
 document.getElementById("btnJugar").addEventListener("click", () => {
-  showLoaderAndRedirect("../dist/index.html");
+  showLoaderAndRedirect("../../dist/index.html");
 });
 
 document.getElementById("btnSalir").addEventListener("click", () => {
