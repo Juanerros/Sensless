@@ -74,7 +74,7 @@ class EnemySpawner {
     // Actualizar progreso de chunks visitados
     // Escala acelerada: 12% por cada chunk (ajustado por this.chunksPerStep)
     const visitedCount = getVisitedChunksCount();
-    this.progressPercent = Math.max(0, Math.min(1, visitedCount * (0.08 / this.chunksPerStep)));
+    this.progressPercent = Math.max(0, Math.min(1, visitedCount * (0.1 / this.chunksPerStep)));
 
     if(!this.hasScoreAdded && (this.progressPercent === 0.5)) {
       addScore(1000);
