@@ -23,16 +23,26 @@ export const gameAssets = [
   { name: 'olvido', url: 'sprites/enemies/olvido/olvido_idle.gif', type: 'animated' },
   { name: 'olvidoTeleport', url: 'sprites/enemies/olvido/olvido_teleport.gif', type: 'animated' },
   { name: 'olvidoTeleportBack', url: 'sprites/enemies/olvido/olvido_teleports_back.gif', type: 'animated' },
+  { name: 'olvidoAttackStart', url: 'sprites/enemies/olvido/olvido_attack_start.gif', type: 'animated' },
+  { name: 'olvidoAttacking', url: 'sprites/enemies/olvido/olvido_attacking.gif', type: 'animated' },
+  { name: 'olvidoHurt', url: 'sprites/enemies/olvido/olvido_hurt.png', type: 'image' },
+  { name: 'olvidoPhase2Head', url: 'sprites/enemies/olvido/olvido_phase 2_head.png', type: 'image' },
+  { name: 'olvidoPhase2HeadTurn', url: 'sprites/enemies/olvido/olvido_phase 2_head-turn.png', type: 'image' },
+  { name: 'olvidoPhase2HeadAttack', url: 'sprites/enemies/olvido/olvido_phase 2_head_attack.gif', type: 'animated' },
+  { name: 'olvidoShot', url: 'sprites/enemies/olvido/olvido_disparo.gif', type: 'animated' },
+
   { name: 'wendigo', url: 'sprites/enemies/Wendigo/Wendingo_idle.gif', type: 'animated' },
   { name: 'wendigoMove', url: 'sprites/enemies/Wendigo/Wendingo_correr .gif', type: 'animated' },
   { name: 'wendigoAlert', url: 'sprites/enemies/Wendigo/Wendingo_alerta.gif', type: 'animated' },
   { name: 'wendigoCharge', url: 'sprites/enemies/Wendigo/Wendigo_embestida.gif', type: 'animated' },
   { name: 'wendigoHurt', url: 'sprites/enemies/Wendigo/Wendigo_Counter.gif', type: 'animated' },
+
   { name: 'wendigoCounterRun', url: 'sprites/enemies/Wendigo/wendigo_embestida_counter.gif', type: 'animated' },
   { name: 'wendigoDeath', url: 'sprites/enemies/Wendigo/wendigo_death.gif', type: 'animated' },
   { name: 'wanderingBud', url: 'sprites/enemies/Tronco/tronco_idle.gif', type: 'animated' },
   { name: 'wanderingBudMove', url: 'sprites/enemies/Tronco/tronco_correr.gif', type: 'animated' },
   { name: 'wanderingBudHurt', url: 'sprites/enemies/Tronco/tronco_hurt.png' },
+  
   { name: 'bandit', url: 'sprites/enemies/Bandido/bandido_idle.gif', type: 'animated' },
   { name: 'banditAttack', url: 'sprites/enemies/Bandido/bandido_ataque.png' },
   { name: 'banditHurt', url: 'sprites/enemies/Bandido/bandido_hurt.gif', type: 'animated' },
@@ -72,7 +82,7 @@ export function getAssetsByCategory(category) {
         asset.name.startsWith('player'));
     case 'enemies':
       return gameAssets.filter(asset => 
-        ['olvido', 'olvidoTeleport', 'olvidoTeleportBack', 'wendigo', 'wendigoMove', 'wendigoAlert', 'wendigoCharge', 'wendigoHurt', 'wendigoCounterRun', 'wendigoDeath', 'wanderingBud', 'wanderingBudMove', 'wanderingBudHurt', 'bandit', 'banditBullet'].includes(asset.name));
+  ['olvido', 'olvidoTeleport', 'olvidoTeleportBack', 'olvidoAttackStart', 'olvidoAttacking', 'olvidoHurt', 'olvidoPhase2Head', 'olvidoPhase2HeadTurn', 'olvidoPhase2HeadAttack', 'olvidoShot', 'wendigo', 'wendigoMove', 'wendigoAlert', 'wendigoCharge', 'wendigoHurt', 'wendigoCounterRun', 'wendigoDeath', 'wanderingBud', 'wanderingBudMove', 'wanderingBudHurt', 'bandit', 'banditBullet'].includes(asset.name));
     case 'items':
       return gameAssets.filter(asset => 
         ['box', 'hidrogeno', 'oxigeno', 'water'].includes(asset.name));

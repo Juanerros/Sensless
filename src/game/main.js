@@ -155,8 +155,9 @@ const sketch = (p) => {
         // Inicializamos el spawner cuando ya cargaron los sprites
         spawner = new EnemySpawner();
         spawner.setPlayer(player);
-        spawner.setIntervalMs(2500);
-        spawner.setMaxEnemies(1);   
+        // Reducir densidad general en 50%
+        spawner.setIntervalMs(1200);
+        spawner.setMaxEnemies(15);   
         spawner.start();
       })
       .catch(error => {
@@ -177,8 +178,9 @@ const sketch = (p) => {
       // Inicializamos el spawner cuando ya cargaron los sprites
       spawner = new EnemySpawner();
       spawner.setPlayer(player);
-      spawner.setIntervalMs(2500);
-      spawner.setMaxEnemies(1);   
+      // Reducir densidad general en 50%
+      spawner.setIntervalMs(1200);
+      spawner.setMaxEnemies(20);
       spawner.start();
     });
   };

@@ -1,6 +1,7 @@
 import { drawInventoryUI } from './inventory.js';
 import assetLoader from './assets/assetLoader.js';
 import { gameState } from './state.js';
+import { getEnemies } from './enemies/core/enemy.js';
 import { getSelectedShotType } from './magicShotsSystem.js';
 import { getShotTypeByName } from './shotTypes.js';
 import { getXPVisualState, getXPEffects, getLevelUpOptions, isLevelUpPending } from './xpSystem.js';
@@ -68,12 +69,54 @@ class HUD {
   drawAll(p, playerHealth, maxHealth) {
     this.drawInventory(p);
     this.drawHealthBar(p, playerHealth, maxHealth);
+    this.drawBossHealthBar(p);
     this.drawXPBar(p);
     this.drawScore(p);
     this.drawShotIcon(p);
     // if (this.isPosiblyToShowBorderBox(p, getBodies())) this.drawBorderBox(p);
     this.drawCursor(p);
     if (isLevelUpPending()) this.drawLevelUpSelection(p);
+  }
+
+  drawBossHealthBar(p) {
+    p.push();
+    p.resetMatrix();
+    const enemies = getEnemies();
+    const boss = enemies.find(e => e && (e.name === 'olvido' || e.type === 'olvido'));
+    if (!boss) { p.pop(); return; }
+
+    const barWidth = 480;
+    const barHeight = 20;
+    const canvasW = (typeof p.width === 'number' && p.width > 0) ? p.width : 1280;
+    const barX = Math.round((canvasW - barWidth) / 2) - 200; // mover un poco a la derecha
+    const barY = 520; // parte media baja
+    const maxHealth = boss.maxHealth || 100;
+    const healthPercentage = Math.max(0, Math.min(1, boss.health / maxHealth));
+
+    // Fondo
+    p.noStroke();
+    p.fill(40, 0, 0);
+    p.rectMode(p.CORNER);
+    p.rect(barX, barY, barWidth, barHeight, 8);
+
+    // Progreso
+    p.fill(200, 40, 40);
+    p.rect(barX, barY, Math.round(barWidth * healthPercentage), barHeight, 8);
+
+    // Contorno
+    p.noFill();
+    p.stroke(255);
+    p.strokeWeight(2);
+    p.rect(barX, barY, barWidth, barHeight, 8);
+
+    // Texto del boss
+    p.noStroke();
+    p.fill(255);
+    p.textAlign(p.CENTER, p.TOP);
+    p.textSize(18);
+    p.text('OLVIDO', barX + barWidth / 2, barY + barHeight + 6);
+
+    p.pop();
   }
 
   drawScore(p) {

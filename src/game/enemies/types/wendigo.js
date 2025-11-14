@@ -2,7 +2,8 @@ import Matter from "matter-js";
 import { Enemy } from "../core/enemy.js";
 import assetLoader from '../../assets/assetLoader.js';
 import { getScaledEnemySpriteByName } from "../sprites/enemySprites.js";
-import { addScore } from '../../state.js';
+import { addScore, gameState } from '../../state.js';
+import { takeDamage } from '../../player.js';
 
 export class Wendigo extends Enemy {
   constructor(x, y, world) {
@@ -64,6 +65,11 @@ export class Wendigo extends Enemy {
     this.sprite = this.idleImg || this.idleSprite || this.sprite;
     if (this.body) this.body.sprite = this.sprite;
     if (this.body) this.body.drawAnchor = 'bottom';
+
+    // Daño por contacto
+    this.contactDamage = 6;
+    this.contactDamageCooldownMs = 800;
+    this.lastContactHitAt = 0;
   }
 
   update() {
@@ -185,6 +191,9 @@ export class Wendigo extends Enemy {
       this.sprite = spr;
       if (this.body) this.body.sprite = this.sprite;
     }
+
+    // Aplicar daño por contacto al jugador
+    this.applyContactDamage();
   }
 
   chasePlayer(dx, dy) {
@@ -236,6 +245,33 @@ export class Wendigo extends Enemy {
     addScore(this.scoreValue);
     this.removeFromEnemies();
     this.removeFromPhysics();
+  }
+
+  // Daño por contacto al jugador con knockback (igual a Olvido)
+  applyContactDamage() {
+    const now = Date.now();
+    if ((now - this.lastContactHitAt) < this.contactDamageCooldownMs) return;
+    const playerBody = gameState?.player;
+    if (!playerBody || !this.body) return;
+
+    const dx = playerBody.position.x - this.body.position.x;
+    const dy = playerBody.position.y - this.body.position.y;
+    // Detección AABB para contacto sólido
+    const halfWEnemy = (this.width || 40) / 2;
+    const halfHEnemy = (this.height || 60) / 2;
+    const halfWPlayer = (playerBody.width || 42) / 2;
+    const halfHPlayer = (playerBody.height || 80) / 2;
+    const overlapX = Math.abs(dx) <= (halfWEnemy + halfWPlayer);
+    const overlapY = Math.abs(dy) <= (halfHEnemy + halfHPlayer);
+    if (overlapX && overlapY) {
+      try { takeDamage(this.contactDamage); } catch (_) {}
+      const dist = Math.hypot(dx, dy);
+      let nx = 0, ny = -1; // fallback hacia arriba
+      if (dist > 0) { nx = dx / dist; ny = dy / dist; }
+      const knockSpeed = 14;
+      try { Matter.Body.setVelocity(playerBody, { x: nx * knockSpeed, y: ny * knockSpeed }); } catch (_) {}
+      this.lastContactHitAt = now;
+    }
   }
 }
 
